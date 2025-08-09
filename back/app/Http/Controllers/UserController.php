@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
+use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller{
     public function updateAvatar(Request $request, $userId)
@@ -91,5 +92,28 @@ class UserController extends Controller{
     }
     function destroy($id){
         return User::destroy($id);
+    }
+    public function getPermissions($userId)
+    {
+        $user = User::findOrFail($userId);
+        // devuelve IDs de permisos del usuario
+        return $user->permissions()->pluck('id');
+    }
+
+    public function syncPermissions(Request $request, $userId)
+    {
+        $request->validate([
+            'permissions' => 'array',
+            'permissions.*' => 'integer|exists:permissions,id',
+        ]);
+
+        $user = User::findOrFail($userId);
+        $perms = Permission::whereIn('id', $request->permissions ?? [])->get();
+        $user->syncPermissions($perms);
+
+        return response()->json([
+            'message' => 'Permisos actualizados',
+            'permissions' => $user->permissions()->pluck('name'),
+        ]);
     }
 }

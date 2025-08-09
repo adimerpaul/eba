@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //})->middleware('auth:sanctum');
 Route::post('/login', [App\Http\Controllers\UserController::class, 'login']);
-Route::get('/migrate', [App\Http\Controllers\MigracionController::class, 'migrate']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [App\Http\Controllers\UserController::class, 'logout']);
     Route::get('/me', [App\Http\Controllers\UserController::class, 'me']);
@@ -24,22 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/updatePassword/{user}', [App\Http\Controllers\UserController::class, 'updatePassword']);
     Route::post('/{user}/avatar', [App\Http\Controllers\UserController::class, 'updateAvatar']);
 
-    Route::get('/clients', [ClientController::class, 'index']);
-    Route::post('/clients', [ClientController::class, 'store']);
-    Route::put('/clients/{client}', [ClientController::class, 'update']);
-    Route::delete('/clients/{client}', [ClientController::class, 'destroy']);
-
-    Route::get('/ordenes', [OrdenController::class, 'index']); // listado filtrado
-    Route::post('/ordenes', [OrdenController::class, 'store']);
-    Route::get('/ordenes/{orden}', [OrdenController::class, 'show']);
-    Route::put('/ordenes/{orden}', [OrdenController::class, 'update']);
-    Route::delete('/ordenes/{orden}', [OrdenController::class, 'destroy']);
-
-    Route::get('cogs', [CogController::class, 'index']);
-    Route::put('cogs/{cog}', [CogController::class, 'update']);
-    Route::get('cogs/{id}', [CogController::class, 'show']);
-
-    Route::get('/ordenes/{orden}/pagos', [OrdenPagoController::class, 'index']);
-    Route::post('/ordenes/pagos', [OrdenPagoController::class, 'store']);
-    Route::put('/ordenes/pagos/{pago}', [OrdenPagoController::class, 'update']);
+    Route::get('/permissions', [App\Http\Controllers\PermissionController::class, 'index']);
+    Route::get('/users/{user}/permissions', [App\Http\Controllers\UserController::class, 'getPermissions']);
+    Route::put('/users/{user}/permissions', [App\Http\Controllers\UserController::class, 'syncPermissions']);
 });
