@@ -40,7 +40,7 @@ class UserController extends Controller{
     }
     function login(Request $request){
         $credentials = $request->only('username', 'password');
-        $user = User::where('username', $credentials['username'])->first();
+        $user = User::where('username', $credentials['username'])->with('permissions:id,name')->first();
         if (!$user || !password_verify($credentials['password'], $user->password)) {
             return response()->json([
                 'message' => 'Usuario o contraseña incorrectos',
@@ -59,11 +59,13 @@ class UserController extends Controller{
         ]);
     }
     function me(Request $request){
-        return $request->user();
+        $user = $request->user();
+        $user->load('permissions:id,name');
+        return response()->json($user);
     }
     function index(){
         return User::where('id', '!=', 0)
-//            ->with('docente')
+            ->with('permissions:id,name')
             ->orderBy('id', 'desc')
             ->get();
     }
