@@ -75,6 +75,45 @@
           </q-avatar>
         </q-td>
       </template>
+      <template v-slot:body-cell-permissions="props">
+        <q-td :props="props">
+          <div class="row items-center q-col-gutter-xs">
+
+            <!-- hasta 3 chips visibles -->
+            <q-chip
+              v-for="(perm, idx) in (props.row.permissions || []).slice(0, 3)"
+              :key="perm.id"
+              dense
+              color="grey-3"
+              text-color="black"
+              size="12px"
+              class="q-mr-xs q-mb-xs"
+            >
+              {{ perm.name }}
+            </q-chip>
+
+            <!-- si hay más, badge + tooltip con el listado completo -->
+            <template v-if="(props.row.permissions || []).length > 3">
+              <q-badge outline color="primary" class="q-ml-xs">
+                +{{ (props.row.permissions || []).length - 3 }}
+                <q-tooltip anchor="top middle" self="bottom middle" :offset="[0,8]">
+                  <div class="text-left">
+                    <div
+                      v-for="perm in props.row.permissions"
+                      :key="perm.id"
+                    >• {{ perm.name }}</div>
+                  </div>
+                </q-tooltip>
+              </q-badge>
+            </template>
+
+            <!-- sin permisos -->
+            <q-badge v-if="!(props.row.permissions || []).length" color="grey-5" text-color="white" outline>
+              Sin permisos
+            </q-badge>
+          </div>
+        </q-td>
+      </template>
       <!--      <template v-slot:body-cell-permisos="props">-->
       <!--        <q-td :props="props">-->
       <!--          <ul class="pm-0">-->
@@ -229,7 +268,9 @@ export default {
         {name: 'username', label: 'Usuario', align: 'left', field: 'username'},
         {name: 'avatar', label: 'Avatar', align: 'left', field: (row) => row.avatar},
         {name: 'role', label: 'Rol', align: 'left', field: 'role'},
-        // { name: 'docente', label: 'Docente', align: 'left', field: (row) =>  row.docente?.nombre },
+        { name: 'permissions', label: 'Permisos', align: 'left',
+          field: row => (row.permissions || []).map(p => p.name).join(', ')
+        },
       ],
       permissions: [],
       dialogPermisos: false,

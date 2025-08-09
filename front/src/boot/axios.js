@@ -59,6 +59,7 @@ export default boot(({ app, router }) => {
     app.config.globalProperties.$axios.get('me').then(response => {
       useCounterStore().isLogged = true
       useCounterStore().user = response.data
+      useCounterStore().permissions = (response.data.permissions || []).map(p => p.name)
       localStorage.setItem('user', JSON.stringify(response.data))
       // useCounterStore().permissions = response.data.permissions
     }).catch(error => {

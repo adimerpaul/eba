@@ -5,6 +5,7 @@ export const useCounterStore = defineStore('counter', {
     counter: 0,
     user: {},
     isLogged: localStorage.getItem('tokenEBA') ? true : false,
+    permissions: [],
   }),
 
   getters: {

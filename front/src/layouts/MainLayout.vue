@@ -1,5 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
+    <!-- HEADER -->
     <q-header class="bg-white text-black" bordered>
       <q-toolbar>
         <q-btn
@@ -11,28 +12,62 @@
           unelevated
           dense
         />
-        <q-toolbar-title>
-          <span class="text-caption text-bold">
-            {{ $version }}
-          </span>
-        </q-toolbar-title>
+        <div class="row items-center q-gutter-sm">
+<!--          <q-badge color="green-8" text-color="white" class="text-bold">EBA</q-badge>-->
+          <div class="text-subtitle1 text-weight-medium" style="line-height: 0.9">
+            Dashboard de Gestión <br>
+            <q-badge color="warning" text-color="black" v-if="roleText" class="text-bold">{{ roleText }}</q-badge>
+          </div>
+        </div>
 
-        <div>
-          <q-btn-dropdown flat unelevated no-caps dropdownIcon="expand_more">
+        <q-space />
+
+        <div class="row items-center q-gutter-sm">
+
+          <q-btn-dropdown flat unelevated no-caps dropdown-icon="expand_more">
             <template v-slot:label>
-              <q-avatar rounded>
-                <q-img :src="`${$url}/../images/${$store.user.avatar}`" width="40px" height="40px" v-if="$store.user.avatar" />
-              </q-avatar>
-              <div class="text-center" style="line-height: 1">
-                <div style="width: 100px; white-space: normal; overflow-wrap: break-word;">
-                  {{ $store.user.username }}
-                  <br>
-                  <q-chip dense size="10px" :color="$filters.color($store.user.role)" text-color="white">
-                    {{ $store.user.role }}
-                  </q-chip>
+              <div class="row items-center no-wrap q-gutter-sm">
+                <q-avatar rounded>
+                  <q-img :src="`${$url}/../images/${$store.user.avatar}`" width="40px" height="40px" v-if="$store.user.avatar"/>
+                  <q-icon name="person" v-else />
+                </q-avatar>
+                <div class="text-left" style="line-height: 1">
+                  <div class="ellipsis" style="max-width: 130px;">
+                    {{ $store.user.username }}
+                  </div>
+<!--                  <q-chip dense size="10px" :color="$filters.color($store.user.role)" text-color="white">-->
+<!--                    {{ $store.user.role }}-->
+<!--                  </q-chip>-->
                 </div>
               </div>
             </template>
+
+            <q-item clickable v-close-popup>
+              <q-item-section>
+                <q-item-label class="text-grey-7">
+                  Permisos asignados
+                </q-item-label>
+                <q-item-label caption class="q-mt-xs">
+                  <div class="row q-col-gutter-xs" style="min-width: 150px; max-width: 150px;">
+                    <q-chip
+                      v-for="(p, i) in $store.permissions"
+                      :key="i"
+                      dense
+                      color="grey-3"
+                      text-color="black"
+                      size="12px"
+                      class="q-mr-xs q-mb-xs"
+                    >
+                      {{ p }}
+                    </q-chip>
+                    <q-badge v-if="!$store.permissions?.length" color="grey-5" outline>Sin permisos</q-badge>
+                  </div>
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-separator />
+
             <q-item clickable v-ripple @click="logout" v-close-popup>
               <q-item-section avatar>
                 <q-icon name="logout" />
@@ -46,44 +81,67 @@
       </q-toolbar>
     </q-header>
 
+    <!-- DRAWER -->
     <q-drawer
       v-model="leftDrawerOpen"
       bordered
       show-if-above
-      :width="200"
-      :breakpoint="500"
-      class="bg-primary text-white"
+      :width="240"
+      :breakpoint="600"
+      class="bg-green-9 text-white"
     >
-      <q-list>
-        <q-item-label header class="text-center q-pa-none">
-          <q-avatar
-            size="60px"
-            class="q-mt-md q-mb-sm bg-white"
-            rounded>
-            <q-img src="/logo.png" width="90px"  />
+      <q-list class="q-pb-none">
+        <q-item-label header class="text-center q-pa-none q-pt-md">
+          <q-avatar size="64px" class="q-mb-sm bg-white" rounded>
+            <q-img src="/logo.png" width="90px" />
           </q-avatar>
+          <div class="text-weight-bold text-white">EBA</div>
+          <div class="text-caption text-white">Sistema de Gestión Apícola</div>
         </q-item-label>
 
+        <q-separator color="green-8" />
+
+        <q-item-label header class="q-px-md text-grey-3 q-mt-sm">
+          Módulos del Sistema
+        </q-item-label>
+
+        <!-- Menú dinámico por permisos -->
         <template v-for="link in filteredLinks" :key="link.title">
-          <q-item clickable :to="link.link" exact
-                  class="text-black"
-                  active-class="menu"
-                  dense
-                  v-close-popup
+          <q-item
+            clickable
+            :to="link.link"
+            exact
+            dense
+            class="menu-item"
+            active-class="menu-active"
+            v-close-popup
           >
             <q-item-section avatar>
-              <q-icon :name="$route.path === link.link ? 'o_' + link.icon : link.icon"
-                      :class="$route.path === link.link ? 'text-black' : 'text-grey-3'" />
+              <q-icon
+                :name="$route.path === link.link ? 'o_' + link.icon : link.icon"
+                :class="$route.path === link.link ? 'text-grey-3' : 'text-white'"
+              />
             </q-item-section>
             <q-item-section>
-              <q-item-label :class="$route.path === link.link ? 'text-black text-bold' : 'text-grey-3'">
+              <q-item-label :class="$route.path === link.link ? 'text-white text-weight-bold' : 'text-white'">
                 {{ link.title }}
               </q-item-label>
             </q-item-section>
           </q-item>
         </template>
 
-        <q-item clickable class="text-grey" @click="logout" v-close-popup>
+        <q-separator color="green-8" class="q-mt-md"/>
+
+        <div class="q-pa-md">
+          <div class="text-white-7 text-caption">
+            EBA v{{ $version }}
+          </div>
+          <div class="text-white-7 text-caption">
+            © {{ new Date().getFullYear() }} Sistema de Gestión Apícola
+          </div>
+        </div>
+
+        <q-item clickable class="text-white" @click="logout" v-close-popup>
           <q-item-section avatar>
             <q-icon name="logout" />
           </q-item-section>
@@ -94,7 +152,8 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container class="bg-grey-3">
+    <!-- PAGE -->
+    <q-page-container class="bg-grey-2">
       <router-view />
     </q-page-container>
   </q-layout>
@@ -102,92 +161,79 @@
 
 <script setup>
 import { computed, getCurrentInstance, ref } from 'vue'
+import { useCounterStore } from 'stores/example-store'
 
 const { proxy } = getCurrentInstance()
+const store = useCounterStore()
+
+const leftDrawerOpen = ref(true)
+
+// Helpers de permisos
+function hasPerm (perm) {
+  if (!perm) return true
+  return store.permissions?.includes(perm)
+}
+function hasAnyPerm (perms = []) {
+  return perms.some(p => hasPerm(p))
+}
 
 const linksList = [
-  {title: 'Principal', icon: 'home', link: '/', can: 'Todos'},
-  {title: 'Usuarios', icon: 'people', link: '/usuarios', can: 'Administrador'},
-//   clientes ordenes prestamos libroDIario ordenesRetrasadso y prestamosRetrasados
-  {title: 'Clientes', icon: 'people', link: '/clientes', can: 'Administrador'},
-  {title: 'Ordenes Crear', icon: 'add_circle', link: '/ordenes/crear', can: ['Administrador', 'Vendedor']},
-  {title: 'Ordenes', icon: 'receipt_long', link: '/ordenes', can: 'Administrador'},
-  {title: 'Prestamos', icon: 'paid', link: '/prestamos', can: 'Administrador'},
-  {title: 'Libro Diario', icon: 'book', link: '/libro-diario', can: ['Administrador', 'Vendedor']},
-  {title: 'Ordenes Retrasadas', icon: 'schedule', link: '/ordenes-retrasadas', can: ['Administrador']},
-  {title: 'Prestamos Retrasados', icon: 'schedule_send', link: '/prestamos-retrasados', can: ['Administrador']},
-  {title: 'Configuraciones', icon: 'settings', link: '/configuraciones', can: 'Administrador'},
-  {title: 'Reportes', icon: 'assessment', link: '/reportes', can: ['Administrador']},
+  { title: 'Dashboard',            icon: 'dashboard',     link: '/',                   canPerm: 'Dashboard' },
+  { title: 'Producción Primaria',  icon: 'inventory_2',   link: '/produccion',         canPerm: 'Produccion primaria' },
+  { title: 'Recolección',          icon: 'yard',          link: '/recoleccion',        canPerm: 'Recoleccion' },
+  { title: 'Procesamiento',        icon: 'precision_manufacturing', link: '/procesamiento', canPerm: 'Procesamiento' },
+  { title: 'Almacenamiento',       icon: 'warehouse',     link: '/almacenamiento',     canPerm: 'Almacenamiento' },
+  { title: 'Despacho',             icon: 'local_shipping',link: '/despacho',           canPerm: 'Despacho' },
+  { title: 'Usuarios',             icon: 'people',        link: '/usuarios',           canPerm: 'Usuarios' },
+  { title: 'Reportes',             icon: 'print',    link: '/reportes',           canPerm: 'Reportes' },
+  { title: 'Configuración',        icon: 'settings',      link: '/configuraciones',    canPerm: 'Configuracion' },
+  { title: 'Soporte',              icon: 'support',       link: '/soporte',            canPerm: 'Soporte' },
 ]
 
-const leftDrawerOpen = ref(false)
+const filteredLinks = computed(() => {
+  return linksList.filter(link => {
+    if (Array.isArray(link.canPerm)) return hasAnyPerm(link.canPerm)
+    if (link.canPerm) return hasPerm(link.canPerm)
+    return true
+  })
+})
 
-function toggleLeftDrawer() {
+function toggleLeftDrawer () {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
-function logout() {
+function logout () {
   proxy.$alert.dialog('¿Desea salir del sistema?')
     .onOk(() => {
-      // proxy.$store.isLogged = false
-      // proxy.$store.user = {}
-      // localStorage.removeItem('tokenAsistencia')
-      // proxy.$router.push('/login')
       proxy.$axios.post('/logout')
         .then(() => {
           proxy.$store.isLogged = false
           proxy.$store.user = {}
-          localStorage.removeItem('tokenAsistencia')
+          proxy.$store.permissions = []
+          localStorage.removeItem('tokenEBA')
           proxy.$router.push('/login')
         })
-        .catch(error => {
-          console.error('Error al cerrar sesión:', error)
-          proxy.$alert.error('Error al cerrar sesión. Intente nuevamente.')
-        })
+        .catch(() => proxy.$alert.error('Error al cerrar sesión. Intente nuevamente.'))
     })
 }
 
-const filteredLinks = computed(() => {
-  // const userPermissions = proxy.$store.user.userPermisos || []
-  //
-  // const permissionIds = userPermissions.map(p => p.permisoId)
-  //
-  // return linksList.filter(link => {
-  //   if (link.can === 'Todos') {
-  //     return true
-  //   }
-  //   return permissionIds.includes(link.can)
-  // })
-  return linksList.filter(link => {
-    if (link.can === 'Todos') {
-      return true
-    }
-    if (Array.isArray(link.can)) {
-      return link.can.includes(proxy.$store.user.role)
-    }
-    return proxy.$store.user.role === link.can
-  })
+const roleText = computed(() => {
+  const role = proxy.$store.user.role
+  if (!role) return ''
+  if (role === 'Administrador') return 'Administrador'
+  return role
 })
-// computed
-// const getColorRole = computed(() => {
-//   const role = proxy.$store.user.role
-//   if (role === 'Administrador') {
-//     return 'red'
-//   } else if (role === 'Docente') {
-//     return 'green'
-//   } else if (role === 'Estudiante') {
-//     return 'blue'
-//   }
-//   return ''
-// })
 </script>
 
-<style>
-.menu {
-  background-color: #fff;
-  color: #000 !important;
+<style scoped>
+.menu-item {
   border-radius: 10px;
-  margin: 5px;
-  padding: 5px
+  margin: 4px 8px;
+  padding: 4px 6px;
+}
+.menu-active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff !important;
+  border-radius: 10px;
 }
 </style>
