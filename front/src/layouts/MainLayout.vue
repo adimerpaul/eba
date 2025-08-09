@@ -55,10 +55,13 @@
       class="bg-primary text-white"
     >
       <q-list>
-        <q-item-label header class="text-center">
-<!--          <template v-if="$store.user.agencia" >-->
-            <q-img src="/logo.png" width="20px"  />
-<!--          </template>-->
+        <q-item-label header class="text-center q-pa-none">
+          <q-avatar
+            size="60px"
+            class="q-mt-md q-mb-sm bg-white"
+            rounded>
+            <q-img src="/logo.png" width="90px"  />
+          </q-avatar>
         </q-item-label>
 
         <template v-for="link in filteredLinks" :key="link.title">
@@ -70,10 +73,10 @@
           >
             <q-item-section avatar>
               <q-icon :name="$route.path === link.link ? 'o_' + link.icon : link.icon"
-                      :class="$route.path === link.link ? 'text-black' : 'text-grey'" />
+                      :class="$route.path === link.link ? 'text-black' : 'text-grey-3'" />
             </q-item-section>
             <q-item-section>
-              <q-item-label :class="$route.path === link.link ? 'text-black text-bold' : 'text-grey'">
+              <q-item-label :class="$route.path === link.link ? 'text-black text-bold' : 'text-grey-3'">
                 {{ link.title }}
               </q-item-label>
             </q-item-section>

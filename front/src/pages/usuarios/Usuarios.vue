@@ -48,14 +48,14 @@
                   <q-item-label>Cambiar avatar</q-item-label>
                 </q-item-section>
               </q-item>
-              <!--              <q-item clickable @click="permisosShow(props.row)" v-close-popup>-->
-              <!--                <q-item-section avatar>-->
-              <!--                  <q-icon name="lock" />-->
-              <!--                </q-item-section>-->
-              <!--                <q-item-section>-->
-              <!--                  <q-item-label>Permisos</q-item-label>-->
-              <!--                </q-item-section>-->
-              <!--              </q-item>-->
+              <q-item clickable @click="permisosShow(props.row)" v-close-popup>
+                <q-item-section avatar>
+                  <q-icon name="lock" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Permisos</q-item-label>
+                </q-item-section>
+              </q-item>
             </q-list>
           </q-btn-dropdown>
         </q-td>
@@ -176,6 +176,36 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="dialogPermisos" persistent>
+      <q-card style="min-width: 420px">
+        <q-card-section class="q-pb-none row items-center text-bold">
+          Permisos de {{ user.username }}
+          <q-space />
+          <q-btn icon="close" flat round dense @click="dialogPermisos = false" />
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input v-model="permFilter" dense outlined placeholder="Filtrar permisos..." class="q-mb-sm">
+            <template v-slot:append><q-icon name="search" /></template>
+          </q-input>
+
+          <q-list dense bordered>
+            <q-item v-for="perm in filteredPermissions" :key="perm.id">
+              <q-item-section>{{ perm.name }}</q-item-section>
+              <q-item-section side>
+                <q-toggle v-model="perm.checked" />
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn color="negative" label="Cancelar" @click="dialogPermisos = false" no-caps :loading="loading" />
+          <q-btn color="primary" label="Guardar" @click="permisosPost" no-caps :loading="loading" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 <script>
@@ -203,6 +233,7 @@ export default {
       ],
       permissions: [],
       dialogPermisos: false,
+      permFilter: '',
       cambioAvatarDialogo: false,
       docentes: [],
     }
@@ -318,12 +349,41 @@ export default {
         this.loading = false
       })
     },
-    permisosShow(user) {
+    async permisosShow(user) {
+      this.user = { ...user }
       this.dialogPermisos = true
-      this.user = {...user}
-      this.permissions.forEach(permiso => {
-        permiso.checked = user.userPermisos.some(p => p.permisoId === permiso.id)
-      })
+      this.loading = true
+      try {
+        // 1) Traer todos los permisos
+        const all = await this.$axios.get('permissions').then(r => r.data)
+        // 2) Traer permisos del usuario (array de IDs)
+        const userPermIds = await this.$axios.get(`users/${user.id}/permissions`).then(r => r.data)
+
+        // 3) Mezclar con checked
+        this.permissions = all.map(p => ({
+          ...p,
+          checked: userPermIds.includes(p.id)
+        }))
+      } catch (e) {
+        this.$alert.error(e.response?.data?.message || 'Error cargando permisos')
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async permisosPost() {
+      this.loading = true
+      try {
+        const ids = this.permissions.filter(p => p.checked).map(p => p.id)
+        await this.$axios.put(`users/${this.user.id}/permissions`, { permissions: ids })
+        this.dialogPermisos = false
+        this.$alert.success('Permisos actualizados')
+        this.usersGet()
+      } catch (e) {
+        this.$alert.error(e.response?.data?.message || 'No se pudo guardar')
+      } finally {
+        this.loading = false
+      }
     },
     userEditPassword(user) {
       this.user = {...user}
@@ -357,7 +417,14 @@ export default {
             this.loading = false
           })
         })
+    },
+  },
+  computed: {
+    filteredPermissions() {
+      if (!this.permFilter) return this.permissions
+      const t = this.permFilter.toLowerCase()
+      return this.permissions.filter(p => p.name.toLowerCase().includes(t))
     }
-  }
+  },
 }
 </script>

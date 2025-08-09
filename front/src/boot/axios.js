@@ -20,7 +20,6 @@ export default boot(({ app, router }) => {
   app.config.globalProperties.$alert = Alert
   app.config.globalProperties.$store = useCounterStore()
   app.config.globalProperties.$url = import.meta.env.VITE_API_BACK
-  app.config.globalProperties.$agencias = ['Oasis', 'Clinica']
   app.config.globalProperties.$version = import.meta.env.VITE_VERSION
   app.config.globalProperties.$filters = {
     dateDmYHis (value) {
@@ -54,7 +53,7 @@ export default boot(({ app, router }) => {
       return 'red'
     }
   }
-  const token = localStorage.getItem('tokenAsistencia')
+  const token = localStorage.getItem('tokenEBA')
   if (token) {
     app.config.globalProperties.$axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     app.config.globalProperties.$axios.get('me').then(response => {
@@ -64,7 +63,7 @@ export default boot(({ app, router }) => {
       // useCounterStore().permissions = response.data.permissions
     }).catch(error => {
       console.log(error)
-      localStorage.removeItem('tokenAsistencia')
+      localStorage.removeItem('tokenEBA')
       useCounterStore().isLogged = false
       // useCounterStore().permissions = []
       useCounterStore().user = {}
