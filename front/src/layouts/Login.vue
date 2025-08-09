@@ -157,6 +157,8 @@
 </template>
 
 <script>
+import {useCounterStore} from "stores/example-store.js";
+
 export default {
   name: 'Login',
   data() {
@@ -214,6 +216,7 @@ export default {
         this.$store.user = response.data.user;
         this.$axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.token;
         localStorage.setItem('tokenEBA', response.data.token);
+        useCounterStore().permissions = (response.data.user.permissions || []).map(p => p.name)
         localStorage.setItem('user', JSON.stringify(response.data.user));
         this.$alert.success('Bienvenido ' + response.data.user.name);
         this.$router.push('/');
