@@ -36,7 +36,7 @@ class ApicultorController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'codigo' => 'required|string|unique:apicultores,codigo',
+//            'codigo' => 'required|string|unique:apicultores,codigo',
             'nombre' => 'required|string',
             'ci' => 'nullable|string',
             'telefono' => 'nullable|string',
@@ -64,7 +64,7 @@ class ApicultorController extends Controller
     public function update(Request $request, Apicultor $apicultor)
     {
         $data = $request->validate([
-            'codigo' => "sometimes|required|string|unique:apicultores,codigo,{$apicultor->id}",
+//            'codigo' => "sometimes|required|string|unique:apicultores,codigo,{$apicultor->id}",
             'nombre' => 'sometimes|required|string',
             'ci' => 'nullable|string',
             'telefono' => 'nullable|string',

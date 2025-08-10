@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('apicultores', function (Blueprint $table) {
             $table->id();
-            $table->string('codigo')->unique();          // ej. API-001
+            $table->string('codigo')->nullable();          // ej. API-001
             $table->string('nombre');                    // Juan Pérez
             $table->string('ci')->nullable();            // documento
             $table->string('telefono')->nullable();
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('departamento')->nullable();
             $table->string('municipio')->nullable();
             $table->string('asociacion')->nullable();    // asociación/cooperativa
-            $table->enum('estado', ['Activo', 'Inactivo'])->default('Activo');
+            $table->enum('estado', ['Activo','Mantenimiento', 'Inactivo'])->default('Activo');
 
             // datos operativos
             $table->unsignedInteger('apiarios')->default(0);
