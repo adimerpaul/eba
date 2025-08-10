@@ -12,38 +12,91 @@
         <q-btn color="primary" icon="refresh" label="Actualizar" no-caps :loading="loading" @click="fetchRows" />
         <q-btn color="positive" icon="add_circle" label="Nuevo" no-caps @click="openNew" />
       </q-card-section>
-
       <q-separator />
+<!--      <q-table-->
+<!--        flat bordered-->
+<!--        :rows="rows"-->
+<!--        :columns="columns"-->
+<!--        row-key="id"-->
+<!--        :loading="loading"-->
+<!--        :pagination="pagination"-->
+<!--        @request="onRequest"-->
+<!--        :rows-per-page-options="[10,20,50]"-->
+<!--      >-->
+<!--        <template #body-cell-estado="props">-->
+<!--          <q-td :props="props">-->
+<!--            <q-chip-->
+<!--              dense-->
+<!--              :color="chipColor(props.row.estado)"-->
+<!--              text-color="white"-->
+<!--            >-->
+<!--              {{ props.row.estado }}-->
+<!--            </q-chip>-->
+<!--          </q-td>-->
+<!--        </template>-->
 
-      <q-table
-        flat bordered
-        :rows="rows"
-        :columns="columns"
-        row-key="id"
-        :loading="loading"
-        :pagination="pagination"
-        @request="onRequest"
-        :rows-per-page-options="[10,20,50]"
-      >
-        <template #body-cell-estado="props">
-          <q-td :props="props">
-            <q-chip
-              dense
-              :color="chipColor(props.row.estado)"
-              text-color="white"
-            >
-              {{ props.row.estado }}
+<!--        <template #body-cell-actions="props">-->
+<!--          <q-td :props="props">-->
+<!--            <q-btn dense flat icon="edit" @click="openEdit(props.row)" />-->
+<!--            <q-btn dense flat icon="delete" color="negative" @click="remove(props.row.id)" />-->
+<!--          </q-td>-->
+<!--        </template>-->
+<!--      </q-table>-->
+
+<!--      protected $fillable = [-->
+<!--      'codigo','nombre','ci','telefono','email',-->
+<!--      'departamento','municipio','asociacion','estado',-->
+<!--      'apiarios','ultima_inspeccion','lat','lng','observaciones'-->
+<!--      ];-->
+      <q-markup-table dense wrap-cells>
+        <thead>
+        <tr class="bg-primary text-white">
+          <th>Opciones</th>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>CI</th>
+          <th>Teléfono</th>
+          <th>Municipio</th>
+          <th>Asociación</th>
+          <th class="text-right">Apiarios</th>
+          <th>Últ. Inspección</th>
+          <th>Estado</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="row in rows" :key="row.id">
+          <td>
+<!--            <q-btn dense flat icon="edit" @click="openEdit(row)" />-->
+<!--            <q-btn dense flat icon="delete" color="negative" @click="remove(row.id)" />-->
+            <q-btn-dropdown dense color="primary" label="Opciones" no-caps size="10px" >
+              <q-list>
+                <q-item clickable @click="openEdit(row)" v-close-popup>
+                  <q-item-section avatar><q-icon name="edit" /></q-item-section>
+                  <q-item-section>Editar</q-item-section>
+                </q-item>
+                <q-item clickable @click="remove(row.id)" v-close-popup>
+                  <q-item-section avatar><q-icon name="delete" color="negative" /></q-item-section>
+                  <q-item-section>Eliminar</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+          </td>
+          <td>{{ row.codigo }}</td>
+          <td>{{ row.nombre }}</td>
+          <td>{{ row.ci }}</td>
+          <td>{{ row.telefono }}</td>
+          <td>{{ row.municipio }}</td>
+          <td>{{ row.asociacion }}</td>
+          <td class="text-right">{{ row.apiarios }}</td>
+          <td>{{ row.ultima_inspeccion || '-' }}</td>
+          <td>
+            <q-chip dense :color="chipColor(row.estado)" text-color="white">
+              {{ row.estado }}
             </q-chip>
-          </q-td>
-        </template>
-
-        <template #body-cell-actions="props">
-          <q-td :props="props">
-            <q-btn dense flat icon="edit" @click="openEdit(props.row)" />
-            <q-btn dense flat icon="delete" color="negative" @click="remove(props.row.id)" />
-          </q-td>
-        </template>
-      </q-table>
+          </td>
+        </tr>
+        </tbody>
+      </q-markup-table>
     </q-card>
 
     <!-- Dialogo crear/editar -->
@@ -74,8 +127,14 @@
               <div class="col-12 col-sm-4"><q-input v-model="form.telefono" label="Teléfono" dense outlined /></div>
               <div class="col-12 col-sm-4"><q-input v-model="form.email" label="Email" type="email" dense outlined /></div>
 
-              <div class="col-12 col-sm-4"><q-input v-model="form.departamento" label="Departamento" dense outlined /></div>
-              <div class="col-12 col-sm-4"><q-input v-model="form.municipio" label="Municipio" dense outlined /></div>
+              <div class="col-12 col-sm-4">
+<!--                <q-input v-model="form.departamento" label="Departamento" dense outlined />-->
+                <q-select v-model="form.departamento" :options="['La Paz', 'Cochabamba', 'Santa Cruz', 'Oruro', 'Potosí', 'Tarija', 'Chuquisaca', 'Beni', 'Pando']" label="Departamento" dense outlined />
+              </div>
+              <div class="col-12 col-sm-4">
+                <q-input v-model="form.municipio" label="Municipio" dense outlined />
+
+              </div>
               <div class="col-12 col-sm-4"><q-input v-model="form.asociacion" label="Asociación" dense outlined /></div>
 
               <div class="col-12 col-sm-4">
@@ -145,13 +204,13 @@ export default {
         const { page, rowsPerPage } = this.pagination
         const res = await this.$axios.get('apicultores', {
           params: {
-            page, per_page: rowsPerPage,
+            // page, per_page: rowsPerPage,
             search: this.filters.search || undefined,
             estado: this.filters.estado || undefined
           }
         })
-        this.rows = res.data.data
-        this.pagination.rowsNumber = res.data.total
+        this.rows = res.data
+        // this.pagination.rowsNumber = res.data.total
       } catch (e) {
         this.$alert.error(e.response?.data?.message || 'No se pudo cargar')
       } finally {
