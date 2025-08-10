@@ -4,50 +4,31 @@
       <q-card-section class="row items-center q-gutter-sm">
         <div class="text-h6">Productores / Apicultores</div>
         <q-space />
-        <q-input v-model="filters.search" dense outlined placeholder="Buscar por código, nombre, CI, municipio..."
-                 @keyup.enter="fetchRows" style="min-width: 280px">
+        <q-input
+          v-model="filters.search"
+          dense
+          outlined
+          placeholder="Buscar por código, nombre, CI, municipio..."
+          @keyup.enter="fetchRows"
+          style="min-width: 280px"
+        >
           <template #append><q-icon name="search" /></template>
         </q-input>
-        <q-select v-model="filters.estado" :options="['Activo','Mantenimiento','Inactivo']" dense outlined clearable label="Estado" style="min-width: 170px" />
+        <q-select
+          v-model="filters.estado"
+          :options="['Activo','Mantenimiento','Inactivo']"
+          dense
+          outlined
+          clearable
+          label="Estado"
+          style="min-width: 170px"
+        />
         <q-btn color="primary" icon="refresh" label="Actualizar" no-caps :loading="loading" @click="fetchRows" />
         <q-btn color="positive" icon="add_circle" label="Nuevo" no-caps @click="openNew" />
       </q-card-section>
+
       <q-separator />
-<!--      <q-table-->
-<!--        flat bordered-->
-<!--        :rows="rows"-->
-<!--        :columns="columns"-->
-<!--        row-key="id"-->
-<!--        :loading="loading"-->
-<!--        :pagination="pagination"-->
-<!--        @request="onRequest"-->
-<!--        :rows-per-page-options="[10,20,50]"-->
-<!--      >-->
-<!--        <template #body-cell-estado="props">-->
-<!--          <q-td :props="props">-->
-<!--            <q-chip-->
-<!--              dense-->
-<!--              :color="chipColor(props.row.estado)"-->
-<!--              text-color="white"-->
-<!--            >-->
-<!--              {{ props.row.estado }}-->
-<!--            </q-chip>-->
-<!--          </q-td>-->
-<!--        </template>-->
 
-<!--        <template #body-cell-actions="props">-->
-<!--          <q-td :props="props">-->
-<!--            <q-btn dense flat icon="edit" @click="openEdit(props.row)" />-->
-<!--            <q-btn dense flat icon="delete" color="negative" @click="remove(props.row.id)" />-->
-<!--          </q-td>-->
-<!--        </template>-->
-<!--      </q-table>-->
-
-<!--      protected $fillable = [-->
-<!--      'codigo','nombre','ci','telefono','email',-->
-<!--      'departamento','municipio','asociacion','estado',-->
-<!--      'apiarios','ultima_inspeccion','lat','lng','observaciones'-->
-<!--      ];-->
       <q-markup-table dense wrap-cells>
         <thead>
         <tr class="bg-primary text-white">
@@ -66,9 +47,7 @@
         <tbody>
         <tr v-for="row in rows" :key="row.id">
           <td>
-<!--            <q-btn dense flat icon="edit" @click="openEdit(row)" />-->
-<!--            <q-btn dense flat icon="delete" color="negative" @click="remove(row.id)" />-->
-            <q-btn-dropdown dense color="primary" label="Opciones" no-caps size="10px" >
+            <q-btn-dropdown dense color="primary" label="Opciones" no-caps size="10px">
               <q-list>
                 <q-item clickable @click="openEdit(row)" v-close-popup>
                   <q-item-section avatar><q-icon name="edit" /></q-item-section>
@@ -107,7 +86,9 @@
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
+
         <q-separator />
+
         <q-card-section>
           <q-form @submit="submit">
             <div class="row q-col-gutter-sm">
@@ -120,7 +101,13 @@
                 <q-input v-model="form.nombre" label="Nombre" dense outlined :rules="[v => !!v || 'Requerido']" />
               </div>
               <div class="col-12 col-sm-4">
-                <q-select v-model="form.estado" :options="['Activo','Mantenimiento','Inactivo']" label="Estado" dense outlined />
+                <q-select
+                  v-model="form.estado"
+                  :options="['Activo','Mantenimiento','Inactivo']"
+                  label="Estado"
+                  dense
+                  outlined
+                />
               </div>
 
               <div class="col-12 col-sm-4"><q-input v-model="form.ci" label="CI" dense outlined /></div>
@@ -128,12 +115,16 @@
               <div class="col-12 col-sm-4"><q-input v-model="form.email" label="Email" type="email" dense outlined /></div>
 
               <div class="col-12 col-sm-4">
-<!--                <q-input v-model="form.departamento" label="Departamento" dense outlined />-->
-                <q-select v-model="form.departamento" :options="['La Paz', 'Cochabamba', 'Santa Cruz', 'Oruro', 'Potosí', 'Tarija', 'Chuquisaca', 'Beni', 'Pando']" label="Departamento" dense outlined />
+                <q-select
+                  v-model="form.departamento"
+                  :options="['La Paz', 'Cochabamba', 'Santa Cruz', 'Oruro', 'Potosí', 'Tarija', 'Chuquisaca', 'Beni', 'Pando']"
+                  label="Departamento"
+                  dense
+                  outlined
+                />
               </div>
               <div class="col-12 col-sm-4">
                 <q-input v-model="form.municipio" label="Municipio" dense outlined />
-
               </div>
               <div class="col-12 col-sm-4"><q-input v-model="form.asociacion" label="Asociación" dense outlined /></div>
 
@@ -141,16 +132,24 @@
                 <q-input v-model.number="form.apiarios" type="number" label="Apiarios" dense outlined />
               </div>
               <div class="col-12 col-sm-4">
-                <q-input v-model="form.ultima_inspeccion" label="Última inspección" dense outlined mask="####-##-##" hint="YYYY-MM-DD" />
+                <q-input
+                  v-model="form.ultima_inspeccion"
+                  label="Última inspección"
+                  dense
+                  outlined
+                  mask="####-##-##"
+                  hint="YYYY-MM-DD"
+                />
               </div>
 
-<!--              <div class="col-12 col-sm-6"><q-input v-model.number="form.lat" label="Lat" dense outlined /></div>-->
-<!--              <div class="col-12 col-sm-6"><q-input v-model.number="form.lng" label="Lng" dense outlined /></div>-->
+              <!-- Mapa con v-model computado (sin watchers) -->
               <div class="col-12">
-                <MapPicker v-model="locationModel" :center="[-16.5, -68.15]" :zoom-init="13" />
+                <MapPicker v-model="formLocation" :center="[-16.5, -68.15]" :zoom-init="13" />
               </div>
 
-              <div class="col-12"><q-input v-model="form.observaciones" type="textarea" label="Observaciones" outlined /></div>
+              <div class="col-12">
+                <q-input v-model="form.observaciones" type="textarea" label="Observaciones" outlined />
+              </div>
             </div>
 
             <div class="text-right q-mt-md">
@@ -177,7 +176,6 @@ export default {
       saving: false,
       dialog: false,
       form: {},
-      locationModel: { lat: null, lng: null },
       filters: { search: '', estado: null },
       pagination: { page: 1, rowsPerPage: 20, rowsNumber: 0 },
       columns: [
@@ -194,26 +192,19 @@ export default {
       ]
     }
   },
-  mounted () { this.fetchRows() },
-  watch: {
-    // cuando el mapa cambie, actualiza el form
-    locationModel: {
-      deep: true,
-      handler (v) {
-        this.form.lat = v.lat
-        this.form.lng = v.lng
-      }
-    },
-    // cuando cargues un registro al editar, refresca el mapa
-    form: {
-      deep: true,
-      handler (f) {
-        if (f && (f.lat != null || f.lng != null)) {
-          this.locationModel = { lat: f.lat ?? null, lng: f.lng ?? null }
-        }
+  computed: {
+    // v-model para el mapa: sólo sincroniza lat/lng
+    formLocation: {
+      get () {
+        return { lat: this.form.lat ?? null, lng: this.form.lng ?? null }
+      },
+      set (v) {
+        this.form.lat = v?.lat ?? null
+        this.form.lng = v?.lng ?? null
       }
     }
   },
+  mounted () { this.fetchRows() },
   methods: {
     chipColor (estado) {
       if (estado === 'Activo') return 'green'
@@ -221,28 +212,20 @@ export default {
       if (estado === 'Mantenimiento') return 'amber'
       return 'grey'
     },
-    chipColorText(estado) {
-      if (estado === 'Activo') return 'white'
+    chipColorText (estado) {
       if (estado === 'Mantenimiento') return 'black'
       return 'white'
     },
-    // onRequest (props) {
-    //   this.pagination = props.pagination
-    //   this.fetchRows()
-    // },
     async fetchRows () {
       this.loading = true
       try {
-        const { page, rowsPerPage } = this.pagination
         const res = await this.$axios.get('apicultores', {
           params: {
-            // page, per_page: rowsPerPage,
             search: this.filters.search || undefined,
             estado: this.filters.estado || undefined
           }
         })
         this.rows = res.data
-        // this.pagination.rowsNumber = res.data.total
       } catch (e) {
         this.$alert.error(e.response?.data?.message || 'No se pudo cargar')
       } finally {
@@ -257,12 +240,10 @@ export default {
         lat: null,
         lng: null
       }
-      this.locationModel = { lat: null, lng: null }
       this.dialog = true
     },
     openEdit (row) {
       this.form = { ...row }
-      this.locationModel = { lat: row.lat ?? null, lng: row.lng ?? null }
       this.dialog = true
     },
     async submit () {
@@ -276,7 +257,6 @@ export default {
         } else {
           const { data } = await this.$axios.post('apicultores', this.form)
           this.$alert.success('Creado')
-          // mostrar código generado en el form si quieres mantener el diálogo abierto
           this.form = { ...data }
         }
         this.dialog = false
