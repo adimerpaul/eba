@@ -86,8 +86,8 @@
       v-model="leftDrawerOpen"
       bordered
       show-if-above
-      :width="240"
-      :breakpoint="600"
+      :width="200"
+      :breakpoint="500"
       class="bg-green-9 text-white"
     >
       <q-list class="q-pb-none">
@@ -166,7 +166,7 @@ import { useCounterStore } from 'stores/example-store'
 const { proxy } = getCurrentInstance()
 const store = useCounterStore()
 
-const leftDrawerOpen = ref(true)
+const leftDrawerOpen = ref(false)
 
 // Helpers de permisos
 function hasPerm (perm) {

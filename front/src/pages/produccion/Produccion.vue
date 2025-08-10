@@ -8,7 +8,7 @@
                  @keyup.enter="fetchRows" style="min-width: 280px">
           <template #append><q-icon name="search" /></template>
         </q-input>
-        <q-select v-model="filters.estado" :options="['Activo','Inactivo']" dense outlined clearable label="Estado" style="min-width: 150px" />
+        <q-select v-model="filters.estado" :options="['Activo','Mantenimiento','Inactivo']" dense outlined clearable label="Estado" style="min-width: 170px" />
         <q-btn color="primary" icon="refresh" label="Actualizar" no-caps :loading="loading" @click="fetchRows" />
         <q-btn color="positive" icon="add_circle" label="Nuevo" no-caps @click="openNew" />
       </q-card-section>
@@ -27,7 +27,11 @@
       >
         <template #body-cell-estado="props">
           <q-td :props="props">
-            <q-chip dense :color="props.row.estado === 'Activo' ? 'green' : 'grey'" text-color="white">
+            <q-chip
+              dense
+              :color="chipColor(props.row.estado)"
+              text-color="white"
+            >
               {{ props.row.estado }}
             </q-chip>
           </q-td>
@@ -44,7 +48,7 @@
 
     <!-- Dialogo crear/editar -->
     <q-dialog v-model="dialog" persistent>
-      <q-card style="min-width: 520px;max-width: 90vw">
+      <q-card style="min-width: 300px;max-width: 90vw">
         <q-card-section class="row items-center q-gutter-sm">
           <div class="text-h6">{{ form.id ? 'Editar Apicultor' : 'Nuevo Apicultor' }}</div>
           <q-space />
@@ -54,8 +58,17 @@
         <q-card-section>
           <q-form @submit="submit">
             <div class="row q-col-gutter-sm">
-              <div class="col-12 col-sm-4"><q-input v-model="form.codigo" label="Código" dense outlined :rules="[v => !!v || 'Requerido']" /></div>
-              <div class="col-12 col-sm-8"><q-input v-model="form.nombre" label="Nombre" dense outlined :rules="[v => !!v || 'Requerido']" /></div>
+              <!-- Código: solo mostrar si existe -->
+              <div class="col-12" v-if="form.codigo">
+                <q-input v-model="form.codigo" label="Código" dense outlined readonly />
+              </div>
+
+              <div class="col-12 col-sm-8">
+                <q-input v-model="form.nombre" label="Nombre" dense outlined :rules="[v => !!v || 'Requerido']" />
+              </div>
+              <div class="col-12 col-sm-4">
+                <q-select v-model="form.estado" :options="['Activo','Mantenimiento','Inactivo']" label="Estado" dense outlined />
+              </div>
 
               <div class="col-12 col-sm-4"><q-input v-model="form.ci" label="CI" dense outlined /></div>
               <div class="col-12 col-sm-4"><q-input v-model="form.telefono" label="Teléfono" dense outlined /></div>
@@ -65,9 +78,6 @@
               <div class="col-12 col-sm-4"><q-input v-model="form.municipio" label="Municipio" dense outlined /></div>
               <div class="col-12 col-sm-4"><q-input v-model="form.asociacion" label="Asociación" dense outlined /></div>
 
-              <div class="col-12 col-sm-4">
-                <q-select v-model="form.estado" :options="['Activo','Inactivo']" label="Estado" dense outlined />
-              </div>
               <div class="col-12 col-sm-4">
                 <q-input v-model.number="form.apiarios" type="number" label="Apiarios" dense outlined />
               </div>
@@ -118,10 +128,13 @@ export default {
       ]
     }
   },
-  mounted () {
-    this.fetchRows()
-  },
+  mounted () { this.fetchRows() },
   methods: {
+    chipColor (estado) {
+      if (estado === 'Activo') return 'green'
+      if (estado === 'Mantenimiento') return 'amber'
+      return 'grey'
+    },
     onRequest (props) {
       this.pagination = props.pagination
       this.fetchRows()
@@ -147,7 +160,8 @@ export default {
     },
     openNew () {
       this.form = {
-        codigo: '', nombre: '', estado: 'Activo',
+        // codigo: auto
+        nombre: '', estado: 'Activo',
         apiarios: 0
       }
       this.dialog = true
@@ -160,11 +174,15 @@ export default {
       this.saving = true
       try {
         if (this.form.id) {
-          await this.$axios.put(`apicultores/${this.form.id}`, this.form)
+          const payload = { ...this.form }
+          delete payload.codigo // no editable
+          await this.$axios.put(`apicultores/${this.form.id}`, payload)
           this.$alert.success('Actualizado')
         } else {
-          await this.$axios.post('apicultores', this.form)
+          const { data } = await this.$axios.post('apicultores', this.form)
           this.$alert.success('Creado')
+          // mostrar código generado en el form si quieres mantener el diálogo abierto
+          this.form = { ...data }
         }
         this.dialog = false
         this.fetchRows()
