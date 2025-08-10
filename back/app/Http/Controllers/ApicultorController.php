@@ -30,7 +30,8 @@ class ApicultorController extends Controller
         }
 
         $q->orderBy('id','desc');
-        return $q->paginate($request->get('per_page', 20));
+//        return $q->paginate($request->get('per_page', 20));
+        return $q->get();
     }
 
     public function store(Request $request)
