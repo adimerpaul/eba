@@ -90,7 +90,7 @@
           <td class="text-right">{{ row.apiarios }}</td>
           <td>{{ row.ultima_inspeccion || '-' }}</td>
           <td>
-            <q-chip dense :color="chipColor(row.estado)" text-color="white">
+            <q-chip dense :color="chipColor(row.estado)" :text-color="chipColorText(row.estado)">
               {{ row.estado }}
             </q-chip>
           </td>
@@ -144,8 +144,11 @@
                 <q-input v-model="form.ultima_inspeccion" label="Última inspección" dense outlined mask="####-##-##" hint="YYYY-MM-DD" />
               </div>
 
-              <div class="col-12 col-sm-6"><q-input v-model.number="form.lat" label="Lat" dense outlined /></div>
-              <div class="col-12 col-sm-6"><q-input v-model.number="form.lng" label="Lng" dense outlined /></div>
+<!--              <div class="col-12 col-sm-6"><q-input v-model.number="form.lat" label="Lat" dense outlined /></div>-->
+<!--              <div class="col-12 col-sm-6"><q-input v-model.number="form.lng" label="Lng" dense outlined /></div>-->
+              <div class="col-12">
+                <MapPicker v-model="locationModel" :center="[-16.5, -68.15]" :zoom-init="13" />
+              </div>
 
               <div class="col-12"><q-input v-model="form.observaciones" type="textarea" label="Observaciones" outlined /></div>
             </div>
@@ -162,8 +165,11 @@
 </template>
 
 <script>
+import MapPicker from 'src/components/MapPicker.vue'
+
 export default {
   name: 'ApicultoresPage',
+  components: { MapPicker },
   data () {
     return {
       rows: [],
@@ -171,6 +177,7 @@ export default {
       saving: false,
       dialog: false,
       form: {},
+      locationModel: { lat: null, lng: null },
       filters: { search: '', estado: null },
       pagination: { page: 1, rowsPerPage: 20, rowsNumber: 0 },
       columns: [
@@ -188,16 +195,41 @@ export default {
     }
   },
   mounted () { this.fetchRows() },
+  watch: {
+    // cuando el mapa cambie, actualiza el form
+    locationModel: {
+      deep: true,
+      handler (v) {
+        this.form.lat = v.lat
+        this.form.lng = v.lng
+      }
+    },
+    // cuando cargues un registro al editar, refresca el mapa
+    form: {
+      deep: true,
+      handler (f) {
+        if (f && (f.lat != null || f.lng != null)) {
+          this.locationModel = { lat: f.lat ?? null, lng: f.lng ?? null }
+        }
+      }
+    }
+  },
   methods: {
     chipColor (estado) {
       if (estado === 'Activo') return 'green'
+      if (estado === 'Inactivo') return 'red-5'
       if (estado === 'Mantenimiento') return 'amber'
       return 'grey'
     },
-    onRequest (props) {
-      this.pagination = props.pagination
-      this.fetchRows()
+    chipColorText(estado) {
+      if (estado === 'Activo') return 'white'
+      if (estado === 'Mantenimiento') return 'black'
+      return 'white'
     },
+    // onRequest (props) {
+    //   this.pagination = props.pagination
+    //   this.fetchRows()
+    // },
     async fetchRows () {
       this.loading = true
       try {
@@ -219,14 +251,18 @@ export default {
     },
     openNew () {
       this.form = {
-        // codigo: auto
-        nombre: '', estado: 'Activo',
-        apiarios: 0
+        nombre: '',
+        estado: 'Activo',
+        apiarios: 0,
+        lat: null,
+        lng: null
       }
+      this.locationModel = { lat: null, lng: null }
       this.dialog = true
     },
     openEdit (row) {
       this.form = { ...row }
+      this.locationModel = { lat: row.lat ?? null, lng: row.lng ?? null }
       this.dialog = true
     },
     async submit () {
