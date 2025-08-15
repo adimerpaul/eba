@@ -9,48 +9,58 @@ class ApicultorController extends Controller
 {
     public function index(Request $request)
     {
-        // filtros simples
         $q = Apicultor::query();
 
+        // Filtro de búsqueda libre
         if ($search = $request->get('search')) {
             $q->where(function ($qq) use ($search) {
-                $qq->where('codigo','ilike',"%$search%")
-                    ->orWhere('nombre','ilike',"%$search%")
+                $qq->where('codigo_runsa','ilike',"%$search%")
+                    ->orWhere('subcodigo','ilike',"%$search%")
+                    ->orWhere('runsa','ilike',"%$search%")
+                    ->orWhere('nombre_apellido','ilike',"%$search%")
                     ->orWhere('ci','ilike',"%$search%")
                     ->orWhere('asociacion','ilike',"%$search%")
-                    ->orWhere('municipio','ilike',"%$search%");
+                    ->orWhere('lugar_apiario','ilike',"%$search%");
             });
         }
 
-        if ($estado = $request->get('estado')) {
-            $q->where('estado', $estado);
-        }
-        if ($depto = $request->get('departamento')) {
-            $q->where('departamento', $depto);
+        // Filtro opcional por asociación (si luego lo usas en el front)
+        if ($asoc = $request->get('asociacion')) {
+            $q->where('asociacion', $asoc);
         }
 
-        $q->orderBy('id','desc');
-//        return $q->paginate($request->get('per_page', 20));
+        $q->orderBy('id', 'desc');
         return $q->get();
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-//            'codigo' => 'required|string|unique:apicultores,codigo',
-            'nombre' => 'required|string',
-            'ci' => 'nullable|string',
-            'telefono' => 'nullable|string',
-            'email' => 'nullable|email',
-            'departamento' => 'nullable|string',
-            'municipio' => 'nullable|string',
-            'asociacion' => 'nullable|string',
-            'estado' => 'required|in:Activo,Inactivo,Mantenimiento',
-            'apiarios' => 'nullable|integer|min:0',
-            'ultima_inspeccion' => 'nullable|date',
-            'lat' => 'nullable|numeric',
-            'lng' => 'nullable|numeric',
-            'observaciones' => 'nullable|string',
+            'latitud'                           => 'nullable|numeric',
+            'longitud'                          => 'nullable|numeric',
+            'codigo_runsa'                      => 'nullable|string',
+            'subcodigo'                         => 'nullable|string',
+            'runsa'                             => 'nullable|string',
+            'nombre_apellido'                   => 'required|string',
+            'ci'                                => 'nullable|string',
+            'expedido'                          => 'nullable|string|max:5',
+            'celular'                           => 'nullable|string',
+            'lugar_apiario'                     => 'nullable|string',
+            'n_colmenas_runsa'                  => 'nullable|integer|min:0',
+            'n_colmenas_produccion'             => 'nullable|integer|min:0',
+            'produccion_promedio'               => 'nullable|numeric|min:0',
+            'proyeccion_produccion_total'       => 'nullable|numeric|min:0',
+            'proyeccion_produccion_toneladas'   => 'nullable|numeric|min:0',
+            'asociacion'                        => 'nullable|string',
+            'fomento'                           => 'nullable|string',
+            'fortalecimiento'                   => 'nullable|string',
+            'total_beneficiarios'               => 'nullable|integer|min:0',
+            'nativas'                           => 'nullable|integer|min:0',
+            'fom'                               => 'nullable|integer|min:0',
+            'fort'                              => 'nullable|integer|min:0',
+            'suma_nuevos'                       => 'nullable|integer|min:0',
+            'n_acta'                            => 'nullable|string',
+            'lote'                              => 'nullable|string',
         ]);
 
         $apicultor = Apicultor::create($data);
@@ -65,20 +75,31 @@ class ApicultorController extends Controller
     public function update(Request $request, Apicultor $apicultor)
     {
         $data = $request->validate([
-//            'codigo' => "sometimes|required|string|unique:apicultores,codigo,{$apicultor->id}",
-            'nombre' => 'sometimes|required|string',
-            'ci' => 'nullable|string',
-            'telefono' => 'nullable|string',
-            'email' => 'nullable|email',
-            'departamento' => 'nullable|string',
-            'municipio' => 'nullable|string',
-            'asociacion' => 'nullable|string',
-            'estado' => 'nullable|in:Activo,Inactivo,Mantenimiento',
-            'apiarios' => 'nullable|integer|min:0',
-            'ultima_inspeccion' => 'nullable|date',
-            'lat' => 'nullable|numeric',
-            'lng' => 'nullable|numeric',
-            'observaciones' => 'nullable|string',
+            'latitud'                           => 'nullable|numeric',
+            'longitud'                          => 'nullable|numeric',
+            'codigo_runsa'                      => 'nullable|string',
+            'subcodigo'                         => 'nullable|string',
+            'runsa'                             => 'nullable|string',
+            'nombre_apellido'                   => 'sometimes|required|string',
+            'ci'                                => 'nullable|string',
+            'expedido'                          => 'nullable|string|max:5',
+            'celular'                           => 'nullable|string',
+            'lugar_apiario'                     => 'nullable|string',
+            'n_colmenas_runsa'                  => 'nullable|integer|min:0',
+            'n_colmenas_produccion'             => 'nullable|integer|min:0',
+            'produccion_promedio'               => 'nullable|numeric|min:0',
+            'proyeccion_produccion_total'       => 'nullable|numeric|min:0',
+            'proyeccion_produccion_toneladas'   => 'nullable|numeric|min:0',
+            'asociacion'                        => 'nullable|string',
+            'fomento'                           => 'nullable|string',
+            'fortalecimiento'                   => 'nullable|string',
+            'total_beneficiarios'               => 'nullable|integer|min:0',
+            'nativas'                           => 'nullable|integer|min:0',
+            'fom'                               => 'nullable|integer|min:0',
+            'fort'                              => 'nullable|integer|min:0',
+            'suma_nuevos'                       => 'nullable|integer|min:0',
+            'n_acta'                            => 'nullable|string',
+            'lote'                              => 'nullable|string',
         ]);
 
         $apicultor->update($data);

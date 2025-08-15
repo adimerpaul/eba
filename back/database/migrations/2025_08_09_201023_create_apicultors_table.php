@@ -12,28 +12,37 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('apicultores', function (Blueprint $table) {
+//            ID	Latitud 	Longitud 	CODIGO RUNSA 	SUBCODIGO 	RUNSA 	NOMBRE Y APELLIDO 	CI	EXPEDIDO 	CELULAR	LUGAR/APIARIO (COMUNIDAD)	N° DE COLMENAS CON RUNSA	N° DE COLMENAS EN PRODUCCIÓN	PRODUCCIÓN PROMEDIO (kg x Colmena)  	PROYECCIÓN PRODUCCIÓN TOTAL (kg)	PROYECCION PRODUCCION TONELADAS /AÑO	ASOCIACIÓN 	FOMENTO 	FORTALECIMIENTO	TOTAL BENEFICIARIOS 	NATIVAS	FOM	FORT	SUMA NUEVOS	N° ACTA	LOTE
+
             $table->id();
-            $table->string('codigo')->nullable();          // ej. API-001
-            $table->string('nombre');                    // Juan Pérez
-            $table->string('ci')->nullable();            // documento
-            $table->string('telefono')->nullable();
-            $table->string('email')->nullable();
-            $table->string('departamento')->nullable();
-            $table->string('municipio')->nullable();
-            $table->string('asociacion')->nullable();    // asociación/cooperativa
+            $table->string('latitud')->nullable();
+            $table->string('longitud')->nullable();
+            $table->string('codigo_runsa')->nullable();
+            $table->string('subcodigo')->nullable();
+            $table->string('runsa')->nullable();
+            $table->string('nombre_apellido')->nullable();
+            $table->string('ci')->nullable();
+            $table->string('expedido')->nullable();
+            $table->string('celular')->nullable();
+            $table->string('lugar_apiario')->nullable();
+            $table->integer('n_colmenas_runsa')->nullable();
+            $table->integer('n_colmenas_produccion')->nullable();
+            $table->float('produccion_promedio')->nullable();
+            $table->float('proyeccion_produccion_total')->nullable();
+            $table->float('proyeccion_produccion_toneladas')->nullable();
+            $table->string('asociacion')->nullable();
+            $table->integer('fomento')->nullable();
+            $table->integer('fortalecimiento')->nullable();
+            $table->integer('total_beneficiarios')->nullable();
+            $table->integer('nativas')->nullable();
+            $table->integer('fom')->nullable();
+            $table->integer('fort')->nullable();
+            $table->integer('suma_nuevos')->nullable();
+            $table->string('n_acta')->nullable();
+            $table->string('lote')->nullable();
             $table->enum('estado', ['Activo','Mantenimiento', 'Inactivo'])->default('Activo');
-
-            // datos operativos
-            $table->unsignedInteger('apiarios')->default(0);
-            $table->date('ultima_inspeccion')->nullable();
-
-            // georreferencia opcional (centroide del productor)
-            $table->decimal('lat', 10, 7)->nullable();
-            $table->decimal('lng', 10, 7)->nullable();
-
-            $table->text('observaciones')->nullable();
-            $table->timestamps();
             $table->softDeletes();
+            $table->timestamps();
         });
     }
 

@@ -11,11 +11,12 @@ class Apicultor extends Model implements Auditable
 {
     use SoftDeletes, AuditableTrait;
     protected $table = 'apicultores';
-
     protected $fillable = [
-        'codigo','nombre','ci','telefono','email',
-        'departamento','municipio','asociacion','estado',
-        'apiarios','ultima_inspeccion','lat','lng','observaciones'
+        'latitud', 'longitud', 'codigo_runsa', 'subcodigo', 'runsa', 'nombre_apellido',
+        'ci', 'expedido', 'celular', 'lugar_apiario', 'n_colmenas_runsa', 'n_colmenas_produccion',
+        'produccion_promedio', 'proyeccion_produccion_total', 'proyeccion_produccion_toneladas',
+        'asociacion', 'fomento', 'fortalecimiento', 'total_beneficiarios', 'nativas',
+        'fom', 'fort', 'suma_nuevos', 'n_acta', 'lote',
     ];
 
 //    protected $casts = [
@@ -31,11 +32,11 @@ class Apicultor extends Model implements Auditable
     const PAD_LEN    = 3;
     protected static function booted()
     {
-        static::creating(function ($model) {
-            if (empty($model->codigo)) {
-                $model->codigo = self::nextCodigo();
-            }
-        });
+//        static::creating(function ($model) {
+//            if (empty($model->codigo)) {
+//                $model->codigo = self::nextCodigo();
+//            }
+//        });
     }
 
     // Genera COL-001, COL-002, ...
