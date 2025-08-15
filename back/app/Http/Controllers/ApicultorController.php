@@ -43,7 +43,7 @@ class ApicultorController extends Controller
             'runsa'                             => 'nullable|string',
             'nombre_apellido'                   => 'required|string',
             'ci'                                => 'nullable|string',
-            'expedido'                          => 'nullable|string|max:5',
+            'expedido'                          => 'nullable|string|max:15',
             'celular'                           => 'nullable|string',
             'lugar_apiario'                     => 'nullable|string',
             'n_colmenas_runsa'                  => 'nullable|integer|min:0',
@@ -61,6 +61,7 @@ class ApicultorController extends Controller
             'suma_nuevos'                       => 'nullable|integer|min:0',
             'n_acta'                            => 'nullable|string',
             'lote'                              => 'nullable|string',
+            'estado' => 'nullable|in:Activo,Inactivo,Mantenimiento',
         ]);
 
         $apicultor = Apicultor::create($data);
@@ -82,7 +83,7 @@ class ApicultorController extends Controller
             'runsa'                             => 'nullable|string',
             'nombre_apellido'                   => 'sometimes|required|string',
             'ci'                                => 'nullable|string',
-            'expedido'                          => 'nullable|string|max:5',
+            'expedido'                          => 'nullable|string|max:15',
             'celular'                           => 'nullable|string',
             'lugar_apiario'                     => 'nullable|string',
             'n_colmenas_runsa'                  => 'nullable|integer|min:0',
@@ -100,6 +101,7 @@ class ApicultorController extends Controller
             'suma_nuevos'                       => 'nullable|integer|min:0',
             'n_acta'                            => 'nullable|string',
             'lote'                              => 'nullable|string',
+            'estado' => 'nullable|in:Activo,Inactivo,Mantenimiento',
         ]);
 
         $apicultor->update($data);

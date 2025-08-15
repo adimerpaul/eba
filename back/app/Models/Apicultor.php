@@ -16,7 +16,7 @@ class Apicultor extends Model implements Auditable
         'ci', 'expedido', 'celular', 'lugar_apiario', 'n_colmenas_runsa', 'n_colmenas_produccion',
         'produccion_promedio', 'proyeccion_produccion_total', 'proyeccion_produccion_toneladas',
         'asociacion', 'fomento', 'fortalecimiento', 'total_beneficiarios', 'nativas',
-        'fom', 'fort', 'suma_nuevos', 'n_acta', 'lote',
+        'fom', 'fort', 'suma_nuevos', 'n_acta', 'lote', 'estado',
     ];
 
 //    protected $casts = [

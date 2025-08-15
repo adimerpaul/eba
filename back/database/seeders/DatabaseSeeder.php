@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             Permission::create(['name' => $permiso]);
         }
         $user->givePermissionTo(Permission::all());
-        $sqlPach = database_path('seeders/apicultores_202508150606.sql');
+        $sqlPach = database_path('seeders/apicultores_202508150628.sql');
         if (File::exists($sqlPach)) {
             $sql = File::get($sqlPach);
             DB::unprepared($sql);

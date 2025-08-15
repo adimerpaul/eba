@@ -15,8 +15,8 @@ return new class extends Migration
 //            ID	Latitud 	Longitud 	CODIGO RUNSA 	SUBCODIGO 	RUNSA 	NOMBRE Y APELLIDO 	CI	EXPEDIDO 	CELULAR	LUGAR/APIARIO (COMUNIDAD)	N° DE COLMENAS CON RUNSA	N° DE COLMENAS EN PRODUCCIÓN	PRODUCCIÓN PROMEDIO (kg x Colmena)  	PROYECCIÓN PRODUCCIÓN TOTAL (kg)	PROYECCION PRODUCCION TONELADAS /AÑO	ASOCIACIÓN 	FOMENTO 	FORTALECIMIENTO	TOTAL BENEFICIARIOS 	NATIVAS	FOM	FORT	SUMA NUEVOS	N° ACTA	LOTE
 
             $table->id();
-            $table->string('latitud')->nullable();
-            $table->string('longitud')->nullable();
+            $table->decimal('latitud', 10, 7)->nullable();
+            $table->decimal('longitud', 10, 7)->nullable();
             $table->string('codigo_runsa')->nullable();
             $table->string('subcodigo')->nullable();
             $table->string('runsa')->nullable();
