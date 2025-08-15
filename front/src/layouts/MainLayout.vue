@@ -179,7 +179,7 @@ function hasAnyPerm (perms = []) {
 
 const linksList = [
   { title: 'Dashboard',            icon: 'dashboard',     link: '/',                   canPerm: 'Dashboard' },
-  { title: 'Productores / Apicultores',  icon: 'inventory_2',   link: '/produccion',         canPerm: 'Produccion primaria' },
+  { title: 'Productores / Apicultores',  icon: 'inventory_2',   link: '/apicultores',         canPerm: 'Produccion primaria' },
   { title: 'Recolección',          icon: 'yard',          link: '/recoleccion',        canPerm: 'Recoleccion' },
   { title: 'Procesamiento',        icon: 'precision_manufacturing', link: '/procesamiento', canPerm: 'Procesamiento' },
   { title: 'Almacenamiento',       icon: 'warehouse',     link: '/almacenamiento',     canPerm: 'Almacenamiento' },

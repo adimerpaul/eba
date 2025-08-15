@@ -2,10 +2,10 @@
   <div class="map-wrapper">
     <div class="row items-center q-col-gutter-sm q-mb-sm">
       <div class="col-6 col-md-3">
-        <q-input v-model.number="localValue.lat" dense outlined label="Lat" style="max-width: 160px" />
+        <q-input v-model.number="localValue.latitud" dense outlined label="Latitud" style="max-width: 160px" />
       </div>
       <div class="col-6 col-md-3">
-        <q-input v-model.number="localValue.lng" dense outlined label="Lng" style="max-width: 160px" />
+        <q-input v-model.number="localValue.longitud" dense outlined label="Longitud" style="max-width: 160px" />
       </div>
       <div class="col-6 col-md-3">
         <q-btn dense no-caps color="primary" label="Ir" @click="flyToLatLng" icon="place" style="width: 100%" />
@@ -71,12 +71,12 @@
       <!-- Marcador -->
       <l-marker
         v-if="hasLatLng"
-        :lat-lng="[localValue.lat, localValue.lng]"
+        :lat-lng="[Number(localValue.latitud), Number(localValue.longitud)]"
         :draggable="true"
         @moveend="onDragEnd"
       >
         <l-popup>
-          <div>Lat: {{ localValue.lat?.toFixed(6) }}<br/>Lng: {{ localValue.lng?.toFixed(6) }}</div>
+          <div>Lat: {{ toFix(localValue.latitud) }}<br/>Lng: {{ toFix(localValue.longitud) }}</div>
         </l-popup>
       </l-marker>
     </l-map>
@@ -100,60 +100,89 @@ L.Icon.Default.mergeOptions({
 })
 
 const props = defineProps({
-  modelValue: { type: Object, default: () => ({ lat: null, lng: null }) },
+  // Retrocompatible: si te pasan {lat, lng} también lo toma
+  modelValue: { type: Object, default: () => ({ latitud: null, longitud: null }) },
   center: { type: Array, default: () => [-16.5, -68.15] },
   zoomInit: { type: Number, default: 13 }
 })
 const emit = defineEmits(['update:modelValue'])
 
-const localValue = ref({ ...props.modelValue })
+/**
+ * Estado interno siempre en {latitud, longitud}.
+ * Si el padre manda {lat, lng}, lo mapeamos.
+ */
+const normalizeIn = (mv) => ({
+  latitud: mv?.latitud ?? mv?.lat ?? null,
+  longitud: mv?.longitud ?? mv?.lng ?? null
+})
+const normalizeOut = (v) => ({
+  // Emitimos ambos pares de keys para no romper nada
+  latitud: v.latitud ?? null,
+  longitud: v.longitud ?? null,
+  lat: v.latitud ?? null,
+  lng: v.longitud ?? null
+})
 
-// <- solo observamos cambios en lat/lng del padre; si no cambian, no tocamos el estado interno
+const localValue = ref(normalizeIn(props.modelValue))
+
+// Observa cambios del padre (en cualquiera de las dos formas)
 watch(
-  () => [props.modelValue.lat, props.modelValue.lng],
-  ([lat, lng]) => {
-    if (lat !== localValue.value.lat || lng !== localValue.value.lng) {
-      localValue.value = { lat, lng }
+  () => props.modelValue,
+  (mv) => {
+    const next = normalizeIn(mv)
+    if (next.latitud !== localValue.value.latitud || next.longitud !== localValue.value.longitud) {
+      localValue.value = next
     }
-  }
+  },
+  { deep: true }
 )
 
-// Emitimos al padre cuando cambian lat/lng locales
-watch(localValue, v => emit('update:modelValue', v), { deep: true })
+// Emitimos al padre cuando cambian latitud/longitud locales
+watch(localValue, v => emit('update:modelValue', normalizeOut(v)), { deep: true })
 
 const mapRef = ref(null)
 const zoom = ref(props.zoomInit)
 
 const mapCenter = computed(() =>
-  localValue.value.lat != null && localValue.value.lng != null
-    ? [localValue.value.lat, localValue.value.lng]
+  (localValue.value.latitud != null && localValue.value.longitud != null)
+    ? [Number(localValue.value.latitud), Number(localValue.value.longitud)]
     : props.center
 )
-const hasLatLng = computed(() => localValue.value.lat != null && localValue.value.lng != null)
+
+const hasLatLng = computed(() =>
+  localValue.value.latitud != null && localValue.value.longitud != null &&
+  Number.isFinite(Number(localValue.value.latitud)) &&
+  Number.isFinite(Number(localValue.value.longitud))
+)
+
+function toFix (v, n = 6) {
+  const num = Number(v)
+  return Number.isFinite(num) ? num.toFixed(n) : '-'
+}
 
 function onMapClick(e) {
   const { lat, lng } = e.latlng
-  localValue.value.lat = Number(lat.toFixed(7))
-  localValue.value.lng = Number(lng.toFixed(7))
+  localValue.value.latitud = Number(lat.toFixed(7))
+  localValue.value.longitud = Number(lng.toFixed(7))
 }
 function onDragEnd(e) {
   const { lat, lng } = e.target.getLatLng()
-  localValue.value.lat = Number(lat.toFixed(7))
-  localValue.value.lng = Number(lng.toFixed(7))
+  localValue.value.latitud = Number(lat.toFixed(7))
+  localValue.value.longitud = Number(lng.toFixed(7))
 }
 function flyToLatLng() {
   if (!hasLatLng.value) return
   const leaflet = mapRef.value?.leafletObject
-  leaflet && leaflet.flyTo([localValue.value.lat, localValue.value.lng], Math.max(zoom.value, 15))
+  leaflet && leaflet.flyTo([Number(localValue.value.latitud), Number(localValue.value.longitud)], Math.max(zoom.value, 15))
 }
 function locateMe() {
   if (!('geolocation' in navigator)) return
   navigator.geolocation.getCurrentPosition(pos => {
     const { latitude, longitude } = pos.coords
-    localValue.value.lat = Number(latitude.toFixed(7))
-    localValue.value.lng = Number(longitude.toFixed(7))
+    localValue.value.latitud = Number(latitude.toFixed(7))
+    localValue.value.longitud = Number(longitude.toFixed(7))
     const leaflet = mapRef.value?.leafletObject
-    leaflet && leaflet.flyTo([localValue.value.lat, localValue.value.lng], 16)
+    leaflet && leaflet.flyTo([Number(localValue.value.latitud), Number(localValue.value.longitud)], 16)
   })
 }
 </script>

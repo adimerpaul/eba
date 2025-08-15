@@ -54,9 +54,9 @@
         >
           <template #append><q-icon name="search" /></template>
         </q-input>
-        <q-btn color="secondary" icon="map" label="Mapa" no-caps @click="openMap" />
+        <q-btn color="secondary" icon="map" label="Mapa" no-caps @click="openMap" :loading="loading" />
         <q-btn color="primary" icon="refresh" label="Actualizar" no-caps :loading="loading" @click="fetchRows" />
-        <q-btn color="positive" icon="add_circle" label="Nuevo" no-caps @click="openNew" />
+        <q-btn color="positive" icon="add_circle" label="Nuevo" no-caps @click="openNew" :loading="loading" />
       </q-card-section>
 
       <q-separator />
@@ -200,6 +200,17 @@
               <div class="col-12 col-sm-3">
                 <q-input v-model="form.lote" label="Lote" dense outlined />
               </div>
+<!--              estado-->
+              <div class="col-12 col-sm-6">
+                <q-select
+                  v-model="form.estado"
+                  :options="['Activo', 'Inactivo', 'Mantenimiento']"
+                  label="Estado"
+                  dense outlined
+                  emit-value map-options
+                />
+              </div>
+
 
               <div class="col-12">
                 <MapPicker v-model="formLocation" :center="[-16.5,-68.15]" :zoom-init="13" />

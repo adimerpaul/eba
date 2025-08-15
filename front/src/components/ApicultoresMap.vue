@@ -48,7 +48,7 @@
       <!-- Marcadores -->
       <template v-for="it in withCoords" :key="it.id">
         <l-circle-marker
-          :lat-lng="[it.lat, it.lng]"
+          :lat-lng="[Number(it.latitud), Number(it.longitud)]"
           :radius="7"
           :color="strokeColor(it.estado)"
           :fill-color="fillColor(it.estado)"
@@ -56,21 +56,27 @@
           :weight="2"
         >
           <l-popup>
-            <div class="q-pa-xs" style="min-width: 180px">
-              <div class="text-bold">{{ it.nombre }}</div>
-              <div class="text-caption text-grey-8">{{ it.codigo }}</div>
+            <div class="q-pa-xs" style="min-width: 220px">
+              <div class="text-bold">{{ it.nombre_apellido || 'Sin nombre' }}</div>
+              <div class="text-caption text-grey-8">
+                <span v-if="it.codigo_runsa"><b>RUNSA:</b> {{ it.codigo_runsa }}</span>
+                <span v-if="it.subcodigo"> · <b>Subcódigo:</b> {{ it.subcodigo }}</span>
+              </div>
               <q-separator spaced />
-              <div><b>Estado:</b> {{ it.estado }}</div>
-              <div><b>Municipio:</b> {{ it.municipio || '-' }}</div>
-              <div><b>Apiarios:</b> {{ it.apiarios ?? 0 }}</div>
+              <div v-if="it.estado"><b>Estado:</b> {{ it.estado }}</div>
+              <div><b>Apiario:</b> {{ it.lugar_apiario || '-' }}</div>
+              <div><b>Colmenas (Prod):</b> {{ it.n_colmenas_produccion ?? 0 }}</div>
               <div class="text-caption q-mt-xs">
-                Lat: {{ Number(it.lat).toFixed(5) }} / Lng: {{ Number(it.lng).toFixed(5) }}
+                Lat: {{ toFix(it.latitud) }} / Lng: {{ toFix(it.longitud) }}
               </div>
             </div>
           </l-popup>
         </l-circle-marker>
       </template>
     </l-map>
+    <pre>
+      {{ withCoords.length }} apicultores con coordenadas
+    </pre>
   </div>
 </template>
 
@@ -81,23 +87,34 @@ import 'leaflet/dist/leaflet.css'
 
 const props = defineProps({
   items: { type: Array, default: () => [] },
-  // cambiar este prop para forzar "fit bounds" (lo mando desde el dialog)
+  // prop para forzar "fit bounds" desde el diálogo
   refitKey: { type: [Number, String], default: 0 }
 })
 
 const mapRef = ref(null)
-const center = ref([-16.5, -64.5]) // Bolivia aprox centro
+const center = ref([-16.5, -64.5]) // centro aprox Bolivia
 const zoom = ref(5)
 
 const withCoords = computed(() =>
-  (props.items || []).filter(i => i.lat != null && i.lng != null)
+  (props.items || []).filter(i =>
+    i.latitud !== null && i.longitud !== null &&
+    i.latitud !== '' && i.longitud !== '' &&
+    !isNaN(Number(i.latitud)) && !isNaN(Number(i.longitud))
+  )
 )
 
-function fillColor (estado) {
-  if (estado === 'Activo') return '#21ba45'       // green
-  if (estado === 'Mantenimiento') return '#FFC107' // amber
-  return '#E53935'                                 // red
+function toFix (v, n = 5) {
+  const num = Number(v)
+  return Number.isFinite(num) ? num.toFixed(n) : '-'
 }
+
+function fillColor (estado) {
+  // Activo = verde, Mantenimiento = ámbar, Inactivo/otros = rojo
+  if (estado === 'Activo') return '#21ba45'
+  if (estado === 'Mantenimiento') return '#FFC107'
+  return '#E53935'
+}
+
 function strokeColor (estado) {
   if (estado === 'Activo') return '#0e8a2f'
   if (estado === 'Mantenimiento') return '#b58900'
@@ -109,7 +126,7 @@ function fitToMarkers () {
   if (!map) return
 
   if (withCoords.value.length) {
-    const latlngs = withCoords.value.map(i => [i.lat, i.lng])
+    const latlngs = withCoords.value.map(i => [Number(i.latitud), Number(i.longitud)])
     const bounds = window.L.latLngBounds(latlngs)
     map.fitBounds(bounds, { padding: [20, 20] })
   } else {
