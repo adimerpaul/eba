@@ -8,6 +8,9 @@ const routes = [
       { path: '/apicultores', component: () => import('pages/apicultores/Apicultor.vue'), meta: { requiresAuth: true, perm: 'Produccion primaria' } },
       { path: '/geocrud', component: () => import('pages/geocrud/GeoCrud.vue'), meta: { requiresAuth: true, perm: 'GeoCrud' } },
       { path: '/organizaciones', component: () => import('pages/organizaciones/Organizaciones.vue'), meta: { requiresAuth: true, perm: 'Organizaciones' } },
+      { path: '/productores', component: () => import('pages/productores/Productores.vue'), meta: { requiresAuth: true, perm: 'Productores' } },
+      { path: '/productores/crear', component: () => import('pages/productores/ProductorCrear.vue'), meta: { requiresAuth: true, perm: 'Productores' } },
+      { path: '/productores/editar/:id', component: () => import('pages/productores/ProductorEditar.vue'), meta: { requiresAuth: true, perm: 'Productores' } },
     ]
   },
   { path: '/login', component: () => import('layouts/Login.vue') },

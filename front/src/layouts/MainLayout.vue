@@ -178,10 +178,12 @@ function hasAnyPerm (perms = []) {
 }
 
 const linksList = [
+  { title: 'Dashboard',            icon: 'dashboard',     link: '/',                   canPerm: 'Dashboard' },
   { title: 'Geografía',          icon: 'location_city', link: '/geocrud',  canPerm: '' },
   { title: 'Organizaciones',       icon: 'apartment',    link: '/organizaciones',     canPerm: '' },
-  { title: 'Dashboard',            icon: 'dashboard',     link: '/',                   canPerm: 'Dashboard' },
-  { title: 'Productores / Apicultores',  icon: 'inventory_2',   link: '/apicultores',         canPerm: 'Produccion primaria' },
+  // { path: '/productores/crear', component: () => import('pages/productores/ProductorCrear.vue'), meta: { requiresAuth: true, perm: 'Productores' } },
+  { title: 'Productores Crear',   icon: 'person_add',  link: '/productores/crear', canPerm: 'Produccion primaria' },
+  { title: 'Productores / Agricultores', icon: 'agriculture', link: '/productores', canPerm: 'Produccion primaria' },
   { title: 'Recolección',          icon: 'yard',          link: '/recoleccion',        canPerm: 'Recoleccion' },
   { title: 'Procesamiento',        icon: 'precision_manufacturing', link: '/procesamiento', canPerm: 'Procesamiento' },
   { title: 'Almacenamiento',       icon: 'warehouse',     link: '/almacenamiento',     canPerm: 'Almacenamiento' },
