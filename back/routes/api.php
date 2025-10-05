@@ -8,6 +8,7 @@ use App\Http\Controllers\GeoController;
 use App\Http\Controllers\MunicipioController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\OrdenPagoController;
+use App\Http\Controllers\OrganizacionController;
 use App\Http\Controllers\ProvinciaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -62,5 +63,11 @@ Route::middleware('auth:sanctum')->group(callback: function () {
 
     // Árbol completo
     Route::get('/geo/tree', [GeoController::class, 'tree']);
+
+    Route::get('/organizaciones', [OrganizacionController::class, 'index']);
+    Route::post('/organizaciones', [OrganizacionController::class, 'store']);
+    Route::get('/organizaciones/{organizacion}', [OrganizacionController::class, 'show']);
+    Route::put('/organizaciones/{organizacion}', [OrganizacionController::class, 'update']);
+    Route::delete('/organizaciones/{organizacion}', [OrganizacionController::class, 'destroy']);
 
 });

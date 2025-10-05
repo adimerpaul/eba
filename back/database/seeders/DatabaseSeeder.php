@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
      */
     private function fixSequences(): void
     {
-        foreach (['departamentos', 'provincias', 'municipios'] as $table) {
+        foreach (['departamentos', 'provincias', 'municipios','organizaciones'] as $table) {
             DB::statement("
             SELECT setval(
                 pg_get_serial_sequence('{$table}', 'id'),
@@ -61,6 +61,8 @@ class DatabaseSeeder extends Seeder
         $sql = File::get(database_path('seeders/provincias_202510050357.sql'));
         DB::unprepared($sql);
         $sql = File::get(database_path('seeders/municipios_202510050357.sql'));
+        DB::unprepared($sql);
+        $sql = File::get(database_path('seeders/organizaciones_202510050431.sql'));
         DB::unprepared($sql);
         $this->fixSequences();
 
