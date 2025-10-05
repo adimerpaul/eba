@@ -71,16 +71,19 @@
           <th>Celular</th>
           <th>Lugar Apiario</th>
           <th>Asociación</th>
-          <th class="text-right">Colmenas (RUNSA)</th>
-          <th class="text-right">Colmenas (Prod)</th>
-          <th class="text-right">Prod. Prom (kg)</th>
-          <th class="text-right">Proy. Total (kg)</th>
+<!--          <th class="text-right">Colmenas (RUNSA)</th>-->
+<!--          <th class="text-right">Colmenas (Prod)</th>-->
+<!--          <th class="text-right">Prod. Prom (kg)</th>-->
+<!--          <th class="text-right">Proy. Total (kg)</th>-->
+          <th>Estado</th>
         </tr>
         </thead>
         <tbody>
-        <tr v-for="row in rows" :key="row.id">
+        <tr v-for="(row,i) in rows" :key="row.id">
           <td>
-            <q-btn-dropdown dense color="primary" label="Opciones" no-caps size="10px">
+            <q-btn-dropdown dense color="primary"
+                            :label="`Opciones (${i + 1})`"
+                            no-caps size="10px">
               <q-list>
                 <q-item clickable @click="openEdit(row)" v-close-popup>
                   <q-item-section avatar><q-icon name="edit" /></q-item-section>
@@ -102,10 +105,20 @@
           <td>{{ row.celular || '-' }}</td>
           <td>{{ row.lugar_apiario || '-' }}</td>
           <td>{{ row.asociacion || '-' }}</td>
-          <td class="text-right">{{ row.n_colmenas_runsa ?? 0 }}</td>
-          <td class="text-right">{{ row.n_colmenas_produccion ?? 0 }}</td>
-          <td class="text-right">{{ fmt(row.produccion_promedio) }}</td>
-          <td class="text-right">{{ fmt(row.proyeccion_produccion_total) }}</td>
+<!--          <td class="text-right">{{ row.n_colmenas_runsa ?? 0 }}</td>-->
+<!--          <td class="text-right">{{ row.n_colmenas_produccion ?? 0 }}</td>-->
+<!--          <td class="text-right">{{ fmt(row.produccion_promedio) }}</td>-->
+<!--          <td class="text-right">{{ fmt(row.proyeccion_produccion_total) }}</td>-->
+          <td>
+            <q-chip
+              :color="row.estado === 'Activo' ? 'green' : row.estado === 'Inactivo' ? 'red' : 'amber'"
+              :text-color="row.estado === 'Activo' ? 'white' : 'black'"
+              class="text-bold"
+              size="xs"
+            >
+              {{ row.estado }}
+            </q-chip>
+          </td>
         </tr>
         </tbody>
       </q-markup-table>

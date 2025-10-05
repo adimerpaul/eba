@@ -178,6 +178,7 @@ function hasAnyPerm (perms = []) {
 }
 
 const linksList = [
+  { title: 'Geografía',          icon: 'location_city', link: '/geocrud',  canPerm: '' },
   { title: 'Dashboard',            icon: 'dashboard',     link: '/',                   canPerm: 'Dashboard' },
   { title: 'Productores / Apicultores',  icon: 'inventory_2',   link: '/apicultores',         canPerm: 'Produccion primaria' },
   { title: 'Recolección',          icon: 'yard',          link: '/recoleccion',        canPerm: 'Recoleccion' },
