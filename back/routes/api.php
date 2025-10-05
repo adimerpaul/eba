@@ -9,6 +9,7 @@ use App\Http\Controllers\MunicipioController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\OrdenPagoController;
 use App\Http\Controllers\OrganizacionController;
+use App\Http\Controllers\ProductorController;
 use App\Http\Controllers\ProvinciaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -70,4 +71,9 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::put('/organizaciones/{organizacion}', [OrganizacionController::class, 'update']);
     Route::delete('/organizaciones/{organizacion}', [OrganizacionController::class, 'destroy']);
 
+    Route::get('/productores', [ProductorController::class, 'index']);
+    Route::post('/productores', [ProductorController::class, 'store']);
+    Route::get('/productores/{productor}', [ProductorController::class, 'show']);
+    Route::put('/productores/{productor}', [ProductorController::class, 'update']);
+    Route::delete('/productores/{productor}', [ProductorController::class, 'destroy']);
 });
