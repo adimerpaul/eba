@@ -16,6 +16,17 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
+    private function fixSequences(): void
+    {
+        foreach (['departamentos', 'provincias', 'municipios'] as $table) {
+            DB::statement("
+            SELECT setval(
+                pg_get_serial_sequence('{$table}', 'id'),
+                COALESCE((SELECT MAX(id) FROM {$table}), 0)
+            );
+        ");
+        }
+    }
     public function run(): void{
         $user = User::create([
             'name' => 'Adimer Paul Chambi Ajata',
@@ -42,14 +53,16 @@ class DatabaseSeeder extends Seeder
             Permission::create(['name' => $permiso]);
         }
         $user->givePermissionTo(Permission::all());
-        $sqlPach = database_path('seeders/apicultores_202508150628.sql');
-        if (File::exists($sqlPach)) {
-            $sql = File::get($sqlPach);
-            DB::unprepared($sql);
-            $this->command->info('Apicultores imported successfully.');
-        } else {
-            $this->command->error('SQL file not found: ' . $sqlPach);
-        }
+
+//        $sql = File::get(database_path('seeders/apicultores_202508150628.sql'));
+//        DB::unprepared($sql);
+        $sql = File::get(database_path('seeders/departamentos_202510050354.sql'));
+        DB::unprepared($sql);
+        $sql = File::get(database_path('seeders/provincias_202510050357.sql'));
+        DB::unprepared($sql);
+        $sql = File::get(database_path('seeders/municipios_202510050357.sql'));
+        DB::unprepared($sql);
+        $this->fixSequences();
 
 //        $faker = Faker::create('es_ES');
 //

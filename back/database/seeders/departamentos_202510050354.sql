@@ -1,0 +1,10 @@
+INSERT INTO public.departamentos (id,nombre_departamento,deleted_at,created_at,updated_at) VALUES
+	 (1,'CHUQUISACA',NULL,NULL,NULL),
+	 (2,'LA PAZ',NULL,NULL,NULL),
+	 (3,'COCHABAMBA',NULL,NULL,NULL),
+	 (4,'ORURO',NULL,NULL,NULL),
+	 (5,'POTOSI',NULL,NULL,NULL),
+	 (6,'TARIJA',NULL,NULL,NULL),
+	 (7,'SANTA CRUZ',NULL,NULL,NULL),
+	 (8,'BENI',NULL,NULL,NULL),
+	 (9,'PANDO',NULL,NULL,NULL);
