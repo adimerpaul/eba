@@ -188,7 +188,7 @@ const linksList = [
   // { title: 'Procesamiento',        icon: 'precision_manufacturing', link: '/procesamiento', canPerm: 'Procesamiento' },
   // { title: 'Almacenamiento',       icon: 'warehouse',     link: '/almacenamiento',     canPerm: 'Almacenamiento' },
   // { title: 'Despacho',             icon: 'local_shipping',link: '/despacho',           canPerm: 'Despacho' },
-  // { title: 'Usuarios',             icon: 'people',        link: '/usuarios',           canPerm: 'Usuarios' },
+  { title: 'Usuarios',             icon: 'people',        link: '/usuarios',           canPerm: 'Usuarios' },
   // { title: 'Reportes',             icon: 'print',    link: '/reportes',           canPerm: 'Reportes' },
   { title: 'Configuración',        icon: 'settings',      link: '/configuraciones',    canPerm: 'Configuracion' },
   { title: 'Soporte',              icon: 'support',       link: '/soporte',            canPerm: 'Soporte' },
