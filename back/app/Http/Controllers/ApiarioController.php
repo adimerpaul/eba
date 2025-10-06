@@ -42,7 +42,7 @@ class ApiarioController extends Controller
             'rend_programa_nal' => ['nullable','numeric'],
             'organizacion_id' => ['nullable','integer'],
             'fecha_instalacion' => ['nullable','date'],
-            'estado'       => ['nullable','in:ACTIVO,INACTIVO'],
+            'estado'       => ['nullable'],
             'fase'         => ['nullable','string','max:50'],
             'coordenada'   => ['nullable','string','max:50'],
         ]);

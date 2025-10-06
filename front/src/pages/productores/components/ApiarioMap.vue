@@ -1,3 +1,4 @@
+<!-- components/ApiarioMap.vue -->
 <template>
   <div class="map-wrapper">
     <div class="row items-center q-col-gutter-sm q-mb-sm">
@@ -71,12 +72,11 @@
 </template>
 
 <script>
-// Vue 3 wrapper:
 import { LMap, LTileLayer, LMarker, LPopup, LControlLayers } from '@vue-leaflet/vue-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 
-// Fix iconos (Vite/Webpack)
+// Fix iconos
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon   from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
@@ -91,7 +91,6 @@ export default {
   name: 'ApiarioMap',
   components: { LMap, LTileLayer, LMarker, LPopup, LControlLayers },
 
-  // v-model en Vue 3
   props: {
     modelValue: { type: Object, default: () => ({ latitud: null, longitud: null }) },
     center:     { type: Array,  default: () => [-16.5, -68.15] },
@@ -102,7 +101,7 @@ export default {
   data () {
     return {
       zoom: this.zoomInit,
-      local: { ...this.modelValue }, // copia local para editar
+      local: { ...this.modelValue },
       mapOptions: {
         zoomControl: true,
         attributionControl: false,
@@ -123,10 +122,7 @@ export default {
         ? [Number(this.local.latitud), Number(this.local.longitud)]
         : this.center
     },
-    // ⚠️ con @vue-leaflet el mapa está en leafletObject
-    mapObj () {
-      return this.$refs.map?.leafletObject || null
-    }
+    mapObj () { return this.$refs.map?.leafletObject || null }
   },
 
   watch: {
@@ -141,22 +137,21 @@ export default {
         }
       }
     },
-    // hijo -> padre
+    // hijo -> padre  (¡MERGE para no perder id ni otros campos!)
     local: {
       deep: true,
       handler (v) {
-        this.$emit('update:modelValue', {
-          latitud: v.latitud ?? null,
+        const merged = {
+          ...this.modelValue,               // conserva id, estado, etc.
+          latitud:  v.latitud ?? null,
           longitud: v.longitud ?? null
-        })
+        }
+        this.$emit('update:modelValue', merged)
       }
     }
   },
 
-  mounted () {
-    // dentro de QDialog necesita invalidateSize al mostrarse
-    this.$nextTick(() => this.refresh())
-  },
+  mounted () { this.$nextTick(() => this.refresh()) },
 
   methods: {
     fix (n) { const x = Number(n); return isFinite(x) ? x.toFixed(6) : '-' },
