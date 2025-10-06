@@ -12,9 +12,6 @@ class ProductorController extends Controller
         $q = Productor::query()
             ->with([
                 'municipio:id,nombre_municipio,provincia_id,departamento_id',
-                // si necesitas nombres de provincia/departamento en respuesta:
-                // 'municipio.provincia:id,nombre_provincia',
-                // 'municipio.departamento:id,nombre_departamento',
                 'organizacion:id,nombre_organiza'
             ]);
 
@@ -110,7 +107,7 @@ class ProductorController extends Controller
 
     public function show(Productor $productor)
     {
-        return $productor->load(['municipio:id,nombre_municipio,provincia_id,departamento_id','organizacion:id,nombre_organiza']);
+        return $productor->load(['municipio:id,nombre_municipio,provincia_id,departamento_id','organizacion:id,nombre_organiza','certificaciones']);
     }
 
     public function update(Request $request, Productor $productor)

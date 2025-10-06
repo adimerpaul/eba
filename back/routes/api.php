@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApicultorController;
+use App\Http\Controllers\CertificacionController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CogController;
 use App\Http\Controllers\DepartamentoController;
@@ -76,4 +77,17 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::get('/productores/{productor}', [ProductorController::class, 'show']);
     Route::put('/productores/{productor}', [ProductorController::class, 'update']);
     Route::delete('/productores/{productor}', [ProductorController::class, 'destroy']);
+
+//    Route::get('/certificaciones', [CertificacionController::class, 'index']);
+    Route::post('/certificaciones', [CertificacionController::class, 'store']);
+//    Route::get('/certificaciones/{certificacion}', [CertificacionController::class, 'show']);
+    Route::put('/certificaciones/{certificacion}', [CertificacionController::class, 'update']);
+    Route::delete('/certificaciones/{certificacion}', [CertificacionController::class, 'destroy']);
+//    Route::get('/productores/{productor}/certificaciones/print', [CertificacionController::class, 'printByProductor']);
+    Route::get('/certificaciones/{certificacion}/print', [CertificacionController::class, 'print']);
+
+
+
 });
+// PDF por productor
+//Route::get('/productores/{productor}/certificaciones/print', [CertificacionController::class, 'printByProductor']);

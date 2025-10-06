@@ -11,8 +11,8 @@
       <q-tabs v-model="tab" class="text-primary" align="left" dense>
         <q-tab name="general" icon="badge" label="1) Información general" no-caps />
         <q-tab name="certs" icon="verified" label="2) Certificaciones" no-caps />
-        <q-tab name="apiarios" icon="hive" label="3)Apiarios" no-caps />
-         <q-tab name="mapa" icon="map" label="4) Mapa" no-caps />
+        <q-tab name="apiarios" icon="hive" label="3) Apiarios" no-caps />
+        <q-tab name="mapa" icon="map" label="4) Mapa" no-caps />
       </q-tabs>
       <q-separator />
 
@@ -29,12 +29,13 @@
         </q-tab-panel>
 
         <q-tab-panel name="certs" class="q-pa-none">
-          <ProductorCertificaciones :productor="productor" />
+          <ProductorCertificaciones :productor="productor" @updated="fetchProductor" />
         </q-tab-panel>
 
         <q-tab-panel name="apiarios" class="q-pa-none">
           <ProductorApiarios :productor="productor" />
         </q-tab-panel>
+
         <q-tab-panel name="mapa" class="q-pa-none">
           <ProductorMapa :productor="productor" />
         </q-tab-panel>
@@ -45,35 +46,21 @@
 
 <script>
 import ProductorForm from 'pages/productores/ProductorForm.vue'
-import ProductorCertificaciones from "pages/productores/tabs/ProductorCertificaciones.vue";
-import ProductorApiarios from "pages/productores/tabs/ProductorApiarios.vue";
-import ProductorMapa from "pages/productores/tabs/ProductorMapa.vue";
+import ProductorCertificaciones from 'pages/productores/tabs/ProductorCertificaciones.vue'
+import ProductorApiarios from 'pages/productores/tabs/ProductorApiarios.vue'
+import ProductorMapa from 'pages/productores/tabs/ProductorMapa.vue'
 
 export default {
   name: 'ProductorEditar',
-  components: {ProductorMapa, ProductorApiarios, ProductorCertificaciones, ProductorForm },
+  components: { ProductorMapa, ProductorApiarios, ProductorCertificaciones, ProductorForm },
   data () {
     return {
       tab: 'general',
       loading: false,
-      productor: null,
-      certsLoading: false,
-      apiLoading: false,
-      certsLoaded: false,
-      apiLoaded: false,
-      certs: [],
-      apiarios: []
+      productor: null
     }
   },
-  // watch: {
-  //   tab (t) {
-  //     if (t === 'certs' && !this.certsLoaded) this.fetchCerts()
-  //     if (t === 'apiarios' && !this.apiLoaded) this.fetchApiarios()
-  //   }
-  // },
-  mounted () {
-    this.fetchProductor()
-  },
+  mounted () { this.fetchProductor() },
   methods: {
     async fetchProductor () {
       this.loading = true

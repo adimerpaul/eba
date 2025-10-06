@@ -57,4 +57,8 @@ class Productor extends Model implements Auditable
     {
         return trim(($this->nombre ?? '').' '.($this->apellidos ?? ''));
     }
+    public function certificaciones()
+    {
+        return $this->hasMany(Certificacion::class, 'productor_id');
+    }
 }
