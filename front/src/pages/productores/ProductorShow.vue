@@ -40,6 +40,7 @@
           <ProductorMapa :productor="productor" />
         </q-tab-panel>
       </q-tab-panels>
+
     </q-card>
   </q-page>
 </template>
@@ -51,7 +52,7 @@ import ProductorApiarios from 'pages/productores/tabs/ProductorApiarios.vue'
 import ProductorMapa from 'pages/productores/tabs/ProductorMapa.vue'
 
 export default {
-  name: 'ProductorEditar',
+  name: 'ProductorShow',
   components: { ProductorMapa, ProductorApiarios, ProductorCertificaciones, ProductorForm },
   data () {
     return {

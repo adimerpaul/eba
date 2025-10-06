@@ -10,7 +10,7 @@ const routes = [
       { path: '/organizaciones', component: () => import('pages/organizaciones/Organizaciones.vue'), meta: { requiresAuth: true, perm: 'Organizaciones' } },
       { path: '/productores', component: () => import('pages/productores/Productores.vue'), meta: { requiresAuth: true, perm: 'Productores' } },
       { path: '/productores/crear', component: () => import('pages/productores/ProductorCrear.vue'), meta: { requiresAuth: true, perm: 'Productores' } },
-      { path: '/productores/editar/:id', component: () => import('pages/productores/ProductorEditar.vue'), meta: { requiresAuth: true, perm: 'Productores' } },
+      { path: '/productores/editar/:id', component: () => import('pages/productores/ProductorShow.vue'), meta: { requiresAuth: true, perm: 'Productores' } },
     ]
   },
   { path: '/login', component: () => import('layouts/Login.vue') },
