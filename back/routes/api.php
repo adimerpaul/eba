@@ -86,6 +86,26 @@ Route::middleware('auth:sanctum')->group(callback: function () {
 //    Route::get('/productores/{productor}/certificaciones/print', [CertificacionController::class, 'printByProductor']);
     Route::get('/certificaciones/{certificacion}/print', [CertificacionController::class, 'print']);
 
+    // Tipo miel
+    Route::get('/tipo-miel', [\App\Http\Controllers\TipoMielController::class, 'index']);
+    Route::post('/tipo-miel', [\App\Http\Controllers\TipoMielController::class, 'store']);
+    Route::put('/tipo-miel/{tipoMiel}', [\App\Http\Controllers\TipoMielController::class, 'update']);
+    Route::delete('/tipo-miel/{tipoMiel}', [\App\Http\Controllers\TipoMielController::class, 'destroy']);
+
+// Apiarios
+    Route::get('/apiarios', [\App\Http\Controllers\ApiarioController::class, 'index']);
+    Route::post('/apiarios', [\App\Http\Controllers\ApiarioController::class, 'store']);
+    Route::get('/apiarios/{apiario}', [\App\Http\Controllers\ApiarioController::class, 'show']);
+    Route::put('/apiarios/{apiario}', [\App\Http\Controllers\ApiarioController::class, 'update']);
+    Route::delete('/apiarios/{apiario}', [\App\Http\Controllers\ApiarioController::class, 'destroy']);
+
+// Colmenas
+    Route::get('/colmenas', [\App\Http\Controllers\ColmenaController::class, 'index']);
+    Route::post('/colmenas', [\App\Http\Controllers\ColmenaController::class, 'store']);
+    Route::get('/colmenas/{colmena}', [\App\Http\Controllers\ColmenaController::class, 'show']);
+    Route::put('/colmenas/{colmena}', [\App\Http\Controllers\ColmenaController::class, 'update']);
+    Route::delete('/colmenas/{colmena}', [\App\Http\Controllers\ColmenaController::class, 'destroy']);
+
 
 
 });

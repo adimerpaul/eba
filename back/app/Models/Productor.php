@@ -61,4 +61,8 @@ class Productor extends Model implements Auditable
     {
         return $this->hasMany(Certificacion::class, 'productor_id');
     }
+    public function apiarios()
+    {
+        return $this->hasMany(Apiario::class, 'productor_id');
+    }
 }

@@ -107,7 +107,12 @@ class ProductorController extends Controller
 
     public function show(Productor $productor)
     {
-        return $productor->load(['municipio:id,nombre_municipio,provincia_id,departamento_id','organizacion:id,nombre_organiza','certificaciones']);
+        return $productor->load([
+            'municipio:id,nombre_municipio,provincia_id,departamento_id',
+            'organizacion:id,nombre_organiza',
+            'certificaciones',
+            'apiarios.colmenas.tipoMiel'
+        ]);
     }
 
     public function update(Request $request, Productor $productor)

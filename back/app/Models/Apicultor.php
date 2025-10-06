@@ -40,34 +40,34 @@ class Apicultor extends Model implements Auditable
     }
 
     // Genera COL-001, COL-002, ...
-    public static function nextCodigo(): string
-    {
-        // --- Intento 1: usar SQL para sacar el MAX del número (MySQL/MariaDB)
-        try {
-            $max = static::query()
-                ->whereNull('deleted_at')
-                ->selectRaw("MAX(CAST(SUBSTRING(codigo, ?) AS UNSIGNED)) AS maxnum", [strlen(self::COD_PREFIX) + 1])
-                ->value('maxnum');
-
-            $next = ((int) $max) + 1;
-
-            return self::COD_PREFIX . str_pad((string)$next, self::PAD_LEN, '0', STR_PAD_LEFT);
-        } catch (\Throwable $e) {
-            // --- Fallback: calcular en PHP por si la BD no soporta el SQL anterior
-            $max = 0;
-            $codes = static::query()
-                ->whereNull('deleted_at')
-                ->pluck('codigo');
-
-            foreach ($codes as $code) {
-                if (preg_match('/^' . preg_quote(self::COD_PREFIX, '/') . '(\d+)$/', $code, $m)) {
-                    $num = (int) $m[1];
-                    if ($num > $max) $max = $num;
-                }
-            }
-
-            $next = $max + 1;
-            return self::COD_PREFIX . str_pad((string)$next, self::PAD_LEN, '0', STR_PAD_LEFT);
-        }
-    }
+//    public static function nextCodigo(): string
+//    {
+//        // --- Intento 1: usar SQL para sacar el MAX del número (MySQL/MariaDB)
+//        try {
+//            $max = static::query()
+//                ->whereNull('deleted_at')
+//                ->selectRaw("MAX(CAST(SUBSTRING(codigo, ?) AS UNSIGNED)) AS maxnum", [strlen(self::COD_PREFIX) + 1])
+//                ->value('maxnum');
+//
+//            $next = ((int) $max) + 1;
+//
+//            return self::COD_PREFIX . str_pad((string)$next, self::PAD_LEN, '0', STR_PAD_LEFT);
+//        } catch (\Throwable $e) {
+//            // --- Fallback: calcular en PHP por si la BD no soporta el SQL anterior
+//            $max = 0;
+//            $codes = static::query()
+//                ->whereNull('deleted_at')
+//                ->pluck('codigo');
+//
+//            foreach ($codes as $code) {
+//                if (preg_match('/^' . preg_quote(self::COD_PREFIX, '/') . '(\d+)$/', $code, $m)) {
+//                    $num = (int) $m[1];
+//                    if ($num > $max) $max = $num;
+//                }
+//            }
+//
+//            $next = $max + 1;
+//            return self::COD_PREFIX . str_pad((string)$next, self::PAD_LEN, '0', STR_PAD_LEFT);
+//        }
+//    }
 }
