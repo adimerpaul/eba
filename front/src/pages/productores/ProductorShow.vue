@@ -33,11 +33,11 @@
         </q-tab-panel>
 
         <q-tab-panel name="apiarios" class="q-pa-none">
-          <ProductorApiarios :productor="productor" />
+          <ProductorApiarios :productor="productor" @updated="fetchProductor" />
         </q-tab-panel>
 
         <q-tab-panel name="mapa" class="q-pa-none">
-          <ProductorMapa :productor="productor" />
+          <ProductorMapa :productor="productor" @updated="fetchProductor" />
         </q-tab-panel>
       </q-tab-panels>
 
