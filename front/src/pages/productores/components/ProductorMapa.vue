@@ -1,6 +1,6 @@
 <template>
   <q-card-section class="q-pa-none">
-    <div style="height: 580px; border-radius: 8px; overflow: hidden">
+    <div style="height: 420px; border-radius: 8px; overflow: hidden">
       <l-map
         ref="map"
         :zoom="zoom"
@@ -16,7 +16,7 @@
           name="OpenStreetMap"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           :max-zoom="19"
-          :visible="false"
+          :visible="true"
         />
         <l-tile-layer
           layer-type="base"
@@ -37,7 +37,7 @@
           name="Google Híbrido"
           url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
           :max-zoom="21"
-          :visible="true"
+          :visible="false"
         />
 
         <!-- Marcadores de apiarios -->
@@ -55,10 +55,7 @@
                 Lng: {{ a.lng.toFixed(6) }}
               </div>
               <div v-if="a.estado" class="q-mt-xs">
-                Estado:
-                <q-badge :color="a.estado==='ACTIVO' ? 'green' : 'grey'" text-color="white" rounded>
-                  {{ a.estado }}
-                </q-badge>
+                Estado: <q-badge :color="a.estado==='ACTIVO' ? 'green' : 'grey'" text-color="white" rounded>{{ a.estado }}</q-badge>
               </div>
             </div>
           </l-popup>
@@ -69,6 +66,7 @@
 </template>
 
 <script>
+// Usa @vue-leaflet/vue-leaflet (wrapper Vue 3)
 import { LMap, LTileLayer, LMarker, LPopup, LControlLayers } from '@vue-leaflet/vue-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
@@ -90,9 +88,9 @@ export default {
 
   props: {
     productor: { type: Object, required: true },
-    // Centro y zoom por defecto: Bolivia
-    defaultCenter: { type: Array, default: () => [-16.29, -63.59] },
-    defaultZoom:   { type: Number, default: 6 }
+    // centro por defecto (si no hay apiarios válidos)
+    defaultCenter: { type: Array, default: () => [-16.5, -68.15] },
+    defaultZoom: { type: Number, default: 13 }
   },
 
   data () {
@@ -112,6 +110,7 @@ export default {
   computed: {
     mapObj () { return this.$refs.map?.leafletObject || null },
 
+    // Apiarios con lat/lng válidos (strings -> number)
     apiariosConLatLng () {
       const arr = Array.isArray(this.productor?.apiarios) ? this.productor.apiarios : []
       return arr
@@ -127,6 +126,7 @@ export default {
   },
 
   watch: {
+    // Cuando cambien los datos del productor, reencuadra el mapa
     productor: {
       deep: true,
       handler () { this.$nextTick(() => this.fitToMarkers()) }
@@ -134,12 +134,13 @@ export default {
   },
 
   mounted () {
+    // Ajusta al montar (útil si está dentro de un QDialog/Tab)
     this.$nextTick(() => this.fitToMarkers())
   },
 
   methods: {
-    // Llama a esto si el mapa se muestra dentro de un QDialog/Tab
     refresh () {
+      // Método público (llámalo al abrir un QDialog): this.$refs.productorMapa.refresh()
       const map = this.mapObj
       if (!map) return
       setTimeout(() => { map.invalidateSize(); this.fitToMarkers(true) }, 60)
@@ -162,6 +163,7 @@ export default {
       }
 
       const bounds = L.latLngBounds(pts)
+      // padding para que no queden pegados al borde
       map.fitBounds(bounds.pad(0.2), { animate: false })
     }
   }
