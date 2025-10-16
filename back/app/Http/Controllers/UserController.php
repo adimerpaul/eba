@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\UserCreatedMail;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Spatie\Permission\Models\Permission;
@@ -84,12 +86,27 @@ class UserController extends Controller{
     }
     function store(Request $request){
         $validatedData = $request->validate([
-            'username' => 'required|unique:users',
+            'username' => 'required',
             'password' => 'required',
             'name' => 'required',
 //            'email' => 'required|email|unique:users',
         ]);
+        if (User::where('username', $request->username)->exists()) {
+            return response()->json(['message' => 'El nombre de usuario ya existe'], 422);
+        }
         $user = User::create($request->all());
+        if ($user->email) {
+            try {
+                Mail::to($user->email)->send(new UserCreatedMail(
+                    $user->username,
+                    $user->name,
+                    $request->password,
+                ));
+            } catch (\Exception $e) {
+//                \Log::error("Error enviando correo de usuario creado: " . $e->getMessage());
+                error_log("Error enviando correo de usuario creado: " . $e->getMessage());
+            }
+        }
         return $user;
     }
     function destroy($id){
