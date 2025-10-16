@@ -139,7 +139,7 @@
             <q-input v-model="user.name" label="Nombre" dense outlined :rules="[val => !!val || 'Campo requerido']"/>
             <q-input v-model="user.username" label="Usuario" dense outlined
                      :rules="[val => !!val || 'Campo requerido']"/>
-            <!--            <q-input v-model="user.email" label="Email" dense outlined hint="" />-->
+            <q-input v-model="user.email" label="Email" dense outlined hint="" />
             <q-input v-model="user.password" label="Contraseña" dense outlined
                      :rules="[val => !!val || 'Campo requerido']" v-if="!user.id"/>
             <q-select v-model="user.role" label="Rol" dense outlined :options="roles"
@@ -261,7 +261,8 @@ export default {
       actionUser: '',
       gestiones: [],
       filter: '',
-      roles: ['Administrador', 'Vendedor'],
+      // USUARIO GERENTE PRODUCTOR PRODUCCION ADMINITRATIVO
+      roles: ['Usuario', 'Gerente', 'Productor', 'Produccion', 'Administrativo'],
       columns: [
         {name: 'actions', label: 'Acciones', align: 'center'},
         {name: 'name', label: 'Nombre', align: 'left', field: 'name'},
@@ -339,7 +340,7 @@ export default {
         area_id: 1,
         username: '',
         cargo: '',
-        role: 'Vendedor',
+        role: 'Usuario',
       }
       this.actionUser = 'Nuevo'
       this.userDialog = true
