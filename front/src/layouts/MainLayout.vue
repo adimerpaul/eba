@@ -88,7 +88,7 @@
       show-if-above
       :width="200"
       :breakpoint="500"
-      class="bg-green-9 text-white"
+      class="bg-primary text-white"
     >
       <q-list class="q-pb-none">
         <q-item-label header class="text-center q-pa-none q-pt-md">

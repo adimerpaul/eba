@@ -98,8 +98,8 @@ class UserController extends Controller{
         if ($user->email) {
             try {
                 Mail::to($user->email)->send(new UserCreatedMail(
-                    $user->username,
                     $user->name,
+                    $user->username,
                     $request->password,
                 ));
             } catch (\Exception $e) {
