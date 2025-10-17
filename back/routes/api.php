@@ -106,7 +106,7 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::put('/colmenas/{colmena}', [\App\Http\Controllers\ColmenaController::class, 'update']);
     Route::delete('/colmenas/{colmena}', [\App\Http\Controllers\ColmenaController::class, 'destroy']);
 
-
+    Route::get('/acopio/cosechas', [\App\Http\Controllers\AcopioCosechaController::class, 'index']);
 
 });
 // PDF por productor

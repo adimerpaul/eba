@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Apicultor;
 use App\Models\User;
+
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,17 @@ class DatabaseSeeder extends Seeder
      */
     private function fixSequences(): void
     {
-        foreach (['departamentos', 'provincias', 'municipios','organizaciones','productores','tipo_manejos','tipo_miel','apiarios'] as $table) {
+        foreach ([
+            'departamentos',
+            'provincias',
+            'municipios',
+            'organizaciones',
+            'productores',
+            'tipo_manejos',
+            'tipo_miel',
+            'apiarios',
+            'acopio_cosechas'
+                 ] as $table) {
             DB::statement("
             SELECT setval(
                 pg_get_serial_sequence('{$table}', 'id'),
@@ -27,7 +38,9 @@ class DatabaseSeeder extends Seeder
         ");
         }
     }
-    public function run(): void{
+
+    public function run(): void
+    {
         $user = User::create([
             'name' => 'Adimer Paul Chambi Ajata',
             'username' => 'admin',
@@ -75,6 +88,8 @@ class DatabaseSeeder extends Seeder
         $sql = File::get(database_path('seeders/tipo_miel_202510060401.sql'));
         DB::unprepared($sql);
         $sql = File::get(database_path('seeders/apiarios_202510060401.sql'));
+        DB::unprepared($sql);
+        $sql = File::get(database_path('seeders/acopio_cosechas_202510170333.sql'));;
         DB::unprepared($sql);
 
 

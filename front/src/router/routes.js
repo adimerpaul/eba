@@ -11,6 +11,7 @@ const routes = [
       { path: '/productores', component: () => import('pages/productores/Productores.vue'), meta: { requiresAuth: true, perm: 'Productores' } },
       { path: '/productores/crear', component: () => import('pages/productores/ProductorCrear.vue'), meta: { requiresAuth: true, perm: 'Productores' } },
       { path: '/productores/editar/:id', component: () => import('pages/productores/ProductorShow.vue'), meta: { requiresAuth: true, perm: 'Productores' } },
+      { path: '/acopios', component: () => import('pages/acopio/Acopio.vue'), meta: { requiresAuth: true, perm: 'Acopio' } },
     ]
   },
   { path: '/login', component: () => import('layouts/Login.vue') },
