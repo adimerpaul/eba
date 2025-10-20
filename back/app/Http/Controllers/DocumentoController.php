@@ -27,6 +27,8 @@ class DocumentoController extends Controller
     public function store(Request $request)
     {
         // Minimal: sin validaciones (puedes agregar cuando quieras)
+//        $request fecha now
+        $request->merge(['fecha' => now()]);
         $doc = Documento::create($request->all());
         return response()->json($doc->fresh(['user:id,name,email']), 201);
     }

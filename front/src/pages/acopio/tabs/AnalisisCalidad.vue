@@ -66,7 +66,7 @@
 
     <!-- Diálogo Crear/Editar -->
     <q-dialog v-model="dlg.open" persistent>
-      <q-card style="min-width: 900px; max-width: 95vw;">
+      <q-card style="max-width: 90vw;">
         <q-card-section class="row items-center justify-between">
           <div class="text-subtitle1">{{ dlg.modo === 'crear' ? 'Nuevo análisis' : 'Editar análisis' }}</div>
           <q-btn flat round dense icon="close" v-close-popup />
