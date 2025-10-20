@@ -86,7 +86,7 @@
       v-model="leftDrawerOpen"
       bordered
       show-if-above
-      :width="200"
+      :width="240"
       :breakpoint="500"
       class="bg-primary text-white"
     >
@@ -106,32 +106,101 @@
         </q-item-label>
 
         <!-- Menú dinámico por permisos -->
-        <template v-for="link in filteredLinks" :key="link.title">
-          <q-item
-            clickable
-            :to="link.link"
-            exact
-            dense
-            class="menu-item"
-            active-class="menu-active"
-            v-close-popup
-          >
-            <q-item-section avatar>
-              <q-icon
-                :name="$route.path === link.link ? 'o_' + link.icon : link.icon"
-                :class="$route.path === link.link ? 'text-grey-3' : 'text-white'"
-              />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label :class="$route.path === link.link ? 'text-white text-weight-bold' : 'text-white'">
-                {{ link.title }}
-              </q-item-label>
-            </q-item-section>
-          </q-item>
-        </template>
-
-        <q-separator color="green-8" class="q-mt-md"/>
-
+<!--        <template v-for="link in filteredLinks" :key="link.title">-->
+<!--          <q-item-->
+<!--            clickable-->
+<!--            :to="link.link"-->
+<!--            exact-->
+<!--            dense-->
+<!--            class="menu-item"-->
+<!--            active-class="menu-active"-->
+<!--            v-close-popup-->
+<!--          >-->
+<!--            <q-item-section avatar>-->
+<!--              <q-icon-->
+<!--                :name="$route.path === link.link ? 'o_' + link.icon : link.icon"-->
+<!--                :class="$route.path === link.link ? 'text-grey-3' : 'text-white'"-->
+<!--              />-->
+<!--            </q-item-section>-->
+<!--            <q-item-section>-->
+<!--              <q-item-label :class="$route.path === link.link ? 'text-white text-weight-bold' : 'text-white'">-->
+<!--                {{ link.title }}-->
+<!--              </q-item-label>-->
+<!--            </q-item-section>-->
+<!--          </q-item>-->
+<!--        </template>-->
+        <q-item dense to="/" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+          <q-item-section avatar>
+            <q-icon name="dashboard" class="text-white"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-white">Dashboard</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-expansion-item dense expand-separator icon="gavel" label="Modulo Apiario" active-class="menu-active" >
+          <q-list>
+            <q-item :inset-level="0.3" dense to="/productores/crear" clickable class="menu-item" active-class="menu-active" v-close-popup >
+              <q-item-section avatar>
+                <q-icon name="person_add" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Productores Crear</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item :inset-level="0.3" dense to="/productores" clickable class="menu-item" active-class="menu-active" v-close-popup >
+              <q-item-section avatar>
+                <q-icon name="agriculture" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Productores Agricultores</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item :inset-level="0.3" dense to="/geocrud" clickable class="menu-item" active-class="menu-active" v-close-popup >
+              <q-item-section avatar>
+                <q-icon name="location_city" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Geografía</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item :inset-level="0.3" dense to="/organizaciones" clickable class="menu-item" active-class="menu-active" v-close-popup >
+              <q-item-section avatar>
+                <q-icon name="apartment" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Organizaciones</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-expansion-item>
+        <q-expansion-item dense expand-separator icon="inbox" label="Módulo Acopio" active-class="menu-active" >
+          <q-list>
+            <q-item :inset-level="0.3" dense to="/recoleccion" clickable class="menu-item" active-class="menu-active" v-close-popup >
+              <q-item-section avatar>
+                <q-icon name="yard" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Recolección</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item :inset-level="0.3" dense to="/acopios" clickable class="menu-item" active-class="menu-active" v-close-popup >
+              <q-item-section avatar>
+                <q-icon name="inbox" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Acopios</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-expansion-item>
+        <q-item dense to="/usuarios" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+          <q-item-section avatar>
+            <q-icon name="people" class="text-white"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-white">Usuarios</q-item-label>
+          </q-item-section>
+        </q-item>
         <div class="q-pa-md">
           <div class="text-white-7 text-caption">
             EBA v{{ $version }}
