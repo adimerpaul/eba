@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('plantas', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 150);
-            $table->string('registro_sanitario', 100)->nullable();
-            $table->string('direccion', 200)->nullable();
+            $table->string('codigo_planta', 10)->unique();
+            $table->string('nombre_planta', 150);
+            $table->string('registro_sanitario', 50)->nullable();
+            $table->text('direccion')->nullable();
             $table->unsignedBigInteger('municipio_id')->nullable();
             $table->foreign('municipio_id')->references('id')->on('municipios');
             $table->softDeletes();

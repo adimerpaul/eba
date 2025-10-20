@@ -3,6 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\Apicultor;
+use App\Models\Planta;
+use App\Models\Producto;
+use App\Models\Productor;
+use App\Models\Tanque;
+use App\Models\TipoProducto;
 use App\Models\User;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -28,7 +33,7 @@ class DatabaseSeeder extends Seeder
             'tipo_manejos',
             'tipo_miel',
             'apiarios',
-            'acopio_cosechas'
+//            'acopio_cosechas'
                  ] as $table) {
             DB::statement("
             SELECT setval(
@@ -89,8 +94,108 @@ class DatabaseSeeder extends Seeder
         DB::unprepared($sql);
         $sql = File::get(database_path('seeders/apiarios_202510060401.sql'));
         DB::unprepared($sql);
-        $sql = File::get(database_path('seeders/acopio_cosechas_202510170333.sql'));;
-        DB::unprepared($sql);
+//        $sql = File::get(database_path('seeders/acopio_cosechas_202510170333.sql'));;
+//        DB::unprepared($sql);
+
+//        INSERT INTO public.tipo_productos (id, codigo_tipo, nombre_tipo, detalles) VALUES(1, '0001', 'Materia Prima', 'Meil, Polen, Propoleo');
+//INSERT INTO public.tipo_productos (id, codigo_tipo, nombre_tipo, detalles) VALUES(2, '0002', 'en Proceso', 'En planta rpocesamiento');
+//INSERT INTO public.tipo_productos (id, codigo_tipo, nombre_tipo, detalles) VALUES(3, '0003', 'Producto Terminado', 'Almacen Terminados');
+        TipoProducto::create([
+            'codigo_tipo' => '0001',
+            'nombre_tipo' => 'Materia Prima',
+            'detalles' => 'Miel, Polen, Propoleo',
+        ]);
+        TipoProducto::create([
+            'codigo_tipo' => '0002',
+            'nombre_tipo' => 'En Proceso',
+            'detalles' => 'En planta procesamiento',
+        ]);
+        TipoProducto::create([
+            'codigo_tipo' => '0003',
+            'nombre_tipo' => 'Producto Terminado',
+            'detalles' => 'Almacen Terminados',
+        ]);
+
+//        INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(1, 1, '0001', 'Miel de Abeja', 'Kilos', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(2, 1, '0002', 'Cera', 'Kilos', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(3, 1, '0003', 'Polen', 'Kilos', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(4, 1, '0004', 'Propoleo', 'Kilos', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(5, 2, '001', 'Miel Abeja', 'Kilos', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(6, 2, '002', 'Cera', 'Kilos', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(7, 2, '003', 'Polen', 'Kilos', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(8, 3, '01', 'Miel Natural 400 GR', 'Pieza', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(9, 3, '02', 'Miel con Propoleo 300 GR', 'Pieza', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(10, 3, '03', 'Miel Flor Jamaica 400 GR', 'Pieza', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(11, 3, '04', 'Miel Jengibre 200 GR', 'Pieza', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(12, 3, '05', 'Miel Polen 200 GR', 'Pieza', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(13, 3, '06', 'Miel con Quinua 100 GR', 'Pieza', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(14, 3, '07', 'Super Energetico 200 GR', 'Pieza', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(15, 3, '08', 'Miel con Maca 200 GR', 'Pieza', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(16, 3, '09', 'Miel con Chocolate 50 GR', 'Pieza', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+//INSERT INTO public.productos (id, tipo_id, codigo_producto, nombre_producto, presentacion, cantidad_kg, costo, precio, fecha_vencimiento, nro_lote, codigo_barra, imagen)
+//VALUES(17, 3, '10', 'Miel Cremosa 100 GR', 'Pieza', 0.00, 0.00, 0.00, NULL, NULL, NULL, NULL);
+
+        Producto::create(['tipo_id' => 1, 'codigo_producto' => '0001', 'nombre_producto' => 'Miel de Abeja', 'presentacion' => 'Kilos', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 1, 'codigo_producto' => '0002', 'nombre_producto' => 'Cera', 'presentacion' => 'Kilos', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 1, 'codigo_producto' => '0003', 'nombre_producto' => 'Polen', 'presentacion' => 'Kilos', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 1, 'codigo_producto' => '0004', 'nombre_producto' => 'Propoleo', 'presentacion' => 'Kilos', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 2, 'codigo_producto' => '001', 'nombre_producto' => 'Miel Abeja', 'presentacion' => 'Kilos', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 2, 'codigo_producto' => '002', 'nombre_producto' => 'Cera', 'presentacion' => 'Kilos', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 2, 'codigo_producto' => '003', 'nombre_producto' => 'Polen', 'presentacion' => 'Kilos', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 3, 'codigo_producto' => '01', 'nombre_producto' => 'Miel Natural 400 GR', 'presentacion' => 'Pieza', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 3, 'codigo_producto' => '02', 'nombre_producto' => 'Miel con Propoleo 300 GR', 'presentacion' => 'Pieza', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 3, 'codigo_producto' => '03', 'nombre_producto' => 'Miel Flor Jamaica 400 GR', 'presentacion' => 'Pieza', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 3, 'codigo_producto' => '04', 'nombre_producto' => 'Miel Jengibre 200 GR', 'presentacion' => 'Pieza', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 3, 'codigo_producto' => '05', 'nombre_producto' => 'Miel Polen 200 GR', 'presentacion' => 'Pieza', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 3, 'codigo_producto' => '06', 'nombre_producto' => 'Miel con Quinua 100 GR', 'presentacion' => 'Pieza', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 3, 'codigo_producto' => '07', 'nombre_producto' => 'Super Energetico 200 GR', 'presentacion' => 'Pieza', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 3, 'codigo_producto' => '08', 'nombre_producto' => 'Miel con Maca 200 GR', 'presentacion' => 'Pieza', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 3, 'codigo_producto' => '09', 'nombre_producto' => 'Miel con Chocolate 50 GR', 'presentacion' => 'Pieza', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+        Producto::create(['tipo_id' => 3, 'codigo_producto' => '10', 'nombre_producto' => 'Miel Cremosa 100 GR', 'presentacion' => 'Pieza', 'cantidad_kg' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+
+
+//        INSERT INTO public.plantas (id, codigo_planta, nombre, registro_sanitario, direccion, municipio_id) VALUES(1, '07', 'Planta Samuzabety', '123456', 'Eterazama, Villa Tunari Cochabamba', 31003);
+//INSERT INTO public.plantas (id, codigo_planta, nombre, registro_sanitario, direccion, municipio_id) VALUES(2, '10', 'Planta Villa Montes', '123456', 'Villamontes, Tarija', 60303);
+//INSERT INTO public.plantas (id, codigo_planta, nombre, registro_sanitario, direccion, municipio_id) VALUES(4, '04', 'Planta Monteagudo', '123456', 'Chaco Chuquisaqueño', 10501);
+//INSERT INTO public.plantas (id, codigo_planta, nombre, registro_sanitario, direccion, municipio_id) VALUES(3, '05', 'Planta Irupana', '123456', 'Yungas Irupana', 21102);
+
+        Planta::create(['codigo_planta' => '07', 'nombre_planta' => 'Planta Samuzabety', 'registro_sanitario' => '123456', 'direccion' => 'Eterazama, Villa Tunari Cochabamba', 'municipio_id' => 31003]);
+        Planta::create(['codigo_planta' => '10', 'nombre_planta' => 'Planta Villa Montes', 'registro_sanitario' => '123456', 'direccion' => 'Villamontes, Tarija', 'municipio_id' => 60303]);
+        Planta::create(['codigo_planta' => '04', 'nombre_planta' => 'Planta Monteagudo', 'registro_sanitario' => '123456', 'direccion' => 'Chaco Chuquisaqueño', 'municipio_id' => 10501]);
+        Planta::create(['codigo_planta' => '05', 'nombre_planta' => 'Planta Irupana', 'registro_sanitario' => '123456', 'direccion' => 'Yungas Irupana', 'municipio_id' => 21102]);
+
+//        INSERT INTO public.tanques (id, codigo_tanque, nombre_tanque, planta_id) VALUES(0, '00', 'Tanque 0', 1);
+//INSERT INTO public.tanques (id, codigo_tanque, nombre_tanque, planta_id) VALUES(1, '01', 'Tanque 1', 1);
+//INSERT INTO public.tanques (id, codigo_tanque, nombre_tanque, planta_id) VALUES(2, '02', 'Tanque 2', 1);
+//INSERT INTO public.tanques (id, codigo_tanque, nombre_tanque, planta_id) VALUES(3, '03', 'Tanque 3', 1);
+//INSERT INTO public.tanques (id, codigo_tanque, nombre_tanque, planta_id) VALUES(4, '04', 'Tanque 4', 1);
+
+        Tanque::create(['codigo_tanque' => '00', 'nombre_tanque' => 'Tanque 0', 'planta_id' => 1]);
+        Tanque::create(['codigo_tanque' => '01', 'nombre_tanque' => 'Tanque 1', 'planta_id' => 1]);
+        Tanque::create(['codigo_tanque' => '02', 'nombre_tanque' => 'Tanque 2', 'planta_id' => 1]);
+        Tanque::create(['codigo_tanque' => '03', 'nombre_tanque' => 'Tanque 3', 'planta_id' => 1]);
+        Tanque::create(['codigo_tanque' => '04', 'nombre_tanque' => 'Tanque 4', 'planta_id' => 1]);
+
+
+
+
+
 
 
         $this->fixSequences();

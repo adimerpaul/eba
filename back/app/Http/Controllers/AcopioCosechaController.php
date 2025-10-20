@@ -17,4 +17,33 @@ class AcopioCosechaController extends Controller{
         $acopiosCosechas = $acopiosCosechas->get();
         return $acopiosCosechas;
     }
+    public function show($id)
+    {
+        return AcopioCosecha::with([
+            'apiario:id,productor_id,municipio_id',
+            'apiario.productor:id,nombre,apellidos',
+            'apiario.municipio:id,nombre_municipio',
+        ])->findOrFail($id);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validated();
+        $acopio = AcopioCosecha::create($data);
+        return response()->json($acopio->fresh(['apiario.productor','apiario.municipio']), 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $acopio = AcopioCosecha::findOrFail($id);
+        $acopio->update($request->validated());
+        return $acopio->fresh(['apiario.productor','apiario.municipio']);
+    }
+
+    public function destroy($id)
+    {
+        $acopio = AcopioCosecha::findOrFail($id);
+        $acopio->delete();
+        return response()->json(['deleted' => true]);
+    }
 }

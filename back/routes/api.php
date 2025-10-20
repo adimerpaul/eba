@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AcopioCosechaController;
 use App\Http\Controllers\ApicultorController;
 use App\Http\Controllers\CertificacionController;
 use App\Http\Controllers\ClientController;
@@ -94,10 +95,10 @@ Route::middleware('auth:sanctum')->group(callback: function () {
 
 // Apiarios
     Route::get('/apiarios', [\App\Http\Controllers\ApiarioController::class, 'index']);
-    Route::post('/apiarios', [\App\Http\Controllers\ApiarioController::class, 'store']);
-    Route::get('/apiarios/{apiario}', [\App\Http\Controllers\ApiarioController::class, 'show']);
-    Route::put('/apiarios/{apiario}', [\App\Http\Controllers\ApiarioController::class, 'update']);
-    Route::delete('/apiarios/{apiario}', [\App\Http\Controllers\ApiarioController::class, 'destroy']);
+    Route::post('/acopio-cosechas', [AcopioCosechaController::class, 'store']);
+    Route::get('/acopio-cosechas/{id}', [AcopioCosechaController::class, 'show']);
+    Route::put('/acopio-cosechas/{id}', [AcopioCosechaController::class, 'update']);
+    Route::delete('/acopio-cosechas/{id}', [AcopioCosechaController::class, 'destroy']);
 
 // Colmenas
     Route::get('/colmenas', [\App\Http\Controllers\ColmenaController::class, 'index']);

@@ -13,17 +13,41 @@ return new class extends Migration
     {
         Schema::create('acopio_cosechas', function (Blueprint $table) {
             $table->id();
+
+            // Datos base
             $table->date('fecha_cosecha');
+
+            // Relaciones
             $table->unsignedBigInteger('apiario_id')->nullable();
             $table->foreign('apiario_id')->references('id')->on('apiarios');
-            $table->decimal('cantidad_kg', 10, 2)->nullable();
+
+            $table->unsignedBigInteger('producto_id')->default(1);
+            $table->foreign('producto_id')->references('id')->on('productos');
+
+            // Métricas de acopio
+            $table->decimal('cantidad_kg', 10, 2)->nullable();          // cantidad recibida
+            $table->decimal('precio_compra', 10, 2)->default(32);        // precio por kg (o unidad)
             $table->decimal('humedad', 5, 2)->nullable();
             $table->decimal('temperatura_almacenaje', 5, 2)->nullable();
+
+            // Documentos / tracking
             $table->string('num_acta', 100)->default('0');
-            $table->string('condiciones_almacenaje', 100)->nullable();
-            $table->string('estado', 20)->default('PENDIENTE')->nullable();
+
+            // Observaciones y procedencia/envase
+            $table->string('observaciones', 255)->nullable();
+            $table->string('procedencia', 50)->nullable();
+            $table->string('tipo_envase', 100)->nullable();
+
+            // Estado operativo (BUENO | EN_PROCESO | CANCELADO, etc.)
+            $table->string('estado', 20)->default('BUENO');
+
+            // Control
             $table->softDeletes();
             $table->timestamps();
+
+            // Índices útiles
+            $table->index(['fecha_cosecha']);
+            $table->index(['estado']);
         });
     }
 
