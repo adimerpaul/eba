@@ -13,8 +13,8 @@
         <tr class="bg-primary text-white">
           <th style="width: 120px;">Acciones</th>
           <th>Fecha</th>
+          <th>Nombre</th>
           <th>Usuario</th>
-          <th>Vista previa</th>
         </tr>
         </thead>
         <tbody>
@@ -34,14 +34,22 @@
                   </q-item-section>
                   <q-item-section>Eliminar</q-item-section>
                 </q-item>
+<!--                imprimir-->
+                <q-item clickable v-ripple @click="imprimir(row)" v-close-popup>
+                  <q-item-section avatar>
+                    <q-icon name="print"/>
+                  </q-item-section>
+                  <q-item-section>Imprimir</q-item-section>
+                </q-item>
               </q-list>
             </q-btn-dropdown>
           </td>
           <td>{{ row.fecha || '—' }}</td>
-          <td>{{ row.user?.name || '—' }}</td>
           <td>
-            <div class="ellipsis-2-lines" v-html="preview(row.html)"></div>
+<!--            <div class="ellipsis-2-lines" v-html="preview(row.html)"></div>-->
+            {{ row.nombre || 'Documento sin nombre' }}
           </td>
+          <td>{{ row.user?.name || '—' }}</td>
         </tr>
         </tbody>
       </q-markup-table>
@@ -59,9 +67,23 @@
 
         <q-card-section class="">
           <div class="row q-col-gutter-md">
-            <!--            <div class="col-12 col-md-3">-->
-            <!--              <q-input v-model="form.fecha" type="date" label="Fecha" dense outlined />-->
-            <!--            </div>-->
+            <div class="col-12 col-md-6">
+              <q-input v-model="form.nombre" label="Nombre" dense outlined/>
+            </div>
+            <div class="col-12 col-md-6">
+              <q-select
+                v-model="plantillaSeleccionada"
+                :options="planillas"
+                option-value="id"
+                option-label="nombre"
+                emit-value
+                map-options
+                dense outlined
+                label="Plantilla"
+                clearable
+                @update:model-value="aplicarPlantilla"
+              />
+            </div>
             <div class="col-12">
               <div class="text-caption text-grey-7 q-mb-xs">Contenido (HTML)</div>
               <q-editor
@@ -94,6 +116,11 @@
 </template>
 
 <script>
+
+// import {actaRecepcionConformidad} from "src/planillas/documentoPlanilla.js";
+
+import {actaRecepcionConformidadPDF} from "src/planillas/documentoPlanilla.js";
+
 export default {
   name: 'Documentos',
   props: {
@@ -112,28 +139,83 @@ export default {
         user_id: null,
         fecha: null,
         html: ''
-      }
+      },
+      plantillaSeleccionada : null,
+      planillas: [
+        // ACTA DE RECEPCIÓN Y CONFORMIDAD DE MATERIA PRIMA
+        // ACTA DE CONTROL CALIDAD Y CONFORMIDAD DE MATERIA PRIMA
+        // ACTA DE ENTREGA DE MATERIA PRIMA MIEL
+        // ACTA DE ENTREGA DE MIEL EBA MONTEAGUDO
+        // RECEPCION DE MATERIA PRIMA
+        // NOTA DE INGRESO DE MATERIA PRIMA
+        // RECIBO COMPRA DE MIEL
+        {
+          id: 1,
+          nombre: 'Acta de Recepción y Conformidad de Materia Prima',
+          html: '<h1>Acta de Recepción y Conformidad de Materia Prima</h1><p>Contenido del acta...</p>'
+        },
+        {
+          id: 2,
+          nombre: 'Acta de Control Calidad y Conformidad de Materia Prima',
+          html: '<h1>Acta de Control Calidad y Conformidad de Materia Prima</h1><p>Contenido del acta...</p>'
+        },
+        {
+          id: 3,
+          nombre: 'Acta de Entrega de Materia Prima Miel',
+          html: '<h1>Acta de Entrega de Materia Prima Miel</h1><p>Contenido del acta...</p>'
+        },
+        {
+          id: 4,
+          nombre: 'Acta de Entrega de Miel EBA Monteagudo',
+          html: '<h1>Acta de Entrega de Miel EBA Monteagudo</h1><p>Contenido del acta...</p>'
+        },
+        {
+          id: 5,
+          nombre: 'Recepción de Materia Prima',
+          html: '<h1>Recepción de Materia Prima</h1><p>Contenido del documento...</p>'
+        },
+        {
+          id: 6,
+          nombre: 'Nota de Ingreso de Materia Prima',
+          html: '<h1>Nota de Ingreso de Materia Prima</h1><p>Contenido del documento...</p>'
+        },
+        {
+          id: 7,
+          nombre: 'Recibo Compra de Miel',
+          html: '<h1>Recibo Compra de Miel</h1><p>Contenido del recibo...</p>'
+        }
+      ]
     }
   },
   mounted() {
     this.fetchRows()
     // si no te pasan currentUserId por props y quieres traerlo del backend:
-    if (!this.currentUserId) this.fetchMe()
+    // if (!this.currentUserId) this.fetchMe()
   },
   methods: {
-    async fetchMe() {
-      try {
-        const {data} = await this.$axios.get('/me')
-        this.form.user_id = data?.id || null
-      } catch (e) {
-        // silencioso: si falla, igual te dejará guardar si seteas user_id manualmente
+    aplicarPlantilla(plantillaId) {
+      const plantilla = this.planillas.find(p => p.id === plantillaId)
+      if (plantilla) {
+        this.form.html = ''
+        if (plantilla.nombre === 'Acta de Recepción y Conformidad de Materia Prima' ){
+          this.form.html = actaRecepcionConformidadPDF(this.cosecha);
+        }
+        this.form.nombre = plantilla.nombre
       }
     },
-    preview(html) {
-      if (!html) return ''
-      const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
-      return text.length > 140 ? text.slice(0, 140) + '…' : text
-    },
+    // async fetchMe() {
+    //   try {
+    //     const {data} = await this.$axios.get('/me')
+    //     this.form.user_id = data?.id || null
+    //   } catch (e) {
+    //     // silencioso: si falla, igual te dejará guardar si seteas user_id manualmente
+    //   }
+    // },
+    // preview(html) {
+    //   if (!html) return ''
+    //   const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+    //   return text.length > 140 ? text.slice(0, 140) + '…' : text
+    // },
     resetForm() {
       this.form = {
         acopio_cosecha_id: this.cosecha?.id || null,
@@ -168,7 +250,8 @@ export default {
         acopio_cosecha_id: this.cosecha?.id || row.acopio_cosecha_id,
         user_id: row.user_id || this.currentUserId || this.form.user_id,
         fecha: row.fecha || null,
-        html: row.html || ''
+        html: row.html || '',
+        nombre: row.nombre || ''
       }
       this.dlg.open = true
     },
@@ -208,6 +291,10 @@ export default {
           this.$q.notify({type: 'negative', message: 'No se pudo eliminar'})
         }
       })
+    },
+    imprimir(row) {
+      const url = this.$axios.defaults.baseURL + `/documentos/${row.id}/imprimir`;
+      window.open(url, '_blank');
     }
   }
 }
