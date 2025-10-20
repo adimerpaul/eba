@@ -28,7 +28,9 @@ class DocumentoController extends Controller
     {
         // Minimal: sin validaciones (puedes agregar cuando quieras)
 //        $request fecha now
+        $user = $request->user();
         $request->merge(['fecha' => now()]);
+        $request->merge(['user_id' => $user->id]);
         $doc = Documento::create($request->all());
         return response()->json($doc->fresh(['user:id,name,email']), 201);
     }
@@ -45,5 +47,15 @@ class DocumentoController extends Controller
         $doc = Documento::findOrFail($id);
         $doc->delete();
         return response()->json(['deleted' => true]);
+    }
+    function printDocument(Request $request, $id)
+    {
+        $document = Documento::findOrFail($id);
+        $htmlContent = $document->html;
+
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($htmlContent);
+
+        return $pdf->stream("documento_{$id}.pdf");
     }
 }

@@ -125,6 +125,8 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::get('/documentos/{id}', [DocumentoController::class, 'show']);
     Route::put('/documentos/{id}', [DocumentoController::class, 'update']);
     Route::delete('/documentos/{id}', [DocumentoController::class, 'destroy']);
+
 });
+Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 // PDF por productor
 //Route::get('/productores/{productor}/certificaciones/print', [CertificacionController::class, 'printByProductor']);

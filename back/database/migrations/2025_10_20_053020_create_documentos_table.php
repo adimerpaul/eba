@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('acopio_cosecha_id');
             $table->unsignedBigInteger('user_id');
-            $table->date('fecha')->nullable();
+            $table->string('nombre')->nullable();
+            $table->dateTime('fecha')->nullable();
             $table->longText('html')->nullable();
 
             $table->timestamps();

@@ -11,10 +11,9 @@ class Documento extends Model implements Auditable
 
     use SoftDeletes, AuditableTrait;
 
-    protected $table = 'documentos';
-
     protected $fillable = [
         'acopio_cosecha_id',
+        'nombre',
         'user_id',
         'html',
         'fecha',
