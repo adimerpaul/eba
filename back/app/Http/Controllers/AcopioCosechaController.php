@@ -28,8 +28,7 @@ class AcopioCosechaController extends Controller{
 
     public function store(Request $request)
     {
-        $data = $request->validated();
-        $acopio = AcopioCosecha::create($data);
+        $acopio = AcopioCosecha::create($request->all());
         return response()->json($acopio->fresh(['apiario.productor','apiario.municipio']), 201);
     }
 

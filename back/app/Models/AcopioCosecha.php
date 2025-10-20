@@ -65,4 +65,10 @@ class AcopioCosecha extends Model implements \OwenIt\Auditing\Contracts\Auditabl
         'created_at',
         'updated_at',
     ];
+    function apiario(){
+        return $this->belongsTo(Apiario::class,'apiario_id');
+    }
+    function producto(){
+        return $this->belongsTo(Producto::class,'producto_id');
+    }
 }

@@ -100,6 +100,9 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::put('/acopio-cosechas/{id}', [AcopioCosechaController::class, 'update']);
     Route::delete('/acopio-cosechas/{id}', [AcopioCosechaController::class, 'destroy']);
 
+//    Productos
+    Route::get('/productos', [\App\Http\Controllers\ProductoController::class, 'index']);
+
 // Colmenas
     Route::get('/colmenas', [\App\Http\Controllers\ColmenaController::class, 'index']);
     Route::post('/colmenas', [\App\Http\Controllers\ColmenaController::class, 'store']);
