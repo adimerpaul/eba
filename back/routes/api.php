@@ -7,6 +7,7 @@ use App\Http\Controllers\CertificacionController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CogController;
 use App\Http\Controllers\DepartamentoController;
+use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\GeoController;
 use App\Http\Controllers\MunicipioController;
 use App\Http\Controllers\OrdenController;
@@ -119,6 +120,11 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::put('/analisis-calidad/{id}', [AnalisisCalidadController::class, 'update']);
     Route::delete('/analisis-calidad/{id}', [AnalisisCalidadController::class, 'destroy']);
 
+    Route::get('/documentos', [DocumentoController::class, 'index']);
+    Route::post('/documentos', [DocumentoController::class, 'store']);
+    Route::get('/documentos/{id}', [DocumentoController::class, 'show']);
+    Route::put('/documentos/{id}', [DocumentoController::class, 'update']);
+    Route::delete('/documentos/{id}', [DocumentoController::class, 'destroy']);
 });
 // PDF por productor
 //Route::get('/productores/{productor}/certificaciones/print', [CertificacionController::class, 'printByProductor']);

@@ -28,7 +28,7 @@
         </q-tab-panel>
 
         <q-tab-panel name="formularios" class="q-pa-none">
-<!--          <ProductorApiarios :productor="productor" @updated="fetchProductor" />-->
+          <Documentos v-if="!loading && cosecha" :cosecha="cosecha" />
         </q-tab-panel>
 
         <q-tab-panel name="mapa" class="q-pa-none">
@@ -46,9 +46,11 @@ import ProductorForm from "pages/productores/ProductorForm.vue";
 import ProductorApiarios from "pages/productores/tabs/ProductorApiarios.vue";
 import ProductorCertificaciones from "pages/productores/tabs/ProductorCertificaciones.vue";
 import AnalisisCalidad from "pages/acopio/tabs/AnalisisCalidad.vue";
+import Documentos from "pages/acopio/tabs/Documentos.vue";
 export default {
   name: 'AcopioCrear',
   components: {
+    Documentos,
     AnalisisCalidad,
     ProductorCertificaciones, ProductorApiarios, ProductorForm, ProductorMapa, AcopioFormulario},
   data() {
