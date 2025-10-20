@@ -81,7 +81,7 @@
               <td>
                 <q-btn-dropdown dense label="Opciones" color="primary" no-caps size="10px">
                   <q-list>
-                    <q-item clickable v-ripple @click="() => {}">
+                    <q-item clickable v-ripple :to="`/acopio/cosechas/${cosecha.id}`">
                       <q-item-section avatar>
                         <q-icon name="visibility" />
                       </q-item-section>

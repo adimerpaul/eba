@@ -1,0 +1,82 @@
+<template>
+  <q-page class="q-pa-md">
+    <div class="row items-center q-gutter-sm q-mb-md">
+      <q-btn flat round icon="arrow_back" @click="$router.back()" />
+      <div class="text-h6">Cosecha</div>
+      <q-space />
+      <q-btn flat round icon="refresh" :loading="loading" @click="acopioCosechaGet" />
+    </div>
+
+    <q-card flat bordered>
+      <q-tabs v-model="tab" class="text-primary" align="left" dense>
+        <q-tab name="general" icon="badge" label="1) Información general" no-caps />
+        <q-tab name="certs" icon="verified" label="2) Certificaciones" no-caps />
+        <q-tab name="apiarios" icon="hive" label="3) Apiarios" no-caps />
+        <q-tab name="mapa" icon="map" label="4) Mapa" no-caps />
+      </q-tabs>
+      <q-separator />
+
+      <q-tab-panels v-model="tab" animated>
+        <q-tab-panel name="general" class="q-pa-none">
+          <q-card-section v-if="!loading && cosecha">
+<!--            <ProductorForm-->
+<!--              :productor="productor"-->
+<!--              banner-msg="Actualiza los datos y guarda los cambios"-->
+<!--              @saved="onSaved"-->
+<!--              @cancel="$router.back()"-->
+<!--            />-->
+            <AcopioFormulario :estado="'editar'" :cosecha="cosecha" />
+          </q-card-section>
+        </q-tab-panel>
+
+        <q-tab-panel name="certs" class="q-pa-none">
+<!--          <ProductorCertificaciones :productor="productor" @updated="fetchProductor" />-->
+        </q-tab-panel>
+
+        <q-tab-panel name="apiarios" class="q-pa-none">
+<!--          <ProductorApiarios :productor="productor" @updated="fetchProductor" />-->
+        </q-tab-panel>
+
+        <q-tab-panel name="mapa" class="q-pa-none">
+<!--          <ProductorMapa :productor="productor" @updated="fetchProductor" />-->
+        </q-tab-panel>
+      </q-tab-panels>
+    </q-card>
+<!--    <AcopioFormulario :estado="'crear'" v-if="cosecha" :cosecha="cosecha"/>-->
+  </q-page>
+</template>
+<script>
+import AcopioFormulario from "pages/acopio/AcopioFormulario.vue";
+import ProductorMapa from "pages/productores/tabs/ProductorMapa.vue";
+import ProductorForm from "pages/productores/ProductorForm.vue";
+import ProductorApiarios from "pages/productores/tabs/ProductorApiarios.vue";
+import ProductorCertificaciones from "pages/productores/tabs/ProductorCertificaciones.vue";
+export default {
+  name: 'AcopioCrear',
+  components: {ProductorCertificaciones, ProductorApiarios, ProductorForm, ProductorMapa, AcopioFormulario},
+  data() {
+    return {
+      cosecha: null,
+      loading: false,
+      tab: 'general'
+    }
+  },
+  mounted() {
+    this.acopioCosechaGet();
+  },
+  methods: {
+    async acopioCosechaGet() {
+      const cosechaId = this.$route.params.id;
+      try {
+        this.loading = true;
+        const response = await this.$axios.get(`/acopio-cosechas/${cosechaId}`);
+        this.cosecha = response.data;
+      } catch (error) {
+        console.error('Error fetching cosecha data:', error);
+      } finally {
+        this.loading = false;
+      }
+    }
+  }
+}
+</script>

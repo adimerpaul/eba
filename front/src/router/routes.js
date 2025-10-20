@@ -13,6 +13,7 @@ const routes = [
       { path: '/productores/editar/:id', component: () => import('pages/productores/ProductorShow.vue'), meta: { requiresAuth: true, perm: 'Productores' } },
       { path: '/acopios', component: () => import('pages/acopio/Acopio.vue'), meta: { requiresAuth: true, perm: 'Acopio' } },
       { path: '/recoleccion', component: () => import('pages/acopio/AcopioCrear.vue'), meta: { requiresAuth: true, perm: 'Acopio' } },
+      { path: '/acopio/cosechas/:id', component: () => import('pages/acopio/CosechaShow.vue'), meta: { requiresAuth: true, perm: 'Acopio' } }
     ]
   },
   { path: '/login', component: () => import('layouts/Login.vue') },

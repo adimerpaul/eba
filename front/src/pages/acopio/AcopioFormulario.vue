@@ -1,7 +1,9 @@
 <template>
   <q-card flat bordered>
     <q-card-section class="row items-center justify-between">
-      <div class="text-h6">Registrar Acopio</div>
+      <div class="text-h6">
+        {{ estado === 'crear' ? 'Nuevo Acopio' : 'Editar Acopio' }}
+      </div>
       <q-badge color="primary" outline v-if="estado === 'crear'">Nuevo</q-badge>
     </q-card-section>
 
@@ -23,7 +25,7 @@
           </div>
 
           <!-- PRODUCTOR (búsqueda) -->
-          <div class="col-12 col-md-6">
+          <div class="col-12 col-md-9">
             <q-select
               v-model="form.productor_id"
               :options="productorOptions"
@@ -68,6 +70,9 @@
               clearable
               :rules="[v => !!v || 'Seleccione un apiario']"
             />
+<!--            <pre>-->
+<!--              {{form.apiario_id}}-->
+<!--            </pre>-->
             <div class="text-caption text-grey-7 q-mt-xs" v-if="apiarioDetalle">
               <q-icon name="place" size="16px" class="q-mr-xs" />
               {{ apiarioDetalle?.municipio || '—' }}
@@ -99,7 +104,7 @@
               map-options
               :rules="[v => !!v || 'Requerido']"
             />
-            <pre>{{form.producto_id}}</pre>
+<!--            <pre>{{form.producto_id}}</pre>-->
           </div>
 
           <!-- Precio compra -->
@@ -187,9 +192,12 @@
           </div>
         </div>
 
-        <div class="row q-gutter-sm q-mt-md">
+        <div class="row q-gutter-sm q-mt-md" v-if="estado === 'crear'">
           <q-btn type="submit" color="primary" icon="save" :loading="loading" no-caps label="Guardar" />
           <q-btn type="reset" color="grey-7" flat icon="history" no-caps label="Limpiar" @click="onReset" />
+        </div>
+        <div class="row q-gutter-sm q-mt-md" v-else>
+          <q-btn type="submit" color="primary" icon="save" :loading="loading" no-caps label="Actualizar" />
         </div>
       </q-form>
     </q-card-section>
@@ -206,6 +214,10 @@ export default {
       type: String,
       required: true,
       validator: v => ['crear', 'editar'].indexOf(v) !== -1
+    },
+    cosecha: {
+      type: Object,
+      default: null
     }
   },
   data () {
@@ -242,6 +254,48 @@ export default {
   },
   mounted() {
     this.productoGet();
+    if (this.estado === 'editar' && this.cosecha) {
+      this.form = {
+        fecha_cosecha: this.cosecha.fecha_cosecha || moment().format('YYYY-MM-DD'),
+        // productor_id: this.cosecha.apiario?.productor_id || null,
+        // apiario_id: this.cosecha.apiario_id || null,
+        producto_id: this.cosecha.producto_id || null,
+        cantidad_kg: this.cosecha.cantidad_kg || null,
+        precio_compra: this.cosecha.precio_compra || 32,
+        humedad: this.cosecha.humedad || null,
+        temperatura_almacenaje: this.cosecha.temperatura_almacenaje || null,
+        procedencia: this.cosecha.procedencia || '',
+        tipo_envase: this.cosecha.tipo_envase || '',
+        observaciones: this.cosecha.observaciones || '',
+        estado: this.cosecha.estado || 'BUENO'
+      }
+      // get Productor ID from cosecha's apiario
+      this.form.productor_id = this.cosecha.apiario?.productor_id || null
+      // filterProductores
+      this.filterProductores('', val => {
+        if (this.form.productor_id && !this.productorOptions.find(o => o.value === this.form.productor_id)) {
+          this.$axios.get(`/productores/${this.form.productor_id}`).then(({ data }) => {
+            const p = data
+            const item = {
+              value: p.id,
+              label: `${p.nombre ?? ''} ${p.apellidos ?? ''} — ${p.municipio?.nombre_municipio ?? ''}`.trim(),
+              raw: p
+            }
+            this.productorOptions.push(item)
+            this.form.apiario_id = this.cosecha.apiario_id || null
+            this.loadApiariosByProductor(this.form.productor_id)
+          })
+        }
+      })
+      // load apiarios for that productor
+      // this.form.apiario_id = this.cosecha.apiario_id || null
+      // // http://localhost:8000/api/apiarios?productor_id=11608&paginate=false
+      //
+      //
+      //   if (this.form.productor_id) {
+      //   this.loadApiariosByProductor(this.form.productor_id)
+      // }
+    }
   },
   computed: {
     productorDetalle () {
@@ -356,30 +410,17 @@ export default {
     // === SUBMIT ===
     async onSubmit () {
       try {
-        const ok = await this.$refs.formRef.validate()
-        if (!ok) return
-
         this.loading = true
-
-        // const payload = {
-        //   fecha_cosecha: this.form.fecha_cosecha,
-        //   apiario_id: this.form.apiario_id,
-        //   // si manejas producto_id dinámico, envíalo; si no, el backend tiene default=1
-        //   // producto_id: this.form.producto_id || 1,
-        //   cantidad_kg: this.form.cantidad_kg,
-        //   precio_compra: this.form.precio_compra,
-        //   humedad: this.form.humedad,
-        //   temperatura_almacenaje: this.form.temperatura_almacenaje,
-        //   observaciones: this.form.observaciones,
-        //   procedencia: this.form.procedencia,
-        //   tipo_envase: this.form.tipo_envase,
-        //   estado: this.form.estado
-        // }
-
-        const { data } = await this.$axios.post('/acopio-cosechas', this.form)
-        this.$q.notify({ type: 'positive', message: 'Acopio guardado' })
-        this.$emit('saved', data)
-        this.onReset()
+        if (this.estado === 'crear') {
+          const { data } = await this.$axios.post('/acopio-cosechas', this.form)
+          this.$q.notify({ type: 'positive', message: 'Acopio guardado' })
+          this.$emit('saved', data)
+          this.onReset()
+        }else {
+          const { data } = await this.$axios.put(`/acopio-cosechas/${this.cosecha.id}`, this.form)
+          this.$q.notify({ type: 'positive', message: 'Acopio actualizado' })
+          this.$emit('saved', data)
+        }
       } catch (e) {
         this.$q.notify({ type: 'negative', message: 'Error al guardar' })
       } finally {
