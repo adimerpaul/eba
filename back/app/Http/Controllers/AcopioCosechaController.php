@@ -19,11 +19,7 @@ class AcopioCosechaController extends Controller{
     }
     public function show($id)
     {
-        return AcopioCosecha::with([
-            'apiario:id,productor_id,municipio_id',
-            'apiario.productor:id,nombre,apellidos',
-            'apiario.municipio:id,nombre_municipio',
-        ])->findOrFail($id);
+        return AcopioCosecha::with(['apiario.productor','apiario.municipio','producto'])->findOrFail($id);
     }
 
     public function store(Request $request)
@@ -35,7 +31,7 @@ class AcopioCosechaController extends Controller{
     public function update(Request $request, $id)
     {
         $acopio = AcopioCosecha::findOrFail($id);
-        $acopio->update($request->validated());
+        $acopio->update($request->all());
         return $acopio->fresh(['apiario.productor','apiario.municipio']);
     }
 
