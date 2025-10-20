@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 
-class AcopioCosecha extends Model implements \OwenIt\Auditing\Contracts\Auditable{
+class AcopioCosecha extends Model implements Auditable{
     use SoftDeletes, AuditableTrait;
 //Schema::create('acopio_cosechas', function (Blueprint $table) {
 //    $table->id();
@@ -70,5 +71,9 @@ class AcopioCosecha extends Model implements \OwenIt\Auditing\Contracts\Auditabl
     }
     function producto(){
         return $this->belongsTo(Producto::class,'producto_id');
+    }
+    public function analisisCalidad()
+    {
+        return $this->hasMany(\App\Models\AnalisisCalidad::class, 'cosecha_id');
     }
 }

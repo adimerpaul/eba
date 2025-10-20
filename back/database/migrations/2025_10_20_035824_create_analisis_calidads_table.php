@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('analisis_calidades', function (Blueprint $table) {
+        Schema::create('analisis_calidad', function (Blueprint $table) {
             $table->id();
 //            CREATE TABLE public.analisis_calidad (
 //                id bigserial NOT NULL PRIMARY KEY,
@@ -65,6 +65,7 @@ return new class extends Migration
             $table->text('observaciones')->nullable();
             $table->boolean('cumplimiento_normativa')->default(true)->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -73,6 +74,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('analisis_calidades');
+        Schema::dropIfExists('analisis_calidad');
     }
 };

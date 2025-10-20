@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AcopioCosechaController;
+use App\Http\Controllers\AnalisisCalidadController;
 use App\Http\Controllers\ApicultorController;
 use App\Http\Controllers\CertificacionController;
 use App\Http\Controllers\ClientController;
@@ -111,6 +112,12 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::delete('/colmenas/{colmena}', [\App\Http\Controllers\ColmenaController::class, 'destroy']);
 
     Route::get('/acopio/cosechas', [\App\Http\Controllers\AcopioCosechaController::class, 'index']);
+
+    Route::get('/analisis-calidad', [AnalisisCalidadController::class, 'index']);
+    Route::post('/analisis-calidad', [AnalisisCalidadController::class, 'store']);
+    Route::get('/analisis-calidad/{id}', [AnalisisCalidadController::class, 'show']);
+    Route::put('/analisis-calidad/{id}', [AnalisisCalidadController::class, 'update']);
+    Route::delete('/analisis-calidad/{id}', [AnalisisCalidadController::class, 'destroy']);
 
 });
 // PDF por productor
