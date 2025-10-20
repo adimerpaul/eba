@@ -10,30 +10,24 @@
     <q-card flat bordered>
       <q-tabs v-model="tab" class="text-primary" align="left" dense>
         <q-tab name="general" icon="badge" label="1) Información general" no-caps />
-        <q-tab name="certs" icon="verified" label="2) Certificaciones" no-caps />
-        <q-tab name="apiarios" icon="hive" label="3) Apiarios" no-caps />
-        <q-tab name="mapa" icon="map" label="4) Mapa" no-caps />
+        <q-tab name="analisis" icon="science" label="2) Análisis de calidad" no-caps />
+        <q-tab name="formularios" icon="description" label="3) Formularios" no-caps />
+
       </q-tabs>
       <q-separator />
 
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="general" class="q-pa-none">
           <q-card-section v-if="!loading && cosecha">
-<!--            <ProductorForm-->
-<!--              :productor="productor"-->
-<!--              banner-msg="Actualiza los datos y guarda los cambios"-->
-<!--              @saved="onSaved"-->
-<!--              @cancel="$router.back()"-->
-<!--            />-->
             <AcopioFormulario :estado="'editar'" :cosecha="cosecha" />
           </q-card-section>
         </q-tab-panel>
 
-        <q-tab-panel name="certs" class="q-pa-none">
-<!--          <ProductorCertificaciones :productor="productor" @updated="fetchProductor" />-->
+        <q-tab-panel name="analisis" class="q-pa-none">
+          <AnalisisCalidad v-if="!loading && cosecha" :cosecha="cosecha" />
         </q-tab-panel>
 
-        <q-tab-panel name="apiarios" class="q-pa-none">
+        <q-tab-panel name="formularios" class="q-pa-none">
 <!--          <ProductorApiarios :productor="productor" @updated="fetchProductor" />-->
         </q-tab-panel>
 
@@ -51,9 +45,12 @@ import ProductorMapa from "pages/productores/tabs/ProductorMapa.vue";
 import ProductorForm from "pages/productores/ProductorForm.vue";
 import ProductorApiarios from "pages/productores/tabs/ProductorApiarios.vue";
 import ProductorCertificaciones from "pages/productores/tabs/ProductorCertificaciones.vue";
+import AnalisisCalidad from "pages/acopio/tabs/AnalisisCalidad.vue";
 export default {
   name: 'AcopioCrear',
-  components: {ProductorCertificaciones, ProductorApiarios, ProductorForm, ProductorMapa, AcopioFormulario},
+  components: {
+    AnalisisCalidad,
+    ProductorCertificaciones, ProductorApiarios, ProductorForm, ProductorMapa, AcopioFormulario},
   data() {
     return {
       cosecha: null,

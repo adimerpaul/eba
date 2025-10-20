@@ -415,7 +415,9 @@ export default {
           const { data } = await this.$axios.post('/acopio-cosechas', this.form)
           this.$q.notify({ type: 'positive', message: 'Acopio guardado' })
           this.$emit('saved', data)
-          this.onReset()
+        // :to="`/acopio/cosechas/${cosecha.id}`
+          this.$router.push(`/acopio/cosechas/${data.id}`)
+          // this.onReset()
         }else {
           const { data } = await this.$axios.put(`/acopio-cosechas/${this.cosecha.id}`, this.form)
           this.$q.notify({ type: 'positive', message: 'Acopio actualizado' })
