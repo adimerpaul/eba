@@ -135,8 +135,8 @@ export default {
       estadoSeleccionado: null,
     }
   },
-  computed: {
-
+  mounted() {
+    this.buscarCosechas();
   },
   methods: {
     buscarCosechas(){

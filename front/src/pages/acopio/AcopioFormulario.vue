@@ -8,7 +8,7 @@
     <q-separator />
 
     <q-card-section>
-      <q-form @submit.prevent="onSubmit" ref="formRef">
+      <q-form ref="formRef" @submit.prevent="onSubmit">
         <div class="row q-col-gutter-md">
 
           <!-- Fecha de cosecha -->
@@ -22,31 +22,55 @@
             />
           </div>
 
-          <!-- Apiario (productor) -->
+          <!-- PRODUCTOR (búsqueda) -->
           <div class="col-12 col-md-6">
             <q-select
-              v-model="form.apiario"
-              :options="apiarioOptions"
-              option-label="label"
+              v-model="form.productor_id"
+              :options="productorOptions"
               option-value="value"
+              option-label="label"
               emit-value
               map-options
               use-input
               input-debounce="400"
-              @filter="filterApiarios"
-              label="Apiario / Productor"
+              @filter="filterProductores"
+              label="Productor"
               dense outlined
-              :loading="loadingApiarios"
+              :loading="loadingProductores"
               clearable
-              :rules="[val => !!val || 'Seleccione un apiario']"
+              :rules="[v => !!v || 'Seleccione un productor']"
             >
-              <template #no-option>
-                <q-item><q-item-section class="text-grey">Sin resultados</q-item-section></q-item>
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">Escriba al menos 2 caracteres…</q-item-section>
+                </q-item>
               </template>
             </q-select>
-            <div class="text-caption text-grey-7 q-mt-xs" v-if="form.apiario_detail">
+            <div class="text-caption text-grey-7 q-mt-xs" v-if="productorDetalle">
+              <q-icon name="badge" size="16px" class="q-mr-xs" />
+              {{ productorDetalle?.label }}
+            </div>
+          </div>
+
+          <!-- APIARIO (dependiente del productor) -->
+          <div class="col-12 col-md-6">
+            <q-select
+              v-model="form.apiario_id"
+              :options="apiarioOptions"
+              option-value="value"
+              option-label="label"
+              emit-value
+              map-options
+              label="Apiario"
+              dense outlined
+              :loading="loadingApiarios"
+              :disable="!form.productor_id"
+              clearable
+              :rules="[v => !!v || 'Seleccione un apiario']"
+            />
+            <div class="text-caption text-grey-7 q-mt-xs" v-if="apiarioDetalle">
               <q-icon name="place" size="16px" class="q-mr-xs" />
-              {{ form.apiario_detail?.municipio?.nombre_municipio || '—' }}
+              {{ apiarioDetalle?.municipio || '—' }}
             </div>
           </div>
 
@@ -59,8 +83,36 @@
               step="0.01"
               label="Cantidad (kg)"
               dense outlined
-              :rules="[v => v > 0 || 'Mayor a 0']"
               suffix="kg"
+              :rules="[v => v > 0 || 'Mayor a 0']"
+            />
+          </div>
+
+<!--          Producto-->
+          <div class="col-6 col-md-3">
+            <q-select
+              v-model="form.producto_id"
+              :options="productos.map(p => ({ label: p.nombre_producto, value: p.id }))"
+              label="Producto"
+              dense outlined
+              emit-value
+              map-options
+              :rules="[v => !!v || 'Requerido']"
+            />
+            <pre>{{form.producto_id}}</pre>
+          </div>
+
+          <!-- Precio compra -->
+          <div class="col-6 col-md-3">
+            <q-input
+              v-model.number="form.precio_compra"
+              type="number"
+              min="0"
+              step="0.01"
+              label="Precio de compra"
+              dense outlined
+              prefix="Bs "
+              :rules="[v => v >= 0 || 'No negativo']"
             />
           </div>
 
@@ -90,22 +142,34 @@
             />
           </div>
 
-          <!-- Número acta -->
-<!--          <div class="col-6 col-md-3">-->
-<!--            <q-input-->
-<!--              v-model="form.num_acta"-->
-<!--              label="Número de Acta"-->
-<!--              dense outlined-->
-<!--            />-->
-<!--          </div>-->
+          <!-- Procedencia -->
+          <div class="col-6 col-md-3">
+            <q-input
+              v-model="form.procedencia"
+              label="Procedencia"
+              dense outlined
+              maxlength="50"
+            />
+          </div>
 
-          <!-- Condiciones -->
+          <!-- Tipo de envase -->
+          <div class="col-6 col-md-3">
+            <q-input
+              v-model="form.tipo_envase"
+              label="Tipo de envase"
+              dense outlined
+              maxlength="100"
+            />
+          </div>
+
+          <!-- Observaciones -->
           <div class="col-12 col-md-6">
             <q-input
-              v-model="form.condiciones_almacenaje"
-              label="Condiciones de Almacenaje"
+              v-model="form.observaciones"
+              label="Observaciones"
               dense outlined
               autogrow
+              maxlength="255"
             />
           </div>
 
@@ -114,9 +178,10 @@
             <q-select
               v-model="form.estado"
               :options="estados"
+              emit-value
+              map-options
               label="Estado"
               dense outlined
-              emit-value map-options
               :rules="[v => !!v || 'Requerido']"
             />
           </div>
@@ -124,7 +189,7 @@
 
         <div class="row q-gutter-sm q-mt-md">
           <q-btn type="submit" color="primary" icon="save" :loading="loading" no-caps label="Guardar" />
-          <q-btn type="reset" color="grey-7" flat icon="history" no-caps label="Limpiar" />
+          <q-btn type="reset" color="grey-7" flat icon="history" no-caps label="Limpiar" @click="onReset" />
         </div>
       </q-form>
     </q-card-section>
@@ -132,61 +197,194 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   name: 'AcopioFormulario',
   props: {
     estado: {
       type: String,
       required: true,
-      validator: val => ['crear', 'editar'].includes(val)
+      validator: v => ['crear', 'editar'].indexOf(v) !== -1
     }
   },
-  data() {
+  data () {
     return {
+      loading: false,
+      productos: [],
+      // selects
+      productorOptions: [],
+      apiarioOptions: [],
+      loadingProductores: false,
+      loadingApiarios: false,
+
+      // form
       form: {
-        fecha_cosecha: '',
-        apiario: null,
-        apiario_detail: null,
+        fecha_cosecha: moment().format('YYYY-MM-DD'),
+        productor_id: null,
+        apiario_id: null,
         cantidad_kg: null,
+        precio_compra: 32,
         humedad: null,
         temperatura_almacenaje: null,
-        num_acta: '',
-        condiciones_almacenaje: '',
-        estado: ''
+        procedencia: '',
+        tipo_envase: '',
+        observaciones: '',
+        estado: 'BUENO'
       },
-      apiarioOptions: [],
-      loadingApiarios: false,
-      estados: ['BUENO', 'REGULAR', 'MALO'],
-      loading: false
-    };
+
+      estados: [
+        { label: 'BUENO', value: 'BUENO' },
+        { label: 'EN PROCESO', value: 'EN PROCESO' },
+        { label: 'CANCELADO', value: 'CANCELADO' }
+      ]
+    }
   },
-  methods: {
-    filterApiarios(val, update) {
-      if (val.length < 2) {
-        this.apiarioOptions = [];
-        return;
-      }
-      this.loadingApiarios = true;
-      // Simulate API call
-      setTimeout(() => {
-        this.apiarioOptions = [
-          { label: 'Apiario 1', value: 1 },
-          { label: 'Apiario 2', value: 2 }
-        ].filter(item => item.label.toLowerCase().includes(val.toLowerCase()));
-        this.loadingApiarios = false;
-      }, 500);
+  mounted() {
+    this.productoGet();
+  },
+  computed: {
+    productorDetalle () {
+      if (!this.form.productor_id) return null
+      return this.productorOptions.find(o => o.value === this.form.productor_id) || null
     },
-    onSubmit() {
-      this.$refs.formRef.validate().then(valid => {
-        if (valid) {
-          this.loading = true;
-          // Simulate form submission
-          setTimeout(() => {
-            this.loading = false;
-            this.$q.notify({ type: 'positive', message: 'Acopio guardado exitosamente' });
-          }, 1000);
+    apiarioDetalle () {
+      if (!this.form.apiario_id) return null
+      return this.apiarioOptions.find(o => o.value === this.form.apiario_id)?.raw || null
+    }
+  },
+
+  watch: {
+    // Al elegir productor, cargar sus apiarios
+    'form.productor_id' (val) {
+      this.form.apiario_id = null
+      this.apiarioOptions = []
+      if (val) this.loadApiariosByProductor(val)
+    }
+  },
+
+  methods: {
+    async productoGet() {
+      this.$axios.get('/productos').then(({ data }) => {
+        this.productos = data?.data || data || []
+      // //   [
+      //   {
+      //     "id": 1,
+      //     "tipo_id": 1,
+      //     "codigo_producto": "0001",
+      //     "nombre_producto": "Miel de Abeja",
+      //     "presentacion": "Kilos",
+      //     "cantidad_kg": "0.00",
+      //     "costo": "0.00",
+      //     "precio": "0.00",
+      //     "fecha_vencimiento": null,
+      //     "nro_lote": null,
+      //     "codigo_barra": null,
+      //     "imagen": null
+      //   },
+      }).catch(() => {
+        this.$q.notify({ type: 'negative', message: 'No se pudieron cargar los productos' })
+      })
+    },
+    onReset () {
+      this.$refs.formRef.resetValidation()
+      this.form = Object.assign({}, this.form, {
+        fecha_cosecha: moment().format('YYYY-MM-DD'),
+        productor_id: null,
+        apiario_id: null,
+        cantidad_kg: null,
+        precio_compra: 32,
+        humedad: null,
+        temperatura_almacenaje: null,
+        procedencia: '',
+        tipo_envase: '',
+        observaciones: '',
+        estado: 'BUENO'
+      })
+    },
+
+    // === PRODUCTORES: filtro remoto ===
+    filterProductores (val, update, abort) {
+      if (!val || val.length < 2) {
+        update(() => { this.productorOptions = [] })
+        return
+      }
+      update(async () => {
+        this.loadingProductores = true
+        try {
+          const { data } = await this.$axios.get('/productores', {
+            params: {
+              search: val,
+              per_page: 20
+            }
+          })
+          const items = (data?.data || data || []).map(p => ({
+            value: p.id,
+            label: `${p.nombre ?? ''} ${p.apellidos ?? ''} — ${p.municipio?.nombre_municipio ?? ''}`.trim(),
+            raw: p
+          }))
+          this.productorOptions = items
+        } catch (e) {
+          this.$q.notify({ type: 'negative', message: 'No se pudo cargar productores' })
+        } finally {
+          this.loadingProductores = false
         }
-      });
+      })
+    },
+
+    // === APIARIOS por productor ===
+    async loadApiariosByProductor (productorId) {
+      this.loadingApiarios = true
+      try {
+        const { data } = await this.$axios.get('/apiarios', {
+          params: { productor_id: productorId, paginate: false }
+        })
+        this.apiarioOptions = (data || []).map(a => ({
+          value: a.id,
+          label: a.nombre_cip
+            ? `${a.nombre_cip} — ${a?.municipio?.nombre_municipio ?? ''}`
+            : `Apiario #${a.id} — ${a?.municipio?.nombre_municipio ?? ''}`,
+          raw: { municipio: a?.municipio?.nombre_municipio || '—' }
+        }))
+      } catch (e) {
+        this.$q.notify({ type: 'negative', message: 'No se pudieron cargar apiarios' })
+      } finally {
+        this.loadingApiarios = false
+      }
+    },
+
+    // === SUBMIT ===
+    async onSubmit () {
+      try {
+        const ok = await this.$refs.formRef.validate()
+        if (!ok) return
+
+        this.loading = true
+
+        // const payload = {
+        //   fecha_cosecha: this.form.fecha_cosecha,
+        //   apiario_id: this.form.apiario_id,
+        //   // si manejas producto_id dinámico, envíalo; si no, el backend tiene default=1
+        //   // producto_id: this.form.producto_id || 1,
+        //   cantidad_kg: this.form.cantidad_kg,
+        //   precio_compra: this.form.precio_compra,
+        //   humedad: this.form.humedad,
+        //   temperatura_almacenaje: this.form.temperatura_almacenaje,
+        //   observaciones: this.form.observaciones,
+        //   procedencia: this.form.procedencia,
+        //   tipo_envase: this.form.tipo_envase,
+        //   estado: this.form.estado
+        // }
+
+        const { data } = await this.$axios.post('/acopio-cosechas', this.form)
+        this.$q.notify({ type: 'positive', message: 'Acopio guardado' })
+        this.$emit('saved', data)
+        this.onReset()
+      } catch (e) {
+        this.$q.notify({ type: 'negative', message: 'Error al guardar' })
+      } finally {
+        this.loading = false
+      }
     }
   }
 }
