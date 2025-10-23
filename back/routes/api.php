@@ -9,6 +9,7 @@ use App\Http\Controllers\CogController;
 use App\Http\Controllers\DepartamentoController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\GeoController;
+use App\Http\Controllers\MobileController;
 use App\Http\Controllers\MunicipioController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\OrdenPagoController;
@@ -125,8 +126,9 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::get('/documentos/{id}', [DocumentoController::class, 'show']);
     Route::put('/documentos/{id}', [DocumentoController::class, 'update']);
     Route::delete('/documentos/{id}', [DocumentoController::class, 'destroy']);
-
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
+
+Route::get('/export', [MobileController::class, 'export']);
 // PDF por productor
 //Route::get('/productores/{productor}/certificaciones/print', [CertificacionController::class, 'printByProductor']);
