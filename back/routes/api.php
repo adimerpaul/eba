@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //})->middleware('auth:sanctum');
 Route::post('/login', [App\Http\Controllers\UserController::class, 'login']);
+Route::get('/cosechas/qr/{code}', [AcopioCosechaController::class, 'showByQr']);
 Route::middleware('auth:sanctum')->group(callback: function () {
     Route::post('/logout', [App\Http\Controllers\UserController::class, 'logout']);
     Route::get('/me', [App\Http\Controllers\UserController::class, 'me']);
@@ -126,6 +127,8 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::get('/documentos/{id}', [DocumentoController::class, 'show']);
     Route::put('/documentos/{id}', [DocumentoController::class, 'update']);
     Route::delete('/documentos/{id}', [DocumentoController::class, 'destroy']);
+
+
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 

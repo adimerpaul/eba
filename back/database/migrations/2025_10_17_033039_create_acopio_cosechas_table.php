@@ -40,6 +40,7 @@ return new class extends Migration
 
             // Estado operativo (BUENO | EN_PROCESO | CANCELADO, etc.)
             $table->string('estado', 20)->default('BUENO');
+            $table->string('qr_code', 255)->nullable();
 
             // Control
             $table->softDeletes();

@@ -12,7 +12,7 @@
         <q-tab name="general" icon="badge" label="1) Información general" no-caps />
         <q-tab name="analisis" icon="science" label="2) Análisis de calidad" no-caps />
         <q-tab name="formularios" icon="description" label="3) Formularios" no-caps />
-
+        <q-tab name="qr" icon="qr_code" label="4) Código QR" no-caps />
       </q-tabs>
       <q-separator />
 
@@ -34,6 +34,9 @@
         <q-tab-panel name="mapa" class="q-pa-none">
 <!--          <ProductorMapa :productor="productor" @updated="fetchProductor" />-->
         </q-tab-panel>
+        <q-tab-panel name="qr" class="q-pa-none">
+          <QrCode v-if="!loading && cosecha" :cosecha="cosecha" />
+        </q-tab-panel>
       </q-tab-panels>
     </q-card>
 <!--    <AcopioFormulario :estado="'crear'" v-if="cosecha" :cosecha="cosecha"/>-->
@@ -47,9 +50,11 @@ import ProductorApiarios from "pages/productores/tabs/ProductorApiarios.vue";
 import ProductorCertificaciones from "pages/productores/tabs/ProductorCertificaciones.vue";
 import AnalisisCalidad from "pages/acopio/tabs/AnalisisCalidad.vue";
 import Documentos from "pages/acopio/tabs/Documentos.vue";
+import QrCode from "pages/acopio/tabs/QrCode.vue";
 export default {
   name: 'AcopioCrear',
   components: {
+    QrCode,
     Documentos,
     AnalisisCalidad,
     ProductorCertificaciones, ProductorApiarios, ProductorForm, ProductorMapa, AcopioFormulario},

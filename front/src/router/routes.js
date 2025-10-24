@@ -16,6 +16,7 @@ const routes = [
       { path: '/acopio/cosechas/:id', component: () => import('pages/acopio/CosechaShow.vue'), meta: { requiresAuth: true, perm: 'Acopio' } }
     ]
   },
+  { path: '/qr/:code', component: () => import('pages/qr/QrFront.vue'), meta: { public: true } },
   { path: '/login', component: () => import('layouts/Login.vue') },
   { path: '/:catchAll(.*)*', component: () => import('pages/ErrorNotFound.vue') }
 ]

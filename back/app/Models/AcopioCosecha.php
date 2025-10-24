@@ -60,6 +60,7 @@ class AcopioCosecha extends Model implements Auditable{
         'procedencia',
         'tipo_envase',
         'estado',
+        'qr_code',
     ];
     protected $hidden = [
         'deleted_at',
