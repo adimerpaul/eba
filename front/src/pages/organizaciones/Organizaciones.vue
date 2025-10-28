@@ -48,6 +48,7 @@
         <tr class="bg-primary text-white">
           <th style="width: 140px;">Opciones</th>
           <th>Organización</th>
+          <th>Archivo</th>
           <th>Asociación</th>
           <th>Presidente</th>
           <th>Departamento</th>
@@ -74,10 +75,23 @@
                   <q-item-section avatar><q-icon name="delete" color="negative" /></q-item-section>
                   <q-item-section>Eliminar</q-item-section>
                 </q-item>
+<!--                subir fecha archio -->
+                <q-item clickable v-close-popup @click="subirArchivo(row)">
+                  <q-item-section avatar><q-icon name="file_upload" /></q-item-section>
+                  <q-item-section>Subir archivo</q-item-section>
+                </q-item>
               </q-list>
             </q-btn-dropdown>
           </td>
           <td class="text-weight-medium">{{ row.nombre_organiza }}</td>
+          <td>
+            <div v-if="row.url">
+              <a :href="openUrl(row)" target="_blank" rel="noopener noreferrer">Ver archivo</a>
+            </div>
+            <div v-else>
+              -
+            </div>
+          </td>
           <td>{{ row.asociacion }}</td>
           <td>{{ row.nombre_presidente || '-' }}</td>
           <td>{{ row.departamento?.nombre_departamento || '-' }}</td>
@@ -180,6 +194,32 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <q-dialog v-model="dialogSubirArchivo" persistent>
+      <q-card style="min-width: 400px; max-width: 90vw">
+        <q-card-section class="row items-center q-gutter-sm">
+          <div class="text-h6">Subir archivo para {{ form.nombre_organiza }}</div>
+          <q-space /><q-btn flat round dense icon="close" v-close-popup />
+        </q-card-section>
+        <q-separator />
+        <q-card-section>
+          <q-form>
+            <q-file
+              filled
+              v-model="file"
+              label="Seleccionar archivo"
+              accept=".pdf,.doc,.docx,.xls,.xlsx"
+              dense
+              outlined
+              style="width: 100%;"
+            />
+            <div class="text-right q-mt-md">
+              <q-btn flat label="Cancelar" color="negative" v-close-popup />
+              <q-btn label="Subir" color="primary" class="q-ml-sm" @click="actualizarArchivo" />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -189,6 +229,8 @@ export default {
   data () {
     return {
       rows: [],
+      dialogSubirArchivo: false,
+      file: null,
       loading: false,
       saving: false,
       dialog: false,
@@ -262,6 +304,38 @@ export default {
     this.fetchRows()
   },
   methods: {
+    openUrl(row) {
+      return this.$axios.defaults.baseURL.replace(/\/+$/,'') + '/../' + row.url.replace(/^\/+/,'');
+    },
+    actualizarArchivo() {
+      if (!this.file) {
+        this.$alert?.error?.('Por favor, seleccione un archivo para subir.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', this.file);
+
+      this.saving = true;
+      // Route::post('/uploadFileUrl/{organizacion}', [OrganizacionController::class, 'uploadFileUrl']);
+      this.$axios.post(`uploadFileUrl/${this.form.id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(() => {
+        this.$alert?.success?.('Archivo subido correctamente.');
+        this.dialogSubirArchivo = false;
+        this.file = null;
+        this.fetchRows();
+      })
+      .catch((e) => {
+        this.$alert?.error?.(e.response?.data?.message || 'No se pudo subir el archivo.');
+      })
+      .finally(() => {
+        this.saving = false;
+      });
+    },
     async loadTree () {
       this.loadingTree = true
       try {
@@ -377,6 +451,13 @@ export default {
       } finally {
         this.saving = false
       }
+    },
+    subirArchivo(row) {
+      this.dialogSubirArchivo = true;
+      this.form = {
+        id: row.id,
+        nombre_organiza: row.nombre_organiza,
+      };
     },
     remove (row) {
       this.$alert?.dialog?.(`¿Eliminar la organización "${row.nombre_organiza}"?`)?.onOk(async () => {
