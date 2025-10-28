@@ -145,4 +145,28 @@ class OrganizacionController extends Controller
         $organizacion->delete();
         return response()->json(['message' => 'Eliminado'], 200);
     }
+//    uploadFileUrl
+    public function uploadFileUrl(Request $request, Organizacion $organizacion)
+    {
+//        files upload
+        $request->validate([
+            'file' => 'required|file|max:4096', // max 2MB
+        ]);
+
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $path = $file->store('organizaciones', 'public');
+
+            // Guardar la URL en el campo correspondiente
+            $organizacion->url = '/storage/' . $path;
+            $organizacion->save();
+
+            return response()->json([
+                'message' => 'Archivo subido correctamente.',
+                'url'     => $organizacion->url,
+            ], 200);
+        }
+
+        return response()->json(['message' => 'No se ha subido ningún archivo.'], 400);
+    }
 }

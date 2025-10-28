@@ -76,6 +76,7 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::get('/organizaciones/{organizacion}', [OrganizacionController::class, 'show']);
     Route::put('/organizaciones/{organizacion}', [OrganizacionController::class, 'update']);
     Route::delete('/organizaciones/{organizacion}', [OrganizacionController::class, 'destroy']);
+    Route::post('/uploadFileUrl/{organizacion}', [OrganizacionController::class, 'uploadFileUrl']);
 
     Route::get('/productores', [ProductorController::class, 'index']);
     Route::post('/productores', [ProductorController::class, 'store']);
