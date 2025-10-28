@@ -27,6 +27,7 @@ class Organizacion extends Model implements Auditable
         'convenio',
         'estado',
         'fecha_registro',
+        'url'
     ];
 
     protected $hidden = ['created_at','updated_at','deleted_at'];

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('programa', 50)->nullable();
             $table->string('nombre_presidente', 50)->nullable();
             $table->string('descripcion', 250)->nullable();
+            $table->string('url', 250)->nullable();
             $table->string('celular', 20)->nullable();
             $table->integer('num_apicultor')->nullable();
             $table->integer('num_colmena')->nullable();
