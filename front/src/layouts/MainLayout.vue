@@ -137,14 +137,14 @@
             <q-item-label class="text-white">Dashboard</q-item-label>
           </q-item-section>
         </q-item>
-        <q-expansion-item dense expand-separator icon="gavel" label="Modulo Apiario" active-class="menu-active" >
+        <q-expansion-item dense expand-separator icon="gavel" label="Modulo Producción Primaria" active-class="menu-active" >
           <q-list>
             <q-item :inset-level="0.3" dense to="/productores/crear" clickable class="menu-item" active-class="menu-active" v-close-popup >
               <q-item-section avatar>
                 <q-icon name="person_add" class="text-white"/>
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-white">Productores Crear</q-item-label>
+                <q-item-label class="text-white">Crear Productor</q-item-label>
               </q-item-section>
             </q-item>
             <q-item :inset-level="0.3" dense to="/productores" clickable class="menu-item" active-class="menu-active" v-close-popup >
@@ -152,7 +152,7 @@
                 <q-icon name="agriculture" class="text-white"/>
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-white">Productores Agricultores</q-item-label>
+                <q-item-label class="text-white">Gestion de Productores</q-item-label>
               </q-item-section>
             </q-item>
             <q-item :inset-level="0.3" dense to="/geocrud" clickable class="menu-item" active-class="menu-active" v-close-popup >
@@ -160,7 +160,7 @@
                 <q-icon name="location_city" class="text-white"/>
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-white">Geografía</q-item-label>
+                <q-item-label class="text-white">Departamento / Provincia </q-item-label>
               </q-item-section>
             </q-item>
             <q-item :inset-level="0.3" dense to="/organizaciones" clickable class="menu-item" active-class="menu-active" v-close-popup >
@@ -168,7 +168,7 @@
                 <q-icon name="apartment" class="text-white"/>
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-white">Organizaciones</q-item-label>
+                <q-item-label class="text-white">Módulo de convenios</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
