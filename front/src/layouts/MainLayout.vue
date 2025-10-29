@@ -201,6 +201,32 @@
             <q-item-label class="text-white">Usuarios</q-item-label>
           </q-item-section>
         </q-item>
+<!--        productos cleintes transporte-->
+        <q-item dense to="/productos" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+          <q-item-section avatar>
+            <q-icon name="inventory" class="text-white"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-white">Productos</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item dense to="/clientes" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+          <q-item-section avatar>
+            <q-icon name="storefront" class="text-white"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-white">Clientes</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item dense to="/transporte" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+          <q-item-section avatar>
+            <q-icon name="local_shipping" class="text-white"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-white">Transporte</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <div class="q-pa-md">
           <div class="text-white-7 text-caption">
             EBA v{{ $version }}
