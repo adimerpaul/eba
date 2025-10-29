@@ -16,7 +16,6 @@
               option-value="id"
               option-label="nombre"
               emit-value map-options
-              use-input fill-input
               input-debounce="300"
               @filter="filterClientes"
               :loading="loadingClientes"
@@ -37,7 +36,6 @@
               option-value="id"
               option-label="nombre"
               emit-value map-options
-              use-input fill-input
               input-debounce="300"
               @filter="filterTransportes"
               :loading="loadingTransportes"
@@ -101,7 +99,6 @@
                   option-label="label"
                   emit-value map-options
                   dense filled
-                  use-input fill-input
                   input-debounce="300"
                   @filter="filterLotes"
                   :loading="loadingLotes"
