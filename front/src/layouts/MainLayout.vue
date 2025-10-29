@@ -226,6 +226,15 @@
             <q-item-label class="text-white">Transporte</q-item-label>
           </q-item-section>
         </q-item>
+<!--        plantas-->
+        <q-item dense to="/plantas" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+          <q-item-section avatar>
+            <q-icon name="factory" class="text-white"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-white">Plantas de Procesamiento</q-item-label>
+          </q-item-section>
+        </q-item>
 
         <div class="q-pa-md">
           <div class="text-white-7 text-caption">

@@ -16,8 +16,9 @@ const routes = [
       { path: '/acopio/cosechas/:id', component: () => import('pages/acopio/CosechaShow.vue'), meta: { requiresAuth: true, perm: 'Acopio' } },
       { path: '/productos', component: () => import('pages/productos/Productos.vue'), meta: { requiresAuth: true, perm: 'Productos' } },
       { path: '/clientes', component: () => import('pages/clientes/Clientes.vue'), meta: { requiresAuth: true, perm: 'Clientes' } },
-      // transportes
       { path: '/transportes', component: () => import('pages/transportes/Transportes.vue'), meta: { requiresAuth: true, perm: 'Transportes' } },
+      // plantas
+      { path: '/plantas', component: () => import('pages/plantas/Plantas.vue'), meta: { requiresAuth: true, perm: 'Plantas' } },
     ]
   },
   { path: '/qr/:code', component: () => import('pages/qr/QrFront.vue'), meta: { public: true } },
