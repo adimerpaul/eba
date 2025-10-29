@@ -15,8 +15,10 @@ use App\Http\Controllers\MunicipioController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\OrdenPagoController;
 use App\Http\Controllers\OrganizacionController;
+use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProductorController;
 use App\Http\Controllers\ProvinciaController;
+use App\Http\Controllers\TipoProductoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -137,6 +139,19 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::delete('lotes/{lote}', [LoteController::class, 'destroy']);
 
     Route::get('/tanques', [\App\Http\Controllers\TanqueController::class, 'index']);
+
+
+    Route::get('productos', [ProductoController::class, 'index']);          // ?q=...&tipo=3
+    Route::get('productos/{producto}', [ProductoController::class, 'show']);
+    Route::post('productos', [ProductoController::class, 'store']);
+    Route::put('productos/{producto}', [ProductoController::class, 'update']);
+    Route::delete('productos/{producto}', [ProductoController::class, 'destroy']);
+
+// Subida de imagen (opcional)
+    Route::post('productos/{producto}/imagen', [ProductoController::class, 'uploadImage']);
+
+// Tipos de producto para el combo
+    Route::get('tipo-productos', [TipoProductoController::class, 'index']);
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 
