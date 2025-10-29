@@ -77,4 +77,7 @@ class AcopioCosecha extends Model implements Auditable{
     {
         return $this->hasMany(\App\Models\AnalisisCalidad::class, 'cosecha_id');
     }
+    function lotes(){
+        return $this->hasMany(\App\Models\Lote::class, 'cosecha_id');
+    }
 }

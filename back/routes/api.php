@@ -9,6 +9,7 @@ use App\Http\Controllers\CogController;
 use App\Http\Controllers\DepartamentoController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\GeoController;
+use App\Http\Controllers\LoteController;
 use App\Http\Controllers\MobileController;
 use App\Http\Controllers\MunicipioController;
 use App\Http\Controllers\OrdenController;
@@ -130,7 +131,12 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::put('/documentos/{id}', [DocumentoController::class, 'update']);
     Route::delete('/documentos/{id}', [DocumentoController::class, 'destroy']);
 
+    Route::get('acopio-cosechas/{cosecha}/lotes', [LoteController::class, 'index']);
+    Route::post('acopio-cosechas/{cosecha}/lotes', [LoteController::class, 'store']);
+    Route::put('lotes/{lote}', [LoteController::class, 'update']);
+    Route::delete('lotes/{lote}', [LoteController::class, 'destroy']);
 
+    Route::get('/tanques', [\App\Http\Controllers\TanqueController::class, 'index']);
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 
