@@ -74,18 +74,6 @@ export default {
     this.acopioCosechaGet();
   },
   methods: {
-    // async acopioCosechaGet() {
-    //   const cosechaId = this.$route.params.id;
-    //   try {
-    //     this.loading = true;
-    //     const response = await this.$axios.get(`/acopio-cosechas/${cosechaId}`);
-    //     this.cosecha = response.data;
-    //   } catch (error) {
-    //     console.error('Error fetching cosecha data:', error);
-    //   } finally {
-    //     this.loading = false;
-    //   }
-    // }
     acopioCosechaGet() {
       this.loading = true;
       const cosechaId = this.$route.params.id;
