@@ -5,6 +5,7 @@ use App\Http\Controllers\AnalisisCalidadController;
 use App\Http\Controllers\ApicultorController;
 use App\Http\Controllers\CertificacionController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CogController;
 use App\Http\Controllers\DepartamentoController;
 use App\Http\Controllers\DocumentoController;
@@ -152,6 +153,13 @@ Route::middleware('auth:sanctum')->group(callback: function () {
 
 // Tipos de producto para el combo
     Route::get('tipo-productos', [TipoProductoController::class, 'index']);
+
+
+    Route::get('clientes', [ClienteController::class, 'index']);          // ?q=...&per_page=...
+    Route::get('clientes/{cliente}', [ClienteController::class, 'show']);
+    Route::post('clientes', [ClienteController::class, 'store']);
+    Route::put('clientes/{cliente}', [ClienteController::class, 'update']);
+    Route::delete('clientes/{cliente}', [ClienteController::class, 'destroy']);
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 
