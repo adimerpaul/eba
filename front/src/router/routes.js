@@ -19,6 +19,7 @@ const routes = [
       { path: '/transportes', component: () => import('pages/transportes/Transportes.vue'), meta: { requiresAuth: true, perm: 'Transportes' } },
       { path: '/plantas', component: () => import('pages/plantas/Plantas.vue'), meta: { requiresAuth: true, perm: 'Plantas' } },
       { path: '/ventas/crear', component: () => import('pages/ventas/VentaCrear.vue'), meta: { requiresAuth: true, perm: 'Ventas' } },
+      { path: '/ventas', component: () => import('pages/ventas/Ventas.vue'), meta: { requiresAuth: true, perm: 'Ventas' } },
     ]
   },
   { path: '/qr/:code', component: () => import('pages/qr/QrFront.vue'), meta: { public: true } },
