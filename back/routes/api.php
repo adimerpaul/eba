@@ -16,6 +16,7 @@ use App\Http\Controllers\MunicipioController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\OrdenPagoController;
 use App\Http\Controllers\OrganizacionController;
+use App\Http\Controllers\PlantaController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProductorController;
 use App\Http\Controllers\ProvinciaController;
@@ -167,6 +168,12 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::post('transportes', [TransporteController::class, 'store']);
     Route::put('transportes/{transporte}', [TransporteController::class, 'update']);
     Route::delete('transportes/{transporte}', [TransporteController::class, 'destroy']);
+
+    Route::get('plantas', [PlantaController::class, 'index']);          // ?q=...&municipio_id=...&per_page=...
+    Route::get('plantas/{planta}', [PlantaController::class, 'show']);
+    Route::post('plantas', [PlantaController::class, 'store']);
+    Route::put('plantas/{planta}', [PlantaController::class, 'update']);
+    Route::delete('plantas/{planta}', [PlantaController::class, 'destroy']);
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 

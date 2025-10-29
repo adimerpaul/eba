@@ -3,11 +3,13 @@
 namespace Database\Seeders;
 
 use App\Models\Apicultor;
+use App\Models\Cliente;
 use App\Models\Planta;
 use App\Models\Producto;
 use App\Models\Productor;
 use App\Models\Tanque;
 use App\Models\TipoProducto;
+use App\Models\Transporte;
 use App\Models\User;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -199,6 +201,12 @@ class DatabaseSeeder extends Seeder
 
 
         $this->fixSequences();
+
+//        INSERT INTO public.transportes (id, empresa, placa, responsable) VALUES(0, 'Sin Empresa', '000', 'Sin nombre');
+//INSERT INTO public.clientes(id, nit, nombre_cliente, direccion, telefono, email, pais_destino) VALUES(0, '0', 'Sin Nombre', 'sin direccion', '0', '''''', '''''');
+        Transporte::create(['empresa' => 'Sin Empresa', 'placa' => '000', 'responsable' => 'Sin nombre']);
+        Cliente::create(['nit' => '0', 'nombre_cliente' => 'Sin Nombre', 'direccion' => 'sin direccion', 'telefono' => '0', 'email' => '', 'pais_destino' => '']);
+
 
 //        $faker = Faker::create('es_ES');
 //
