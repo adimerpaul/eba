@@ -25,6 +25,15 @@ class Lote extends Model implements Auditable
         'updated_at',
         'deleted_at',
     ];
+    function apio_cosecha(){
+        return $this->belongsTo(AcopioCosecha::class,'cosecha_id');
+    }
+    function producto(){
+        return $this->belongsTo(Producto::class,'producto_id');
+    }
+    function tanque(){
+        return $this->belongsTo(Tanque::class, 'tanque_id');
+    }
 }
 //{
 //    //        Schema::create('lotes', function (Blueprint $table) {

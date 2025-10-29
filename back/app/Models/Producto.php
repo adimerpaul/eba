@@ -41,4 +41,7 @@ class Producto extends Model implements Auditable
         'updated_at',
         'deleted_at',
     ];
+    function  tipo(){
+        return $this->belongsTo(TipoProducto::class, 'tipo_id');
+    }
 }

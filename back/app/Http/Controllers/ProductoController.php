@@ -9,4 +9,7 @@ class ProductoController extends Controller{
     function index(){
         return Producto::all();
     }
+    function getByTipo($tipo){
+        return Producto::where('tipo_id', $tipo)->get();
+    }
 }

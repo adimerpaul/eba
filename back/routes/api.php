@@ -107,6 +107,7 @@ Route::middleware('auth:sanctum')->group(callback: function () {
 
 //    Productos
     Route::get('/productos', [\App\Http\Controllers\ProductoController::class, 'index']);
+    Route::get('/productos/tipo/{tipo}', [\App\Http\Controllers\ProductoController::class, 'getByTipo']);
 
 // Colmenas
     Route::get('/colmenas', [\App\Http\Controllers\ColmenaController::class, 'index']);
