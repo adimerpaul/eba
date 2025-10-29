@@ -20,6 +20,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProductorController;
 use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\TipoProductoController;
+use App\Http\Controllers\TransporteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -160,6 +161,12 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::post('clientes', [ClienteController::class, 'store']);
     Route::put('clientes/{cliente}', [ClienteController::class, 'update']);
     Route::delete('clientes/{cliente}', [ClienteController::class, 'destroy']);
+
+    Route::get('transportes', [TransporteController::class, 'index']);          // ?q=...&per_page=...
+    Route::get('transportes/{transporte}', [TransporteController::class, 'show']);
+    Route::post('transportes', [TransporteController::class, 'store']);
+    Route::put('transportes/{transporte}', [TransporteController::class, 'update']);
+    Route::delete('transportes/{transporte}', [TransporteController::class, 'destroy']);
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 
