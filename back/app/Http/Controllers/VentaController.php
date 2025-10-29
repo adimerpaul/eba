@@ -8,12 +8,39 @@ use App\Models\Lote;
 use App\Models\Producto;
 use App\Models\Cliente;
 use App\Models\Transporte;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class VentaController extends Controller
 {
+    public function notaPdf(Venta $venta)
+    {
+        $venta->load([
+            'cliente',
+            'transporte',
+            'detalles' => fn($q) => $q->with(['lote','producto'])->orderBy('id')
+        ]);
+
+        // Datos de cabecera para la vista
+        $empresa = [
+            'nombre' => 'EBA - Empresa Boliviana de Alimentos',
+            'logo'   => public_path('images/eba_logo.png'), // pon tu logo aquí
+            'dir'    => 'Av. Industrial s/n',
+            'tel'    => '+591 2 123456',
+            'ciudad' => 'La Paz - Bolivia',
+        ];
+
+        $pdf = Pdf::loadView('ventas.nota', [
+            'venta'   => $venta,
+            'empresa' => $empresa,
+            'hoy'     => now(),
+        ])->setPaper('a5', 'portrait'); // chico tipo "nota"
+//
+//        // stream en el navegador
+        return $pdf->stream('nota-venta-'.$venta->id.'.pdf');
+    }
     /**
      * Listado simple de ventas con búsqueda por cliente, factura o guía (opcional)
      * GET /ventas?q=texto&per_page=20&page=1
