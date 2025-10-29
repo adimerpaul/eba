@@ -218,7 +218,7 @@
             <q-item-label class="text-white">Clientes</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item dense to="/transporte" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+        <q-item dense to="/transportes" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
           <q-item-section avatar>
             <q-icon name="local_shipping" class="text-white"/>
           </q-item-section>
