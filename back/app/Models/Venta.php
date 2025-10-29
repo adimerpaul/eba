@@ -46,4 +46,8 @@ class Venta extends Model implements Auditable
     {
         return $this->belongsTo(Transporte::class);
     }
+    function detalles()
+    {
+        return $this->hasMany(Kardex::class, 'venta_id');
+    }
 }

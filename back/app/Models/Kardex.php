@@ -32,4 +32,7 @@ class Kardex extends Model implements Auditable{
     {
         return $this->belongsTo(Producto::class);
     }
+    function venta(){
+        return $this->belongsTo(Venta::class);
+    }
 }

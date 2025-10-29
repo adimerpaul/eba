@@ -22,6 +22,7 @@ use App\Http\Controllers\ProductorController;
 use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\TipoProductoController;
 use App\Http\Controllers\TransporteController;
+use App\Http\Controllers\VentaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -174,6 +175,13 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::post('plantas', [PlantaController::class, 'store']);
     Route::put('plantas/{planta}', [PlantaController::class, 'update']);
     Route::delete('plantas/{planta}', [PlantaController::class, 'destroy']);
+
+    Route::get('lotes/disponibles', [VentaController::class, 'lotesDisponibles']);
+
+    Route::get('ventas', [VentaController::class, 'index']);       // opcional: listado
+    Route::get('ventas/{venta}', [VentaController::class, 'show']); // detalle
+    Route::post('ventas', [VentaController::class, 'store']);       // crear
+    Route::delete('ventas/{venta}', [VentaController::class, 'destroy']); // opcional
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 
