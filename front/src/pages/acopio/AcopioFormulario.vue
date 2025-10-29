@@ -319,7 +319,7 @@ export default {
 
   methods: {
     async productoGet() {
-      this.$axios.get('/productos').then(({ data }) => {
+      this.$axios.get('/productos/tipo/1').then(({ data }) => {
         this.productos = data?.data || data || []
       // //   [
       //   {
