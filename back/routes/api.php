@@ -182,7 +182,7 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::get('ventas/{venta}', [VentaController::class, 'show']); // detalle
     Route::post('ventas', [VentaController::class, 'store']);       // crear
     Route::delete('ventas/{venta}', [VentaController::class, 'destroy']); // opcional
-
+    Route::get('/organizaciones/reportActivos/{estado}', [OrganizacionController::class, 'reportActivos']);
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 Route::get('/ventas/{venta}/nota', [VentaController::class, 'notaPdf'])->name('ventas.nota');

@@ -4,10 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Models\Organizacion;
 use App\Models\Municipio;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class OrganizacionController extends Controller
 {
+    function reportActivos($estado,Request $request){
+//        con dom pdf = \App::make('dompdf.wrapper');
+        $user = $request->user() ?? User::find(1);
+//        return $user;
+        $organizaciones = Organizacion::where('estado', $estado)->with([
+            'municipio:id,nombre_municipio,provincia_id,departamento_id',
+            'provincia' => function ($qq) {
+                $qq->select('provincias.id', 'provincias.nombre_provincia', 'provincias.departamento_id');
+            },
+            'departamento' => function ($qq) {
+                $qq->select('departamentos.id', 'departamentos.nombre_departamento');
+            },
+        ])->get();
+        $pdf = \PDF::loadView('pdf.organizaciones_activos', ['organizaciones' => $organizaciones, 'user' => $user, 'estado' => $estado]);
+        return $pdf->stream('organizaciones_activos.pdf');
+    }
     public function index(Request $request)
     {
         $q = Organizacion::with([

@@ -35,9 +35,22 @@
           <q-select v-model="filters.estado" :options="['ACTIVO','INACTIVO']" dense outlined label="Estado" clearable />
         </div>
 
-        <div class="col-12 col-md-3 q-gutter-sm">
+        <div class="col-12 col-md-6 q-gutter-sm">
           <q-btn color="secondary" icon="refresh" label="Actualizar" :loading="loading" @click="fetchRows" no-caps />
           <q-btn color="positive" icon="add_circle" label="Nueva" :loading="saving" @click="openNew" no-caps />
+          <q-btn-dropdown label="Reportes" color="primary" no-caps>
+            <q-list>
+<!--              repote de activos inactivos-->
+              <q-item clickable v-close-popup @click="reporte('ACTIVO')">
+                <q-item-section avatar><q-icon name="description" /></q-item-section>
+                <q-item-section>Reporte Activos</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="reporte('INACTIVO')">
+                <q-item-section avatar><q-icon name="description" /></q-item-section>
+                <q-item-section>Reporte Inactivos</q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
         </div>
       </q-card-section>
     </q-card>
@@ -304,6 +317,20 @@ export default {
     this.fetchRows()
   },
   methods: {
+    reporte(estado) {
+      this.$axios.get('organizaciones/reportActivos/'+estado, {
+        responseType: 'blob'
+      }).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'reporte_organizaciones_activas.pdf');
+        document.body.appendChild(link);
+        link.click();
+      }).catch((e) => {
+        this.$alert?.error?.(e.response?.data?.message || 'No se pudo generar el reporte.');
+      });
+    },
     openUrl(row) {
       return this.$axios.defaults.baseURL.replace(/\/+$/,'') + '/../' + row.url.replace(/^\/+/,'');
     },
