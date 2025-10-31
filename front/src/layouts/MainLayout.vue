@@ -160,7 +160,9 @@
                 <q-icon name="location_city" class="text-white"/>
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-white">Departamento / Provincia </q-item-label>
+                <q-item-label class="text-white">
+                  Ubicación de Apiarios
+                </q-item-label>
               </q-item-section>
             </q-item>
             <q-item :inset-level="0.3" dense to="/organizaciones" clickable class="menu-item" active-class="menu-active" v-close-popup >

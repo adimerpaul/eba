@@ -37,6 +37,7 @@
               <th>Departamento</th>
               <th class="text-right"># Provincias</th>
               <th class="text-right"># Municipios</th>
+              <th class="text-right"># Productores</th>
             </tr>
             </thead>
             <tbody>
@@ -52,12 +53,23 @@
                       <q-item-section avatar><q-icon name="delete" color="negative" /></q-item-section>
                       <q-item-section>Eliminar</q-item-section>
                     </q-item>
+                    <q-item clickable v-close-popup @click="goApiariosMapa(row)">
+                      <q-item-section avatar><q-icon name="map" /></q-item-section>
+                      <q-item-section>Ver apiarios</q-item-section>
+                    </q-item>
                   </q-list>
                 </q-btn-dropdown>
+<!--                <q-btn-->
+<!--                  dense no-caps color="secondary" icon="map"-->
+<!--                  label="Ver apiarios"-->
+<!--                  size="10px"-->
+<!--                  @click="goApiariosMapa(row)"-->
+<!--                />-->
               </td>
               <td>{{ row.nombre_departamento }}</td>
               <td class="text-right">{{ row.provincias_count ?? '-' }}</td>
               <td class="text-right">{{ row.municipios_count ?? '-' }}</td>
+              <td class="text-right">{{ row.productores_count ?? '0' }}</td>
             </tr>
             </tbody>
           </q-markup-table>
@@ -328,6 +340,10 @@ export default {
     this.fetchMunicipios()
   },
   methods: {
+    goApiariosMapa (row) {
+      this.$router.push({ name: 'geo.apiarios', query: { departamento_id: row.id, nombre: row.nombre_departamento } })
+    },
+
     async loadTree () {
       this.loadingTree = true
       try {
@@ -344,21 +360,12 @@ export default {
     async fetchDepartamentos () {
       this.dep.loading = true
       try {
-        const { data } = await this.$axios.get('departamentos', {
+        // CAMBIA a geo/departamentos para traer counts listos
+        const { data } = await this.$axios.get('geo/departamentos', {
           params: { search: this.dep.filters.search || undefined }
         })
-        // completar contadores usando show? aquí hacemos llamados individuales si quieres.
-        // Para rapidez: traemos simples.
         this.dep.rows = data
-        // opcional: traer counts
-        this.dep.rows = await Promise.all(this.dep.rows.map(async (d) => {
-          try {
-            const { data: one } = await this.$axios.get(`departamentos/${d.id}`)
-            return { ...d, provincias_count: one.provincias_count, municipios_count: one.municipios_count }
-          } catch {
-            return d
-          }
-        }))
+        // Ya NO hace falta pedir show por cada uno: vienen provincias_count, municipios_count y productores_count
       } catch (e) {
         this.$alert?.error?.(e.response?.data?.message || 'No se pudo cargar departamentos')
       } finally {

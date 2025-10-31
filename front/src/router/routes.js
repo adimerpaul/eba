@@ -20,6 +20,12 @@ const routes = [
       { path: '/plantas', component: () => import('pages/plantas/Plantas.vue'), meta: { requiresAuth: true, perm: 'Plantas' } },
       { path: '/ventas/crear', component: () => import('pages/ventas/VentaCrear.vue'), meta: { requiresAuth: true, perm: 'Ventas' } },
       { path: '/ventas', component: () => import('pages/ventas/Ventas.vue'), meta: { requiresAuth: true, perm: 'Ventas' } },
+      {
+        path: '/geo/apiarios',
+        name: 'geo.apiarios',
+        component: () => import('pages/geocrud/GeoApiariosMap.vue'),
+        meta: { requiresAuth: true }
+      },
     ]
   },
   { path: '/qr/:code', component: () => import('pages/qr/QrFront.vue'), meta: { public: true } },
