@@ -110,6 +110,15 @@
             @click="applyFilters"
             no-caps
           />
+<!--          btn craear productos-->
+          <q-btn
+            color="primary"
+            icon="person_add"
+            label="Nuevo Productor"
+            :loading="loading"
+            @click="$router.push('/productores/crear')"
+            no-caps
+          />
         </div>
       </q-card-section>
     </q-card>

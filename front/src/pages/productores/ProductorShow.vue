@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <div class="row items-center q-gutter-sm q-mb-md">
-      <q-btn flat round icon="arrow_back" @click="$router.back()" />
+      <q-btn flat round icon="arrow_back" @click="$router.push('/productores')" />
       <div class="text-h6">Editar Productor</div>
       <q-space />
       <q-btn flat round icon="refresh" :loading="loading" @click="fetchProductor" />

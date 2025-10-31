@@ -340,6 +340,9 @@ export default {
         }
 
         const saved = res.data
+        if (!this.form.id) {
+          this.$router.push('/productores/editar/' + saved.id)
+        }
         this.$alert?.success?.(this.form.id ? 'Productor actualizado' : 'Productor creado')
         // this.$emit('saved', saved)
       } catch (e) {
