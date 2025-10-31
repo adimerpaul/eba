@@ -77,6 +77,10 @@ Route::middleware('auth:sanctum')->group(callback: function () {
 
     // Árbol completo
     Route::get('/geo/tree', [GeoController::class, 'tree']);
+    Route::get('geo/tree', [\App\Http\Controllers\GeoController::class, 'tree']);
+    Route::get('geo/departamentos', [\App\Http\Controllers\GeoController::class, 'departamentosIndex']);
+    Route::get('geo/departamentos/{id}/apiarios', [\App\Http\Controllers\GeoController::class, 'apiariosByDepartamento']);
+
 
     Route::get('/organizaciones', [OrganizacionController::class, 'index']);
     Route::post('/organizaciones', [OrganizacionController::class, 'store']);
