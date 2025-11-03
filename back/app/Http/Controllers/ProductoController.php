@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Producto;
 use Illuminate\Http\Request;
-
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 class ProductoController extends Controller{
     public function index(Request $request)
     {
@@ -29,6 +31,49 @@ class ProductoController extends Controller{
         // if ($perPage > 0) return $q->paginate($perPage);
 
         return $q->get();
+    }
+
+    public function productoExcel(Request $request){
+        if($request->tipo_id==0){
+            $result = Producto::where('codigo', 'like', "%{$request->search}%")->orWhere('nombre', 'like', "%{$request->search}%")->get();
+        }
+        else{
+            $result = Producto::where('tipo_id', $request->tipo_id)
+            ->where('codigo', 'like', "%{$request->search}%")->orWhere('nombre', 'like', "%{$request->search}%")->get();
+        }
+       /// return $result;
+
+          $template = storage_path('app/excel/productos.xlsx');
+                $output   = public_path('reportes/reporte_producto.xlsx');
+
+                // Cargar la plantilla
+                $spreadsheet = IOFactory::load($template);
+                $sheet = $spreadsheet->getActiveSheet();
+
+                // Escribir datos (ejemplo a partir de fila 2)
+                $fila = 7;
+                foreach ($todos as $u) {
+                    $sheet->setCellValue("B{$fila}", $u->id);
+                    $sheet->setCellValue("C{$fila}", $u->runsa);
+                    $sheet->setCellValue("D{$fila}", $u->sub_codigo);
+                    $sheet->setCellValue("E{$fila}", $u->municipio['nombre_municipio']);
+                    $sheet->setCellValue("F{$fila}", $u->nombre_completo);
+                    $sheet->setCellValue("G{$fila}", $u->numcarnet);
+                    $sheet->setCellValue("H{$fila}", $u->num_celular);
+                    $sheet->setCellValue("I{$fila}", $u->comunidad??'');
+                    $sheet->setCellValue("J{$fila}", $u->estado);
+                    $sheet->setCellValue("K{$fila}", $u->fecha_registro);
+                    $fila++;
+                }
+
+                // Guardar en public/
+                $writer = new Xlsx($spreadsheet);
+                $writer->save($output);
+
+                // Retornar link para descarga
+                return response()->download($output);
+
+
     }
     function getByTipo($tipo){
         return Producto::where('tipo_id', $tipo)->get();

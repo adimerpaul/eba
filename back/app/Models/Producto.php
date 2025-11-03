@@ -44,4 +44,8 @@ class Producto extends Model implements Auditable
     function  tipo(){
         return $this->belongsTo(TipoProducto::class, 'tipo_id');
     }
+
+    function kardex(){
+        return $this->hasMany(Kardex::class);
+    }
 }

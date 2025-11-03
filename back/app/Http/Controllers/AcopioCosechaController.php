@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\AcopioCosecha;
 use Illuminate\Http\Request;
-
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 class AcopioCosechaController extends Controller{
     public function showByQr(string $code)
     {
@@ -29,6 +31,42 @@ class AcopioCosechaController extends Controller{
         }
         $acopiosCosechas = $acopiosCosechas->get();
         return $acopiosCosechas;
+    }
+
+    public function acopioExcel(Request $request) {
+        $params = $request->all();
+        $resultado = $this->index(new Request($params));
+
+        $template = storage_path('app/excel/acopio.xlsx');
+        $output   = public_path('reportes/reporte_acopios.xlsx');
+
+        // Cargar la plantilla
+        $spreadsheet = IOFactory::load($template);
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Escribir datos (ejemplo a partir de fila 2)
+        $fila = 7;
+        $i=1;
+        foreach ($resultado as $u) {
+            $sheet->setCellValue("B{$fila}", $u->i);
+            $sheet->setCellValue("B{$fila}", $u->fecha_cosecha);
+            $sheet->setCellValue("B{$fila}", $u->apiario->productor['nombre_completo']);
+            $sheet->setCellValue("B{$fila}", $u->cantidad_kg);
+            $sheet->setCellValue("B{$fila}", $u->humedad);
+            $sheet->setCellValue("B{$fila}", $u->temperatura_almacenaje);
+            $sheet->setCellValue("B{$fila}", $u->num_act);
+            $sheet->setCellValue("B{$fila}", $u->observaciones);
+            $sheet->setCellValue("B{$fila}", $u->estado);
+            $fila++;
+            $i++;
+        }
+                        // Guardar en public/
+                $writer = new Xlsx($spreadsheet);
+                $writer->save($output);
+
+                // Retornar link para descarga
+                return response()->download($output);
+
     }
     public function show($id)
     {

@@ -119,6 +119,7 @@
             @click="$router.push('/productores/crear')"
             no-caps
           />
+          <q-btn color="green" label="EXCEL" @click="genrarExcel" :loading="loading" />
         </div>
       </q-card-section>
     </q-card>
@@ -164,7 +165,7 @@
           </td>
           <td class="text-left">{{ row.fecha_registro }}</td>
         </tr>
-        <tr v-if="!loading && rows.length === 0">
+        <tr v-if="!loading && rows?.length === 0">
           <td colspan="9" class="text-center text-grey q-pa-md">No hay resultados</td>
         </tr>
         </tbody>
@@ -175,7 +176,7 @@
       </div>
 
       <div class="q-pa-sm row items-center justify-between">
-        <div class="text-caption">Total: <b>{{ serverCount.toLocaleString() }}</b></div>
+        <div class="text-caption">Total: <b>{{ serverCount?.toLocaleString() }}</b></div>
         <div class="row items-center q-gutter-sm">
           <q-select
             v-model="pagination.perPage"
@@ -197,16 +198,20 @@
         </div>
       </div>
     </q-card>
+
   </q-page>
 </template>
 
 <script>
+import moment from 'moment';
 export default {
   name: 'ProductoresPage',
   data () {
     return {
+
       rows: [],
       loading: false,
+      producto: {},
       serverCount: 0,
 
       pagination: { page: 1, perPage: 10 },
@@ -235,7 +240,10 @@ export default {
       return Math.max(1, Math.ceil(this.serverCount / this.pagination.perPage))
     },
     depOptions () {
-      return (this.tree || []).map(d => ({ label: d.nombre_departamento, value: d.id }))
+      return Array.isArray(this.tree) 
+      ? this.tree.map(d => ({ label: d.nombre_departamento, value: d.id })) 
+      : [];
+
     },
     provOptions () {
       const depId = this.filters.departamento_id
@@ -257,6 +265,37 @@ export default {
     this.fetchPage()
   },
   methods: {
+    genrarExcel(){
+      this.loading = true
+      this.$axios.post('productorExcel',       {
+            page: this.pagination.page,
+            per_page: this.pagination.perPage,
+            sort_by: 'id',
+            sort_dir: 'desc',
+            search: this.filters.search || undefined,
+            estado: this.filters.estado || undefined,
+            sexo: this.filters.sexo || undefined,
+            fecha_desde: this.filters.fecha_desde || undefined,
+            fecha_hasta: this.filters.fecha_hasta || undefined,
+            departamento_id: this.filters.departamento_id || undefined,
+            provincia_id: this.filters.provincia_id || undefined,
+            municipio_id: this.filters.municipio_id || undefined
+    }).then((res) => {
+            const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'proveedores.xlsx') // nombre del archivo
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+        }).catch((e) => {
+          this.$alert?.error?.(e.response?.data?.message || 'No se pudo generar el reporte.')
+        }).finally(() => {
+          this.loading = false
+        })
+    },
     chipColor (estado) {
       if (estado === 'VIGENTE' || estado === 'ACTIVO') return 'green'
       if (estado === 'VENCIDO' || estado === 'INACTIVO') return 'red'
@@ -277,6 +316,7 @@ export default {
 
     async fetchPage () {
       this.loading = true
+      this.rows=[]
       try {
         const { data } = await this.$axios.get('productores', {
           params: {
@@ -294,6 +334,7 @@ export default {
             municipio_id: this.filters.municipio_id || undefined
           }
         })
+        console.log(data)
         this.rows = data.data
         this.serverCount = data.total
         if (this.pagination.page > this.pageCount) this.pagination.page = this.pageCount

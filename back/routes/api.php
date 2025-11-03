@@ -23,6 +23,7 @@ use App\Http\Controllers\ProvinciaController;
 use App\Http\Controllers\TipoProductoController;
 use App\Http\Controllers\TransporteController;
 use App\Http\Controllers\VentaController;
+use App\Http\Controllers\KardexController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -187,6 +188,11 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::post('ventas', [VentaController::class, 'store']);       // crear
     Route::delete('ventas/{venta}', [VentaController::class, 'destroy']); // opcional
     Route::get('/organizaciones/reportActivos/{estado}', [OrganizacionController::class, 'reportActivos']);
+
+    Route::post('productorExcel', [ProductorController::class, 'productorExcel']);
+    Route::post('acopioExcel', [AcopioCosechaController::class, 'acopioExcel']);
+    Route::post('productoExcel', [ProductoController::class, 'productoExcel']);
+    Route::post('getKardex', [KardexController::class, 'getKardex']);
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 Route::get('/ventas/{venta}/nota', [VentaController::class, 'notaPdf'])->name('ventas.nota');

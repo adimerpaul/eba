@@ -28,6 +28,7 @@
           </q-input>
           <q-btn color="positive" icon="add_circle_outline" label="Nuevo" no-caps :loading="loading" @click="openCreate"/>
           <q-btn color="primary"  icon="refresh"            label="Actualizar" no-caps :loading="loading" @click="fetch"/>
+          <q-btn color="green"    label="EXCEL" :loading="loading" @click="generarExcel"/>
         </div>
       </template>
 
@@ -48,6 +49,10 @@
         <q-td :props="props" class="text-right">
           <q-btn-dropdown label="Opciones" dense color="primary" no-caps size="10px">
             <q-list>
+              <q-item clickable v-ripple @click="verkardex(props.row)" v-close-popup>
+                <q-item-section avatar><q-icon name="article" /></q-item-section>
+                <q-item-section><span >Kardex</span></q-item-section>
+              </q-item>
               <q-item clickable v-ripple @click="openImagen(props.row)" v-close-popup>
                 <q-item-section avatar><q-icon name="image" /></q-item-section>
                 <q-item-section>Imagen</q-item-section>
@@ -60,6 +65,7 @@
                 <q-item-section avatar><q-icon name="delete" color="negative" /></q-item-section>
                 <q-item-section><span class="text-negative">Eliminar</span></q-item-section>
               </q-item>
+ 
             </q-list>
           </q-btn-dropdown>
         </q-td>
@@ -148,14 +154,48 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+        <q-dialog v-model="dialogKardex" >
+      <q-card style="min-width: 400px; max-width: 90vw">
+        <q-card-section class="row items-center">
+          <q-avatar icon="article" color="primary" text-color="white" size="lg" />
+          <span class="q-ml-sm">Seleccione el rango de fechas producto <b>{{ producto.nombre_producto }}</b></span>
+        </q-card-section>
+        <q-card-section>
+          <div class="row">
+            <div class="col-6">
+              <q-input dense v-model="inicio" label="Desde" type="date"  filled @update:model-value="generarKardex"/>
+            </div>
+            <div class="col-6">
+              <q-input dense v-model="fin" label="Hasta" type="date" filled @update:model-value="generarKardex"/>
+            </div>
+          </div>
+          <br>
+          <q-table
+            :rows="kardex"
+            :columns="colkardex"
+            row-key="name"
+            dense
+          />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="Cancel" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script>
+import moment from 'moment';
 export default {
   name: 'ProductosPage',
   data () {
     return {
+      inicio: moment().format('YYYY-MM-DD'),
+      fin: moment().format('YYYY-MM-DD'),
+      dialogKardex: false,
+      kardex: [],
       loading: false,
       rows: [],
       columns: [
@@ -195,9 +235,15 @@ export default {
       // Imagen
       dlgImg: { open: false, row: null },
       uploading: false,
+      colkardex: [
+        { name: 'fecha_registro', label: 'Fecha', align: 'left', field: 'fecha_registro' },
+        { name: 'cantidad_procesada', label: 'Procesada', align: 'right', field: 'cantidad_procesada', format: v => Number(v||0).toFixed(2) },
+        { name: 'cantidad_salida', label: 'Salida', align: 'right', field: 'cantidad_salida', format: v => Number(v||0).toFixed(2) },
+      ]
     }
   },
   computed: {
+
     canSubmit () {
       const f = this.form
       return !!(f.tipo_id && f.codigo_producto && f.nombre_producto)
@@ -205,9 +251,50 @@ export default {
   },
   mounted () {
     this.fetchTipos()
-    this.fetch()
   },
   methods: {
+        generarExcel(){
+      this.loading=true
+          this.$axios.post('productoExcel', {
+          responseType: 'blob' // 👈 importante para manejar archivos binarios
+        }).then((res) => {
+                  // Crear blob y enlace de descarga
+        const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'productos.xlsx') // nombre del archivo
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+        }).catch((e) => {
+          this.$alert?.error?.(e.response?.data?.message || 'No se pudo generar el reporte.')
+        }).finally(() => {
+          this.loading = false
+        })
+    },
+    verkardex (p) {
+       this.producto = p
+       this.dialogKardex = true
+       this.generarKardex()
+    },
+    generarKardex () {
+
+        if(!this.inicio || !this.fin || !this.producto || this.inicio > this.fin){
+            this.$q.notify({ type: 'negative', message: 'Seleccione el rango de fechas' })
+            return
+        }
+        this.loading = true
+        this.$axios.post('getKardex',{inicio: this.inicio, fin: this.fin, productoid: this.producto.id}).then(res => {
+          console.log(res.data)
+            this.kardex = res.data
+        }).catch(e => {
+            this.$q.notify({ type: 'negative', message: e.response?.data?.message || 'No se pudo generar el reporte.' })
+        }).finally(() => {
+            this.loading = false
+        })
+    },
     imgUrl (p) {
       return p?.startsWith('http') ? p : `${this.$url}/../storage/${p}`
     },
@@ -224,6 +311,7 @@ export default {
         if (this.tipo) params.tipo = this.tipo
         const { data } = await this.$axios.get('/productos', { params })
         this.rows = Array.isArray(data) ? data : (data.data || [])
+        console.log(data)
       } catch (e) {
         this.$q.notify({ type: 'negative', message: e.response?.data?.message || 'Error al listar productos' })
       } finally { this.loading = false }
@@ -241,6 +329,9 @@ export default {
       try {
         const { data } = await this.$axios.get('/tipo-productos')
         this.tipoOptions = data
+        // asignar a tipo el que indique 'Producto Terminado' de tipoOptions
+        this.tipo = this.tipoOptions.find(x => x.nombre_tipo === 'Producto Terminado')??null
+        this.fetch()
       } catch (e) { /* noop */ }
     },
 

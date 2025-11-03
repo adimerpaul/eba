@@ -37,15 +37,22 @@
                 clearable
               />
             </div>
-            <div class="col-12 col-md-3 flex flex-center">
+            <div class="col-12 col-md-2 flex flex-center">
               <q-btn
                 :loading="loading"
                 label="Buscar Cosechas"
                 type="submit"
                 color="primary"
-                class="full-width"
                 no-caps
                 icon="search"
+              />
+              </div>
+            <div class="col-12 col-md-2 flex flex-center">
+              <q-btn
+                :loading="loading"
+                label="EXCEL"
+                color="green"
+                @click="generarExcel"
               />
             </div>
           </div>
@@ -139,6 +146,30 @@ export default {
     this.buscarCosechas();
   },
   methods: {
+    generarExcel() {
+      this.loading = true;
+      this.$axios.post('acopioExcel',{fecha_inicio: this.fechaInicio,
+          fecha_fin: this.fechaFin,
+          estado: this.estadoSeleccionado,}, {
+        responseType: 'blob' // 👈 importante para manejar archivos binarios
+      })
+      .then((res) => {
+        // Crear blob y enlace de descarga
+        const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'acopio.xlsx') // nombre del archivo
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+      }).catch((e) => {
+        this.$alert?.error?.(e.response?.data?.message || 'No se pudo generar el reporte.')
+      }).finally(() => {
+        this.loading = false
+      })
+    },
     buscarCosechas(){
       this.loading = true;
       this.$axios.get('/acopio/cosechas', {

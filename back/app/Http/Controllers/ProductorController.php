@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Productor;
 use Illuminate\Http\Request;
-
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 class ProductorController extends Controller
 {
     public function index(Request $request)
@@ -75,6 +77,57 @@ class ProductorController extends Controller
         return $q->paginate($perPage)->appends($request->query());
     }
 
+
+    public function productorExcel(Request $request) {
+            $params = $request->all();
+
+            $pagina = 1;
+            $todos = collect();
+
+            do {
+                // asegura pasar todos los filtros + la página actual
+                $params['page'] = $pagina;
+                $paginado = $this->index(new Request($params)); // usa tu función existente
+
+                // getCollection() devuelve una Collection con los items de esta página
+                $todos = $todos->merge($paginado->getCollection());
+
+                $lastPage = $paginado->lastPage(); // número total de páginas
+                $pagina++;
+            } while ($pagina <= $lastPage);
+
+            $template = storage_path('app/excel/proveedores.xlsx');
+                $output   = public_path('reportes/reporte_proveedor.xlsx');
+
+                // Cargar la plantilla
+                $spreadsheet = IOFactory::load($template);
+                $sheet = $spreadsheet->getActiveSheet();
+
+                // Escribir datos (ejemplo a partir de fila 2)
+                $fila = 7;
+                foreach ($todos as $u) {
+                    $sheet->setCellValue("B{$fila}", $u->id);
+                    $sheet->setCellValue("C{$fila}", $u->runsa);
+                    $sheet->setCellValue("D{$fila}", $u->sub_codigo);
+                    $sheet->setCellValue("E{$fila}", $u->municipio['nombre_municipio']);
+                    $sheet->setCellValue("F{$fila}", $u->nombre_completo);
+                    $sheet->setCellValue("G{$fila}", $u->numcarnet);
+                    $sheet->setCellValue("H{$fila}", $u->num_celular);
+                    $sheet->setCellValue("I{$fila}", $u->comunidad??'');
+                    $sheet->setCellValue("J{$fila}", $u->estado);
+                    $sheet->setCellValue("K{$fila}", $u->fecha_registro);
+                    $fila++;
+                }
+
+                // Guardar en public/
+                $writer = new Xlsx($spreadsheet);
+                $writer->save($output);
+
+                // Retornar link para descarga
+                return response()->download($output);
+
+            //return $todos;
+    }
     public function store(Request $request)
     {
         $data = $request->validate([
