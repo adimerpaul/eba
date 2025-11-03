@@ -12,6 +12,9 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Illuminate\Support\Facades\Storage;
 
 class VentaController extends Controller
 {
@@ -49,6 +52,8 @@ class VentaController extends Controller
     {
         $q = Venta::query()
             ->with(['cliente:id,nombre_cliente', 'transporte:id,empresa,responsable,placa'])
+            ->whereDate('fecha_venta', '>=', $request->inicio)
+            ->whereDate('fecha_venta', '<=', $request->fin)
             ->whereNull('deleted_at')
             ->orderByDesc('id');
 
@@ -63,6 +68,40 @@ class VentaController extends Controller
         $perPage = (int) $request->get('per_page', 0);
         if ($perPage > 0) return $q->paginate($perPage);
         return $q->get();
+    }
+
+    public function ventaExcel(Request $request){
+        $result = $this->index($request);
+
+                    $template = storage_path('app/excel/ventas.xlsx');
+                $output   = public_path('reportes/reporte_venta.xlsx');
+
+                // Cargar la plantilla
+                $spreadsheet = IOFactory::load($template);
+                $sheet = $spreadsheet->getActiveSheet();
+
+                // Escribir datos (ejemplo a partir de fila 2)
+                $fila = 7;
+                foreach ($todos as $u) {
+                    $sheet->setCellValue("B{$fila}", $u->id);
+                    $sheet->setCellValue("C{$fila}", $u->runsa);
+                    $sheet->setCellValue("D{$fila}", $u->sub_codigo);
+                    $sheet->setCellValue("E{$fila}", $u->municipio['nombre_municipio']);
+                    $sheet->setCellValue("F{$fila}", $u->nombre_completo);
+                    $sheet->setCellValue("G{$fila}", $u->numcarnet);
+                    $sheet->setCellValue("H{$fila}", $u->num_celular);
+                    $sheet->setCellValue("I{$fila}", $u->comunidad??'');
+                    $sheet->setCellValue("J{$fila}", $u->estado);
+                    $sheet->setCellValue("K{$fila}", $u->fecha_registro);
+                    $fila++;
+                }
+
+                // Guardar en public/
+                $writer = new Xlsx($spreadsheet);
+                $writer->save($output);
+
+                // Retornar link para descarga
+                return response()->download($output);
     }
 
     public function show(Venta $venta)

@@ -4,6 +4,8 @@
       <q-card-section class="row items-center q-gutter-sm">
         <div class="text-h6">Gestionar Ventas</div>
         <q-space/>
+        <q-input v-model="inicio" type="date" label="Fecha inicio" dense outlined />
+        <q-input v-model="fin" type="date" label="Fecha fin" dense outlined  />
         <q-input v-model="filter" dense outlined placeholder="Buscar cliente / factura / guía" @update:model-value="fetchDebounced">
           <template #append><q-icon name="search"/></template>
         </q-input>
@@ -95,10 +97,13 @@
 </template>
 
 <script>
+import moment from "moment";
 export default {
   name: 'VentasList',
   data () {
     return {
+      inicio: moment().format('YYYY-MM-DD'),
+      fin: moment().format('YYYY-MM-DD'),
       loading: false,
       rows: [],
       filter: '',
@@ -120,12 +125,14 @@ export default {
     fmtDate (iso) { return iso ? new Date(iso).toLocaleString() : '-' },
 
     async fetch () {
+      if(!this.inicio || !this.fin || this.inicio > this.fin){ this.$q.notify({ type: 'negative', message: 'Seleccione el rango de fechas' }); return }
       this.loading = true
       try {
-        const params = {}
+        const params = {inicio: this.inicio, fin: this.fin}
         if (this.filter) params.q = this.filter
         const { data } = await this.$axios.get('/ventas', { params })
         this.rows = Array.isArray(data) ? data : (data.data || [])
+        console.log(data)
       } catch (e) {
         this.$q.notify({ type: 'negative', message: e.response?.data?.message || 'Error al listar ventas' })
       } finally { this.loading = false }
