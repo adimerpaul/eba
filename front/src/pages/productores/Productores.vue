@@ -265,9 +265,9 @@ export default {
     this.fetchPage()
   },
   methods: {
-    genrarExcel(){
+    async genrarExcel(){
       this.loading = true
-      this.$axios.post('productorExcel',       {
+      await this.$axios.post('productorExcel',       {
             page: this.pagination.page,
             per_page: this.pagination.perPage,
             sort_by: 'id',
@@ -280,7 +280,7 @@ export default {
             departamento_id: this.filters.departamento_id || undefined,
             provincia_id: this.filters.provincia_id || undefined,
             municipio_id: this.filters.municipio_id || undefined
-    }).then((res) => {
+    }, { responseType: 'blob' }).then((res) => {
             const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')

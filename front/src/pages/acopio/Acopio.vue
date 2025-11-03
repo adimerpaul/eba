@@ -146,9 +146,9 @@ export default {
     this.buscarCosechas();
   },
   methods: {
-    generarExcel() {
+    async generarExcel() {
       this.loading = true;
-      this.$axios.post('acopioExcel',{fecha_inicio: this.fechaInicio,
+      await this.$axios.post('acopioExcel',{fecha_inicio: this.fechaInicio,
           fecha_fin: this.fechaFin,
           estado: this.estadoSeleccionado,}, {
         responseType: 'blob' // 👈 importante para manejar archivos binarios

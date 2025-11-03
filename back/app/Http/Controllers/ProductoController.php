@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Producto;
+use App\Models\TipoProducto;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -35,11 +36,16 @@ class ProductoController extends Controller{
 
     public function productoExcel(Request $request){
         if($request->tipo_id==0){
-            $result = Producto::where('codigo', 'like', "%{$request->search}%")->orWhere('nombre', 'like', "%{$request->search}%")->get();
+            $result = Producto::where('codigo_producto', 'like', "%{$request->search}%")
+            ->orWhere('nombre_producto', 'like', "%{$request->search}%")->get();
+            $nombre = 'TODOS';
         }
         else{
             $result = Producto::where('tipo_id', $request->tipo_id)
-            ->where('codigo', 'like', "%{$request->search}%")->orWhere('nombre', 'like', "%{$request->search}%")->get();
+            ->where('codigo_producto', 'like', "%{$request->search}%")
+            ->orWhere('nombre_producto', 'like', "%{$request->search}%")->get();
+            $tipo = TipoProducto::find($request->tipo_id);
+            $nombre = $tipo->nombre_tipo;
         }
        /// return $result;
 
@@ -49,21 +55,23 @@ class ProductoController extends Controller{
                 // Cargar la plantilla
                 $spreadsheet = IOFactory::load($template);
                 $sheet = $spreadsheet->getActiveSheet();
+                //$sheet->setCellValue("E1", $nombre);
 
                 // Escribir datos (ejemplo a partir de fila 2)
                 $fila = 7;
-                foreach ($todos as $u) {
-                    $sheet->setCellValue("B{$fila}", $u->id);
-                    $sheet->setCellValue("C{$fila}", $u->runsa);
-                    $sheet->setCellValue("D{$fila}", $u->sub_codigo);
-                    $sheet->setCellValue("E{$fila}", $u->municipio['nombre_municipio']);
-                    $sheet->setCellValue("F{$fila}", $u->nombre_completo);
-                    $sheet->setCellValue("G{$fila}", $u->numcarnet);
-                    $sheet->setCellValue("H{$fila}", $u->num_celular);
-                    $sheet->setCellValue("I{$fila}", $u->comunidad??'');
-                    $sheet->setCellValue("J{$fila}", $u->estado);
-                    $sheet->setCellValue("K{$fila}", $u->fecha_registro);
+                $i=1;
+                foreach ($result as $u) {
+                    $sheet->setCellValue("B{$fila}", $u->i);
+                    $sheet->setCellValue("C{$fila}", $u->codigo_producto);
+                    $sheet->setCellValue("D{$fila}", $u->nombre_producto);
+                    $sheet->setCellValue("E{$fila}", '');
+                    $sheet->setCellValue("F{$fila}", $u->presentacion);
+                    $sheet->setCellValue("G{$fila}", $u->cantidad_kg);
+                    $sheet->setCellValue("H{$fila}", $u->costo??0);
+                    $sheet->setCellValue("I{$fila}", $u->precio??0);
+                    $sheet->setCellValue("J{$fila}", $u->fecha_vencimiento??'');
                     $fila++;
+                    $i++;
                 }
 
                 // Guardar en public/

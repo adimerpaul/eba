@@ -48,15 +48,15 @@ class AcopioCosechaController extends Controller{
         $fila = 7;
         $i=1;
         foreach ($resultado as $u) {
-            $sheet->setCellValue("B{$fila}", $u->i);
-            $sheet->setCellValue("B{$fila}", $u->fecha_cosecha);
-            $sheet->setCellValue("B{$fila}", $u->apiario->productor['nombre_completo']);
-            $sheet->setCellValue("B{$fila}", $u->cantidad_kg);
-            $sheet->setCellValue("B{$fila}", $u->humedad);
-            $sheet->setCellValue("B{$fila}", $u->temperatura_almacenaje);
-            $sheet->setCellValue("B{$fila}", $u->num_act);
-            $sheet->setCellValue("B{$fila}", $u->observaciones);
-            $sheet->setCellValue("B{$fila}", $u->estado);
+            $sheet->setCellValue("B{$fila}", $i);
+            $sheet->setCellValue("C{$fila}", $u->fecha_cosecha);
+            $sheet->setCellValue("D{$fila}", $u->apiario->productor['nombre_completo']);
+            $sheet->setCellValue("E{$fila}", $u->cantidad_kg);
+            $sheet->setCellValue("F{$fila}", $u->humedad);
+            $sheet->setCellValue("G{$fila}", $u->temperatura_almacenaje);
+            $sheet->setCellValue("H{$fila}", $u->num_act);
+            $sheet->setCellValue("I{$fila}", $u->observaciones);
+            $sheet->setCellValue("J{$fila}", $u->estado);
             $fila++;
             $i++;
         }

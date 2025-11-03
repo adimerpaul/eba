@@ -255,7 +255,7 @@ export default {
   methods: {
         generarExcel(){
       this.loading=true
-          this.$axios.post('productoExcel', {
+          this.$axios.post('productoExcel', {tipo_id: this.tipo.id??0,search:this.filter},{
           responseType: 'blob' // 👈 importante para manejar archivos binarios
         }).then((res) => {
                   // Crear blob y enlace de descarga
