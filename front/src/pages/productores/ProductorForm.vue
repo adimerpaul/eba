@@ -65,13 +65,13 @@
       <!-- Organización (buscador remoto simple) -->
       <div class="col-12 col-sm-6">
         <q-select
-          v-model="form.organizacion_id"
+          v-model="form.organizacion"
           label="Organización"
           dense outlined
           use-input fill-input input-debounce="300"
           :options="orgOptions"
           option-label="nombre_organiza"
-          option-value="id"
+          
           emit-value map-options
           clearable
           @filter="filterOrganizaciones"
@@ -83,8 +83,10 @@
           </template>
         </q-select>
       </div>
-
-      <!-- Ubicación administrativa -->
+      <div class="col-12 col-sm-4"><b>DEPT:</b> {{ form.organizacion?.departamento.nombre_departamento }}</div>
+      <div class="col-12 col-sm-4"><b>Mun:</b> {{ form.organizacion?.municipio.nombre_municipio }}</div>
+      <div class="col-12 col-sm-4"><b>Prov:</b> {{ form.organizacion?.provincia.nombre_provincia }}</div>
+      <!-- Ubicación administrativa 
       <div class="col-12 col-sm-4">
         <q-select
           v-model="form.departamento_id"
@@ -119,7 +121,7 @@
           :rules="[v => !!v || 'Requerido']"
           :disable="!form.provincia_id"
         />
-      </div>
+      </div>-->
 
       <!-- Fechas / Estado -->
       <div class="col-12 col-sm-4">
@@ -255,7 +257,7 @@ export default {
       }
       this.form = {
         id: p.id ?? null,
-        municipio_id: p.municipio?.id || p.municipio_id || null,
+        //municipio_id: p.municipio?.id || p.municipio_id || null,
         runsa: p.runsa ?? '0',
         sub_codigo: p.sub_codigo ?? '',
         nombre: p.nombre ?? '',
@@ -276,7 +278,7 @@ export default {
         fecha_registro: p.fecha_registro ?? new Date().toISOString().slice(0,10),
         fecha_expiracion: p.fecha_expiracion ?? null,
         estado: p.estado ?? 'VIGENTE',
-        departamento_id: p.municipio?.departamento_id || null,
+        //departamento_id: p.municipio?.departamento_id || null,
         provincia_id: p.municipio?.provincia_id || null
       }
     },
@@ -296,6 +298,7 @@ export default {
           const { data } = await this.$axios.get('organizaciones', {
             params: { search: val || undefined, paginate: false }
           })
+          console.log(data)
           this.orgOptions = Array.isArray(data) ? data : (data?.data || [])
         } catch {
           this.orgOptions = []
@@ -309,7 +312,7 @@ export default {
       this.saving = true
       try {
         const payload = {
-          municipio_id: this.form.municipio_id,
+          //municipio_id: this.form.municipio_id,
           runsa: this.form.runsa,
           sub_codigo: this.form.sub_codigo,
           nombre: this.form.nombre,
@@ -326,7 +329,7 @@ export default {
           ocupacion: this.form.ocupacion,
           otros: this.form.otros,
           seleccion: this.form.seleccion,
-          organizacion_id: this.form.organizacion_id,
+          organizacion_id: this.form.organizacion.id,
           fecha_registro: this.form.fecha_registro,
           fecha_expiracion: this.form.fecha_expiracion,
           estado: this.form.estado

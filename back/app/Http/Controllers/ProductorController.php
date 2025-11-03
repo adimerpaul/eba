@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Productor;
+use App\Models\Organizacion; 
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -131,7 +132,7 @@ class ProductorController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'municipio_id'   => ['nullable','integer','exists:municipios,id'],
+            //'municipio_id'   => ['nullable','integer','exists:municipios,id'],
             'runsa'          => ['nullable','string','max:20'],
             'sub_codigo'     => ['nullable','string','max:20'],
             'nombre'         => ['required','string','max:200'],
@@ -153,6 +154,9 @@ class ProductorController extends Controller
             'fecha_expiracion'=>['nullable','date'],
             'estado'         => ['nullable','string','in:VIGENTE,VENCIDO,INACTIVO,ACTIVO'],
         ]);
+        $organizacion = Organizacion::find($data['organizacion_id']);
+        //$data['organizacion_id'] = $organizacion->id;
+        $data['municipio_id'] = $organizacion->municipio_id;
 
         $p = Productor::create($data);
         return response()->json($p->load(['municipio:id,nombre_municipio,provincia_id,departamento_id','organizacion:id,nombre_organiza']), 201);
@@ -171,7 +175,7 @@ class ProductorController extends Controller
     public function update(Request $request, Productor $productor)
     {
         $data = $request->validate([
-            'municipio_id'   => ['nullable','integer','exists:municipios,id'],
+            //'municipio_id'   => ['nullable','integer','exists:municipios,id'],
             'runsa'          => ['nullable','string','max:20'],
             'sub_codigo'     => ['nullable','string','max:20'],
             'nombre'         => ['required','string','max:200'],
@@ -193,6 +197,10 @@ class ProductorController extends Controller
             'fecha_expiracion'=>['nullable','date'],
             'estado'         => ['nullable','string','in:VIGENTE,VENCIDO,INACTIVO,ACTIVO'],
         ]);
+
+        $organizacion = Organizacion::find($data['organizacion_id']);
+        //$data['organizacion_id'] = $organizacion->id;
+        $data['municipio_id'] = $organizacion->municipio_id;
 
         $productor->update($data);
         return $productor->load(['municipio:id,nombre_municipio,provincia_id,departamento_id','organizacion:id,nombre_organiza']);
