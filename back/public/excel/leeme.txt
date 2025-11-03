@@ -1,0 +1,2 @@
+Esta carpeta contiene las plantillas para los Excel se debe agregar en storage/app/Excel
+para recuperar y llenar los datos
