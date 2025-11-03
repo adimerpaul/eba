@@ -237,8 +237,10 @@ export default {
       uploading: false,
       colkardex: [
         { name: 'fecha_registro', label: 'Fecha', align: 'left', field: 'fecha_registro' },
-        { name: 'cantidad_procesada', label: 'Procesada', align: 'right', field: 'cantidad_procesada', format: v => Number(v||0).toFixed(2) },
-        { name: 'cantidad_salida', label: 'Salida', align: 'right', field: 'cantidad_salida', format: v => Number(v||0).toFixed(2) },
+        { name: 'tipo_movimiento', label: 'Tipo_mov', align: 'left', field: 'tipo_movimiento' },
+        { name: 'entrada', label: 'Entrada', align: 'left', field: 'entrada' },
+        { name: 'salida', label: 'Salida', align: 'left', field: 'salida' },
+        { name: 'saldo', label: 'Saldo', align: 'left', field: 'saldo' },
       ]
     }
   },

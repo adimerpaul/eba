@@ -7,6 +7,6 @@ use Illuminate\Http\Request;
 
 class TanqueController extends Controller{
     function index(){
-        return Tanque::all();
+        return Tanque::where('id', '>', 0)->get();
     }
 }

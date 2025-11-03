@@ -52,6 +52,7 @@ class VentaController extends Controller
     {
         $q = Venta::query()
             ->with(['cliente:id,nombre_cliente', 'transporte:id,empresa,responsable,placa'])
+            ->where('id', '>', 0)
             ->whereDate('fecha_venta', '>=', $request->inicio)
             ->whereDate('fecha_venta', '<=', $request->fin)
             ->whereNull('deleted_at')
@@ -103,7 +104,7 @@ class VentaController extends Controller
                 // Retornar link para descarga
                 return response()->download($output);
     }
-
+    
     public function show(Venta $venta)
     {
         // Detalle: cliente, transporte y kardex (ítems)

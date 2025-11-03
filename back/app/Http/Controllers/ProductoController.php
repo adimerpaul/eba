@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Storage;
 class ProductoController extends Controller{
     public function index(Request $request)
     {
-        $q = Producto::query();
+        
+        $q = Producto::query()->where('id', '>', 0 );
 
         if ($term = trim((string) $request->get('q', ''))) {
             $q->where(function ($w) use ($term) {

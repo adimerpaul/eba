@@ -13,7 +13,7 @@ class ClienteController extends Controller
      */
     public function index(Request $request)
     {
-        $q = Cliente::query();
+        $q = Cliente::query()->where('id', '>', 0);
 
         if ($term = trim((string) $request->get('q', ''))) {
             $q->where(function ($w) use ($term) {

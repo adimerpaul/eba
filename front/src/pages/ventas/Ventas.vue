@@ -4,8 +4,8 @@
       <q-card-section class="row items-center q-gutter-sm">
         <div class="text-h6">Gestionar Ventas</div>
         <q-space/>
-        <q-input v-model="inicio" type="date" label="Fecha inicio" dense outlined />
-        <q-input v-model="fin" type="date" label="Fecha fin" dense outlined  />
+        <q-input v-model="inicio" type="date" label="Fecha inicio" dense outlined @update:model-value="fetch" />
+        <q-input v-model="fin" type="date" label="Fecha fin" dense outlined @update:model-value="fetch" />
         <q-input v-model="filter" dense outlined placeholder="Buscar cliente / factura / guía" @update:model-value="fetchDebounced">
           <template #append><q-icon name="search"/></template>
         </q-input>
