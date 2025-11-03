@@ -11,6 +11,7 @@
         </q-input>
         <q-btn color="positive" icon="add_circle_outline" label="Crear venta" no-caps @click="$router.push('/ventas/crear')"/>
         <q-btn color="primary" icon="refresh" label="Actualizar" no-caps :loading="loading" @click="fetch"/>
+        <q-btn color="green"  label="EXCEL" @click="generarExcel" :loading="loading"/>
       </q-card-section>
 
       <q-separator/>
@@ -121,6 +122,28 @@ export default {
   },
   mounted () { this.fetch() },
   methods: {
+    generarExcel () {
+        if(!this.inicio || !this.fin || this.inicio > this.fin){ this.$q.notify({ type: 'negative', message: 'Seleccione el rango de fechas' }); return }
+
+        const params = {inicio: this.inicio, fin: this.fin,q:this.filter}
+        this.loading=true
+        this.$axios.post('ventaExcel',params,{ responseType: 'blob' }).then((res) => {
+            const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'ventas.xlsx') // nombre del archivo
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+        }).catch((e) => {
+          this.$alert?.error?.(e.response?.data?.message || 'No se pudo generar el reporte.')
+        }).finally(() => {
+          this.loading = false
+        })
+        
+    },
     fmt (v) { return Number(v || 0).toFixed(2) },
     fmtDate (iso) { return iso ? new Date(iso).toLocaleString() : '-' },
 

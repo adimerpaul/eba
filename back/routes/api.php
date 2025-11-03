@@ -192,6 +192,8 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::post('productorExcel', [ProductorController::class, 'productorExcel']);
     Route::post('acopioExcel', [AcopioCosechaController::class, 'acopioExcel']);
     Route::post('productoExcel', [ProductoController::class, 'productoExcel']);
+    Route::post('ventaExcel', [VentaController::class, 'ventaExcel']);
+    
     Route::post('getKardex', [KardexController::class, 'getKardex']);
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);

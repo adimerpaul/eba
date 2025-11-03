@@ -83,18 +83,16 @@ class VentaController extends Controller
 
                 // Escribir datos (ejemplo a partir de fila 2)
                 $fila = 7;
-                foreach ($todos as $u) {
-                    $sheet->setCellValue("B{$fila}", $u->id);
-                    $sheet->setCellValue("C{$fila}", $u->runsa);
-                    $sheet->setCellValue("D{$fila}", $u->sub_codigo);
-                    $sheet->setCellValue("E{$fila}", $u->municipio['nombre_municipio']);
-                    $sheet->setCellValue("F{$fila}", $u->nombre_completo);
-                    $sheet->setCellValue("G{$fila}", $u->numcarnet);
-                    $sheet->setCellValue("H{$fila}", $u->num_celular);
-                    $sheet->setCellValue("I{$fila}", $u->comunidad??'');
-                    $sheet->setCellValue("J{$fila}", $u->estado);
-                    $sheet->setCellValue("K{$fila}", $u->fecha_registro);
+                $i=1;
+                foreach ($result as $u) {
+                    $sheet->setCellValue("B{$fila}", $i);
+                    $sheet->setCellValue("C{$fila}", date('d/m/Y', strtotime($u->fecha_venta)));
+                    $sheet->setCellValue("D{$fila}", $u->cliente['nombre_cliente']);
+                    $sheet->setCellValue("E{$fila}", $u->num_factura);
+                    $sheet->setCellValue("F{$fila}", $u->guia_remision);
+                    $sheet->setCellValue("G{$fila}", $u->precio_total);
                     $fila++;
+                    $i++;
                 }
 
                 // Guardar en public/
@@ -104,7 +102,7 @@ class VentaController extends Controller
                 // Retornar link para descarga
                 return response()->download($output);
     }
-    
+
     public function show(Venta $venta)
     {
         // Detalle: cliente, transporte y kardex (ítems)
