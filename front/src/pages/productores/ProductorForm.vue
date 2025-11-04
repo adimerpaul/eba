@@ -63,7 +63,7 @@
       </div>
 
       <!-- Organización (buscador remoto simple) -->
-      <div class="col-12 col-sm-6">
+      <div class="col-12 col-sm-4">
         <q-select
           v-model="form.organizacion"
           label="Organización"
