@@ -155,6 +155,7 @@ class ProductorController extends Controller
             'estado'         => ['nullable','string','in:VIGENTE,VENCIDO,INACTIVO,ACTIVO'],
         ]);
         $organizacion = Organizacion::find($data['organizacion_id']);
+        $data['ocupacion']='APICULTOR';
         //$data['organizacion_id'] = $organizacion->id;
         $data['municipio_id'] = $organizacion->municipio_id;
 

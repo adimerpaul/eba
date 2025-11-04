@@ -26,7 +26,7 @@
         <q-input v-model="form.numcarnet" label="N° Carnet" dense outlined :rules="[v => !!v || 'Requerido']" />
       </div>
       <div class="col-6 col-sm-2">
-        <q-input v-model="form.expedido" label="Expedido" dense outlined hint="LP, CB, SC..." />
+        <q-select v-model="form.expedido" label="Expedido" dense outlined :options="dept" />
       </div>
       <div class="col-12 col-sm-3">
         <q-input v-model="form.fec_nacimiento" type="date" label="Nacimiento" dense outlined />
@@ -55,9 +55,9 @@
       <div class="col-12 col-sm-4">
         <q-input v-model="form.num_celular" label="Celular" dense outlined />
       </div>
-      <div class="col-12 col-sm-4">
+      <!--<div class="col-12 col-sm-4">
         <q-input v-model="form.ocupacion" label="Ocupación" dense outlined />
-      </div>
+      </div>-->
       <div class="col-12 col-sm-4">
         <q-input v-model.number="form.seleccion" type="number" label="Selección" dense outlined />
       </div>
@@ -162,7 +162,7 @@ export default {
   data () {
     return {
       tipos: ['Pequeño Productor','Productor Individual','Organizacion de Productores','Asociacion'],
-
+      dept:['LPZ','CBB','SCZ','ORU','POT','PND','BEN','TAR','SUC','OTRO'],
       localTree: [],
       saving: false,
       banner: this.bannerMsg,
