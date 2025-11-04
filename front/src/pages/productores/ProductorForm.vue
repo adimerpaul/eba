@@ -45,7 +45,7 @@
         <q-input v-model="form.comunidad" label="Comunidad" dense outlined />
       </div>
       <div class="col-12 col-sm-4">
-        <q-input v-model="form.proveedor" label="Proveedor" dense outlined />
+        <q-select v-model="form.proveedor" label="Proveedor" :options="tipos" dense outlined />
       </div>
       <div class="col-12 col-sm-4">
         <q-input v-model="form.cip_acopio" label="CIP Acopio" dense outlined />
@@ -161,6 +161,8 @@ export default {
   emits: ['saved', 'cancel', 'error'],
   data () {
     return {
+      tipos: ['Pequeño Productor','Productor Individual','Organizacion de Productores','Asociacion'],
+
       localTree: [],
       saving: false,
       banner: this.bannerMsg,

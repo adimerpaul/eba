@@ -228,7 +228,6 @@ export default {
         provincia_id: null,
         municipio_id: null
       },
-
       sexoOptions: [
         { label: 'Masculino', value: 1 },
         { label: 'Femenino', value: 2 }
