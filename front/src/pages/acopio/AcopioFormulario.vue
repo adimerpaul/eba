@@ -159,11 +159,12 @@
 
           <!-- Tipo de envase -->
           <div class="col-6 col-md-3">
-            <q-input
+            <q-select
               v-model="form.tipo_envase"
               label="Tipo de envase"
               dense outlined
               maxlength="100"
+              :options="['VALDE','OTRO']"
             />
           </div>
 
