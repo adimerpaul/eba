@@ -356,6 +356,7 @@ export default {
     openEdit (row) {
       this.dlg = { open: true, mode: 'edit', row }
       this.form = {
+        id: row.id,
         tipo_id: row.tipo_id,
         codigo_producto: row.codigo_producto,
         nombre_producto: row.nombre_producto,
@@ -376,6 +377,7 @@ export default {
         if (this.dlg.mode === 'create') {
           await this.$axios.post('/productos', this.form)
         } else {
+          this.form.id = this.dlg.row.id
           await this.$axios.put(`/productos/${this.dlg.row.id}`, this.form)
         }
         this.$q.notify({ type: 'positive', message: 'Guardado' })

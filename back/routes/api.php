@@ -112,6 +112,9 @@ Route::middleware('auth:sanctum')->group(callback: function () {
 
 // Apiarios
     Route::get('/apiarios', [\App\Http\Controllers\ApiarioController::class, 'index']);
+    Route::put('/apiarios/{id}', [\App\Http\Controllers\ApiarioController::class, 'update']);
+    Route::post('/apiarios', [\App\Http\Controllers\ApiarioController::class, 'store']);
+    Route::delete('/apiarios/{id}', [\App\Http\Controllers\ApiarioController::class, 'destroy']);
     Route::post('/acopio-cosechas', [AcopioCosechaController::class, 'store']);
     Route::get('/acopio-cosechas/{id}', [AcopioCosechaController::class, 'show']);
     Route::put('/acopio-cosechas/{id}', [AcopioCosechaController::class, 'update']);
@@ -153,8 +156,8 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::get('productos', [ProductoController::class, 'index']);          // ?q=...&tipo=3
     Route::get('productos/{producto}', [ProductoController::class, 'show']);
     Route::post('productos', [ProductoController::class, 'store']);
-    Route::put('productos/{producto}', [ProductoController::class, 'update']);
-    Route::delete('productos/{producto}', [ProductoController::class, 'destroy']);
+    Route::put('productos/{id}', [ProductoController::class, 'update']);
+    Route::delete('productos/{id}', [ProductoController::class, 'destroy']);
 
 // Subida de imagen (opcional)
     Route::post('productos/{producto}/imagen', [ProductoController::class, 'uploadImage']);

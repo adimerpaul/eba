@@ -104,7 +104,8 @@ class ProductoController extends Controller{
 
     public function update(Request $request, Producto $producto)
     {
-        $producto->update($request->validated());
+        $producto = Producto::find($request->id);
+        $producto->update($request->all());
         return $producto->fresh('tipo');
     }
 

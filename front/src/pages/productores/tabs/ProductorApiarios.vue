@@ -282,8 +282,10 @@ export default {
       this.saving = true
       try {
         const payload = { ...this.formApiario, productor_id: this.productor.id }
-        if (payload.id) await this.$axios.put(`apiarios/${payload.id}`, payload)
-        else await this.$axios.post('apiarios', payload)
+        if (payload.id) 
+          await this.$axios.put(`apiarios/${payload.id}`, payload)
+        else 
+          await this.$axios.post('apiarios', payload)
         this.$alert?.success?.(payload.id ? 'Apiario actualizado' : 'Apiario creado')
         this.dlgApiario.open = false
         this.$emit('updated')
@@ -296,6 +298,16 @@ export default {
     // --- Colmenas (igual que tenías) ---
     emptyColmena () { return { id:null, apiario_id:null, tipo_miel_id:null, codigo_colmena:'', tipo_colmena:'', fecha_instalacion:null, reina_fecha_nacimiento:null, reina_procedencia:'', estado:'ACTIVA' } },
     async openColmenas (apiario) { this.currentApiario = apiario; this.dlgColmena.open = true; await this.fetchTipoMiel(); await this.fetchColmenas() },
+    async removeApiario(apiario) {
+      this.$alert?.dialog?.('¿Eliminar apiario?')?.onOk(async () => {
+        try {
+          await this.$axios.delete(`apiarios/${apiario.id}`)
+          this.$alert?.success?.('Apiario eliminado')
+          await this.fetchApiarios()
+        } catch (e) {
+          this.$alert?.error?.(e.response?.data?.message || 'No se pudo eliminar apiario')
+        }
+    })},
     async fetchTipoMiel () { try { const { data } = await this.$axios.get('tipo-miel'); this.tipoMielOptions = Array.isArray(data)?data:(data?.data||[]) } catch { this.tipoMielOptions = [] } },
     async fetchColmenas () {
       if (!this.currentApiario?.id) return

@@ -25,4 +25,25 @@ class ApiarioController extends Controller
         }
         return $q->get();
     }
+
+    public function store(Request $request)
+    {
+        $apiario = Apiario::create($request->all());
+        return response()->json($apiario, 201);
+    }
+
+    public function update(Request $request, Apiario $apiario)
+    {
+        $apiario = Apiario::find($request->id);
+        if (!$apiario) return response()->json(['error' => 'Apiario no encontrado'], 404);
+        $apiario->update($request->all());
+        return $apiario;
+    }
+
+    public function destroy($id)
+    {
+        $apiario = Apiario::find($id);
+        $apiario->delete(); // Soft delete
+        return response()->json(['deleted' => true]);
+    }
 }

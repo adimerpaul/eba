@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Kardex;
+use Illuminate\Support\Facades\DB;
+
 
 class KardexController extends Controller
 {

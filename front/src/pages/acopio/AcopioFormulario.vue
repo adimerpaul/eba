@@ -243,13 +243,12 @@ export default {
         procedencia: '',
         tipo_envase: '',
         observaciones: '',
-        estado: 'BUENO'
+        estado: 'SIN OBSERVACION'
       },
 
       estados: [
-        { label: 'BUENO', value: 'BUENO' },
-        { label: 'EN PROCESO', value: 'EN PROCESO' },
-        { label: 'CANCELADO', value: 'CANCELADO' }
+        { label: 'OBSERVADA', value: 'OBSERVADA' },
+        { label: 'SIN OBSERVACION', value: 'SIN OBSERVACION' },
       ]
     }
   },
