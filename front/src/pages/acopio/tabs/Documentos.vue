@@ -122,7 +122,6 @@
 import {actaRecepcionConformidadPDF} from "src/planillas/documentoPlanilla.js";
 import {reciboCompraPolenPDF} from "src/planillas/recibocomprapolen.js";
 import {reciboCompraCeraPDF} from "src/planillas/recibocompracera.js";
-
 export default {
   name: 'Documentos',
   props: {

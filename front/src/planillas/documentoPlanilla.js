@@ -1,77 +1,92 @@
-// === Plantilla Dompdf-friendly (100% tablas, CSS mínimo) ===
-export function actaRecepcionConformidadPDF(cosecha = {}) {
+export function actaRecepcionConformidadPDF(data = {}) {
+  const {
+    lugar = 'SAMAUZABETY',
+    dia = '07',
+    mes = '07',
+    anio = '2022',
+    almacen = '0001',
+    fechaRecibo = '07/07/2022',
+    literal = '',
+    monto = '0.00',
+    consistencia = '',
+    precioUnitario = '0.00',
+    sabor = '_____',
+    aroma = '_____',
+    gb = '_____',
+    humedad = '_____',
+    region = '_____',
+    proveedor = '_____',
+    peso = '_____',
+    nombre = '_____',
+    materia = '_____',
+    color = '_____',
+  } = data;
 
   return `
   <style>
   *{ font-family: DejaVu Sans, sans-serif; }
-  .titulo { text-align:center; font-size:20px; margin-bottom:10px; }
-  .box { width:100%; border-collapse:collapse; margin-bottom:8px; }
-  .box td { border:1px solid #8a96a3; padding:6px; font-size:12px; }
-  .box .label { background:#5f6c78; color:#fff; font-weight:600; width:220px; }
-  .tabla { width:100%; border-collapse:collapse; }
-  .tabla th, .tabla td { border:1px solid #8a96a3; padding:6px; font-size:12px; }
-  .tabla th { background:#5f6c78; color:#fff; font-weight:700; }
-  .tabla tfoot td { background:#5f6c78; color:#fff; font-weight:700; }
+  body { font-size: 12px; }
+  .header { width:100%; border-collapse: collapse; margin-bottom:8px; }
+  .header td { padding:4px; font-size:11px; }
+  .titulo { text-align:center; font-size:16px; font-weight:bold; margin:8px 0; }
+  .subtitulo { text-align:center; font-size:13px; margin-bottom:8px; }
+  .table { width:100%; border-collapse: collapse; font-size:12px; }
+  .table2 { width:100%; border-collapse: collapse; font-size:8px; }
+  .table td, .table th { border:1px solid #444; padding:5px; }
+  .label { background:#f0f0f0; font-weight:bold; }
   .right { text-align:right; }
   .center { text-align:center; }
-  .firmas { width:100%; text-align:center; margin-top:36px; font-size:12px; }
-  .firmas .linea { border-top:1px dotted #444; margin:20px auto 6px; width:80%; }
-</style>
+  .firma { text-align:center; font-size:11px; padding-top:25px; }
+  .firma .linea { border-top:1px dotted #444; width:80%; margin:0 auto 4px; }
+  .nota { font-size:10px; margin-top:5px; }
+  .dark { background:#5f6c78; color:#fff; font-weight:bold; text-align:center; }
+  .no-border td { border:none !important; }
+  p{font-size:14px;}
+  </style>
 
-<h2 style="text-align:center;">IRUPANA</h2>
-<h3 class="titulo">ACTA DE RECEPCIÓN Y CONFORMIDAD DE MATERIA PRIMA</h3>
-
-<table class="box">
-  <tr><td class="label">Responsable de Almacén:</td><td>ORLANDO URUÑA KAPA</td></tr>
-  <tr><td class="label">Dependencia:</td><td>GERENCIA DE LÍNEA APÍCOLA, LIOFILIZADOS, STEVIA Y GRANOS</td></tr>
-  <tr><td class="label">Tipo de Materia Prima:</td><td>MAP-17 MIEL</td></tr>
-  <tr><td class="label">Proveedor:</td><td>TINTA MAMANI ELIZABETH</td></tr>
-</table>
-
-<table class="tabla">
-  <thead>
+  <table class="header">
     <tr>
-      <th>Nro.</th>
-      <th>Código</th>
-      <th>Partida</th>
-      <th>Descripción</th>
-      <th>Unidad de Medida</th>
-      <th>Fecha de Vencimiento</th>
-      <th>Lote</th>
-      <th>Cantidad</th>
-      <th>Costo Unitario</th>
-      <th>Costo Total</th>
+      <td rowspan="2" style="width:150px;"><img src="../../logoOld.png" width="150"></td>
+      <td colspan="3" style="text-align:center; font-weight:bold; font-size:22px;">EMPRESA BOLIVIANA DE ALIMENTOS Y DERIVADOS - EBA</td>
+      <td style="border:1px solid #000; font-size:10px;" rowspan="2">
+        <b>Fecha de emisión:</b>01/01/2025<br><br>
+        <b>Usuario: _________</b><br><br>
+        <b>Código: 9999999</b>
+      </td>
     </tr>
-  </thead>
-  <tbody>
     <tr>
-      <td class="center">1</td>
-      <td><b>MAP-17</b></td>
-      <td><b>31300</b></td>
-      <td><b>MIEL</b></td>
-      <td><b>KILO</b></td>
-      <td><b>2027-12-31</b></td>
-      <td><b>S/L</b></td>
-      <td class="right">400.00</td>
-      <td class="right">32.00</td>
-      <td class="right">12,800.00</td>
+      <td colspan="3" style="text-align:center; font-size:12px;">NOMBRE DEL CIP ........</td>
     </tr>
-  </tbody>
-  <tfoot>
+    <tr><td colspan="5" style="text-align:center; font-size:16px; font-weight:bold;">ACTA DE CONTROL DE CALIDAD Y CONFORMIDAD DE MATERIA PRIMA</td></tr>
+  </table>
+
+  <p>
+  De acuerdo a la designacion como, <b>ENCARGADA DE ACOPIO</b> Y PERSONAL DE CALIDAD, mi persona ${nombre}, ha procedido con la RECEPCION DE MIEL, mediante COMPRA DIRECTA, 
+  lote que fue entregado en fecha ${fechaRecibo}, de acuerdo al siguiente detalle:
+  </p>
+  <p>${peso} Kg. de ${materia}, con un precio por kg. de ${precioUnitario} Bs/kg</p>
+  <p>La entrega fue realizada por el proveedor: ${proveedor}</p>
+  <p>Productor de la region de : ${region}</p>
+  <p>En conformidad con los parametros de control de calidad estipulados por la Empresa de Alimentos y Derivados EBA: <br> <b>MIEL ${materia}</b></p>
+  <p>Luego de un Analisis sensorial, la miel presento las siguientes caracteristicas, una humedad promedio de: <br> 
+   ${humedad} %, GB ${gb}, Aroma: ${aroma}, Sabor: ${sabor}, Consistencia: ${consistencia}, Color: ${color}
+  </p>
+  <p>Con presencia minima de impurezas.</p>
+  <p>Del lote de miel recepcionado ${ peso } Kg. se distribuyo al ${almacen}</p>
+  <p>El monto total CANCELADO ES: <b>${monto}</b> Bs.</p>
+  <p>${literal} 00/100 Bolivianos</p>
+  <p>Es cuanto se informa para fines consiguientes:</p>
+  <br>
+
+  <table class="table no-border" style="margin-top:25px;">
+    <tr class="dark" style="font-size:8px;"><td>ENTREGUE CONFORME</td><td></td><td>RECIBI CONFORME</td><td></td></tr>
+    <tr style="height:100px"><td></td><td></td><td></td><td></td></tr
     <tr>
-      <td colspan="9" class="right">Total:</td>
-      <td class="right">12,800.00</td>
+      <td class="firma"><div class="linea"></div>PRODUCTOR O PRODUCTORA</td>
+      <td class="firma"><div class="linea"></div>HUELLA DACTILAR PULGAR DERECHO</td>
+      <td class="firma"><div class="linea"></div>AUXILIAR DE ACOPIO</td>
+      <td class="firma"><div class="linea"></div>ENCARGADO DE CALIDAD DE PLANTA</td>
     </tr>
-  </tfoot>
-</table>
-
-<table class="firmas">
-  <tr>
-    <td><div class="linea"></div>Encargado de Almacén</td>
-    <td><div class="linea"></div>Área/Unidad administrativa</td>
-    <td><div class="linea"></div>Jefe de Planta</td>
-  </tr>
-</table>
-
+  </table>
   `;
 }
