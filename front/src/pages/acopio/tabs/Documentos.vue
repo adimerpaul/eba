@@ -120,6 +120,8 @@
 // import {actaRecepcionConformidad} from "src/planillas/documentoPlanilla.js";
 
 import {actaRecepcionConformidadPDF} from "src/planillas/documentoPlanilla.js";
+import {reciboCompraPolenPDF} from "src/planillas/recibocomprapolen.js";
+import {reciboCompraCeraPDF} from "src/planillas/recibocompracera.js";
 
 export default {
   name: 'Documentos',
@@ -183,6 +185,16 @@ export default {
           id: 7,
           nombre: 'Recibo Compra de Miel',
           html: '<h1>Recibo Compra de Miel</h1><p>Contenido del recibo...</p>'
+        },
+        {
+          id: 8,
+          nombre: 'Recibo Compra de Polen',
+          html: '<h1>Recibo Compra de Polen</h1><p>Contenido del recibo...</p>'
+        },
+        {
+          id: 9,
+          nombre: 'Recibo Compra de Cera de Abeja',
+          html: '<h1>Recibo Compra de Cera de Abeja</h1><p>Contenido del recibo...</p>'
         }
       ]
     }
@@ -195,12 +207,20 @@ export default {
   methods: {
     aplicarPlantilla(plantillaId) {
       const plantilla = this.planillas.find(p => p.id === plantillaId)
+
       if (plantilla) {
         this.form.html = ''
         if (plantilla.nombre === 'Acta de Recepción y Conformidad de Materia Prima' ){
           this.form.html = actaRecepcionConformidadPDF(this.cosecha);
         }
+        if (plantilla.nombre === 'Recibo Compra de Polen' ){
+          this.form.html = reciboCompraPolenPDF(this.cosecha);
+        }
+        if (plantilla.nombre === 'Recibo Compra de Cera de Abeja' ){
+          this.form.html = reciboCompraCeraPDF(this.cosecha);
+        }
         this.form.nombre = plantilla.nombre
+        console.log(this.form.html)
       }
     },
     // async fetchMe() {

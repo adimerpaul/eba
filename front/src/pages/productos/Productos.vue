@@ -6,7 +6,7 @@
       row-key="id"
       flat bordered dense wrap-cells
       :rows-per-page-options="[0]"
-      title="Productos"
+      title="Almacen de Productos"
       :loading="loading"
       :filter="filter"
     >
@@ -288,7 +288,7 @@ export default {
             return
         }
         this.loading = true
-        this.$axios.post('getKardex',{inicio: this.inicio, fin: this.fin, productoid: this.producto.id}).then(res => {
+        this.$axios.post('getKardex',{inicio: this.inicio, fin: this.fin, producto_id: this.producto.id}).then(res => {
           console.log(res.data)
             this.kardex = res.data
         }).catch(e => {
