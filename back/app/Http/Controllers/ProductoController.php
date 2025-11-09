@@ -67,7 +67,7 @@ class ProductoController extends Controller{
                     $sheet->setCellValue("D{$fila}", $u->nombre_producto);
                     $sheet->setCellValue("E{$fila}", '');
                     $sheet->setCellValue("F{$fila}", $u->presentacion);
-                    $sheet->setCellValue("G{$fila}", $u->cantidad_kg);
+                    $sheet->setCellValue("G{$fila}", $u->cantidad);
                     $sheet->setCellValue("H{$fila}", $u->costo??0);
                     $sheet->setCellValue("I{$fila}", $u->precio??0);
                     $sheet->setCellValue("J{$fila}", $u->fecha_vencimiento??'');
@@ -85,7 +85,7 @@ class ProductoController extends Controller{
 
     }
     function getByTipo($tipo){
-        return Producto::where('tipo_id', $tipo)->get();
+        return Producto::where('tipo_id', $tipo)->where('id','>',0)->get();
     }
     public function show(Producto $producto)
     {

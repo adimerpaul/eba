@@ -65,4 +65,9 @@ class Productor extends Model implements Auditable
     {
         return $this->hasMany(Apiario::class, 'productor_id');
     }
+
+    public function runsas()
+    {
+        return $this->hasMany(Runsa::class, 'productor_id');
+    }
 }

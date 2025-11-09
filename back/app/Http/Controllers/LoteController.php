@@ -139,7 +139,7 @@ class LoteController extends Controller
         return DB::transaction(function () use ($lote) {
             $producto = Producto::find($lote->producto_id);
             if ($producto && (float) $lote->cantidad_kg > 0) {
-                $producto->decrement('cantidad_kg', (float) $lote->cantidad_kg);
+                $producto->decrement('cantidad', (float) $lote->cantidad_kg);
             }
             $lote->delete();
 

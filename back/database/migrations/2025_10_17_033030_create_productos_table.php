@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('codigo_producto', 20);
             $table->string('nombre_producto', 100);
             $table->string('presentacion', 20)->default('PIEZA');
-            $table->decimal('cantidad_kg', 10, 2)->nullable();
+            $table->decimal('cantidad', 10, 2)->nullable();
             $table->decimal('costo', 10, 2)->default(0);
             $table->decimal('precio', 10, 2)->default(0);
             $table->date('fecha_vencimiento')->nullable();

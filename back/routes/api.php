@@ -24,6 +24,8 @@ use App\Http\Controllers\TipoProductoController;
 use App\Http\Controllers\TransporteController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\KardexController;
+use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\RunsaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -198,6 +200,14 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::post('ventaExcel', [VentaController::class, 'ventaExcel']);
     
     Route::post('getKardex', [KardexController::class, 'getKardex']);
+
+    Route::post('/reporteAcopioProveedorDep', [ReporteController::class, 'reporteAcopioProveedorDep']); //reporteAcopioProveedorDep
+    Route::post('/reportePorcentual', [ReporteController::class, 'reportePorcentual']); //reportePorcentual
+
+    Route::get('/runsas', [RunsaController::class, 'index']);
+    Route::post('/runsas', [RunsaController::class, 'store']);
+    Route::put('/runsas/{runsa}', [RunsaController::class, 'update']);
+    Route::delete('/runsas/{runsa}', [RunsaController::class, 'destroy']);
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 Route::get('/ventas/{venta}/nota', [VentaController::class, 'notaPdf'])->name('ventas.nota');

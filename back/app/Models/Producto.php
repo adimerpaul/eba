@@ -28,7 +28,7 @@ class Producto extends Model implements Auditable
         'codigo_producto',
         'nombre_producto',
         'presentacion',
-        'cantidad_kg',
+        'cantidad',
         'costo',
         'precio',
         'fecha_vencimiento',

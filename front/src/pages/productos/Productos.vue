@@ -103,7 +103,7 @@
                 <q-input v-model="form.presentacion" dense filled label="Presentación" />
               </div>
               <div class="col-12 col-md-6">
-                <q-input v-model.number="form.cantidad_kg" type="number" min="0" step="0.01" dense filled label="Cantidad (kg)" />
+                <q-input v-model.number="form.cantidad" type="number" min="0" step="0.01" dense filled label="Cantidad (kg)" />
               </div>
               <div class="col-12 col-md-6">
                 <q-input v-model.number="form.costo" type="number" min="0" step="0.01" dense filled label="Costo" />
@@ -205,7 +205,7 @@ export default {
         { name: 'nombre_producto', label: 'Nombre', align: 'left', field: 'nombre_producto' },
         { name: 'tipo', label: 'Tipo', align: 'left', field: 'tipo_id' },
         { name: 'presentacion', label: 'Presentación', align: 'left', field: 'presentacion' },
-        { name: 'cantidad_kg', label: 'Kg', align: 'right', field: 'cantidad_kg', format: v => Number(v||0).toFixed(2) },
+        { name: 'cantidad', label: 'Kg', align: 'right', field: 'cantidad', format: v => Number(v||0).toFixed(2) },
         { name: 'costo', label: 'Costo', align: 'right', field: 'costo', format: v => Number(v||0).toFixed(2) },
         { name: 'precio', label: 'Precio', align: 'right', field: 'precio', format: v => Number(v||0).toFixed(2) },
         { name: 'fecha_vencimiento', label: 'Vence', align: 'left', field: 'fecha_vencimiento' },
@@ -223,7 +223,7 @@ export default {
         codigo_producto: '',
         nombre_producto: '',
         presentacion: 'PIEZA',
-        cantidad_kg: 0,
+        cantidad: 0,
         costo: 0,
         precio: 0,
         fecha_vencimiento: '',
@@ -344,7 +344,7 @@ export default {
         codigo_producto: '',
         nombre_producto: '',
         presentacion: 'PIEZA',
-        cantidad_kg: 0,
+        cantidad: 0,
         costo: 0,
         precio: 0,
         fecha_vencimiento: '',
@@ -361,7 +361,7 @@ export default {
         codigo_producto: row.codigo_producto,
         nombre_producto: row.nombre_producto,
         presentacion: row.presentacion || 'PIEZA',
-        cantidad_kg: Number(row.cantidad_kg || 0),
+        cantidad: Number(row.cantidad || 0),
         costo: Number(row.costo || 0),
         precio: Number(row.precio || 0),
         fecha_vencimiento: row.fecha_vencimiento || '',

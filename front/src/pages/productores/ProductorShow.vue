@@ -10,9 +10,10 @@
     <q-card flat bordered>
       <q-tabs v-model="tab" class="text-primary" align="left" dense>
         <q-tab name="general" icon="badge" label="1) Información general" no-caps />
-        <q-tab name="certs" icon="verified" label="2) Certificaciones" no-caps />
-        <q-tab name="apiarios" icon="hive" label="3) Apiarios" no-caps />
-        <q-tab name="mapa" icon="map" label="4) Mapa" no-caps />
+        <q-tab name="runsa" icon="assured_workload" label="2) Runsa" no-caps />
+        <q-tab name="certs" icon="verified" label="3) Certificaciones" no-caps />
+        <q-tab name="apiarios" icon="hive" label="4) Apiarios" no-caps />
+        <q-tab name="mapa" icon="map" label="5) Mapa" no-caps />
       </q-tabs>
       <q-separator />
 
@@ -30,6 +31,10 @@
 
         <q-tab-panel name="certs" class="q-pa-none">
           <ProductorCertificaciones :productor="productor" @updated="fetchProductor" />
+        </q-tab-panel>
+        
+        <q-tab-panel name="runsa" class="q-pa-none">
+          <ProductorRunsa :productor="productor" @updated="fetchProductor" />
         </q-tab-panel>
 
         <q-tab-panel name="apiarios" class="q-pa-none">
@@ -50,10 +55,11 @@ import ProductorForm from 'pages/productores/ProductorForm.vue'
 import ProductorCertificaciones from 'pages/productores/tabs/ProductorCertificaciones.vue'
 import ProductorApiarios from 'pages/productores/tabs/ProductorApiarios.vue'
 import ProductorMapa from 'pages/productores/tabs/ProductorMapa.vue'
+import ProductorRunsa from 'pages/productores/tabs/ProductorRunsa.vue'
 
 export default {
   name: 'ProductorShow',
-  components: { ProductorMapa, ProductorApiarios, ProductorCertificaciones, ProductorForm },
+  components: { ProductorMapa, ProductorApiarios, ProductorCertificaciones, ProductorForm, ProductorRunsa },
   data () {
     return {
       tab: 'general',

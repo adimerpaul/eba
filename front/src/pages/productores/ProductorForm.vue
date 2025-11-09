@@ -44,9 +44,9 @@
       <div class="col-12 col-sm-4">
         <q-input v-model="form.comunidad" label="Comunidad" dense outlined />
       </div>
-      <div class="col-12 col-sm-4">
+      <!-- <div class="col-12 col-sm-4">
         <q-select v-model="form.proveedor" label="Proveedor" :options="tipos" dense outlined />
-      </div>
+      </div>-->
       <div class="col-12 col-sm-4">
         <q-input v-model="form.cip_acopio" label="CIP Acopio" dense outlined />
       </div>
