@@ -203,6 +203,8 @@ Route::middleware('auth:sanctum')->group(callback: function () {
 
     Route::post('/reporteAcopioProveedorDep', [ReporteController::class, 'reporteAcopioProveedorDep']); //reporteAcopioProveedorDep
     Route::post('/reportePorcentual', [ReporteController::class, 'reportePorcentual']); //reportePorcentual
+    Route::post('/reportEdad', [ReporteController::class, 'reportEdad']); //reportEdad
+    Route::post('/reportAcopioOrg', [ReporteController::class, 'reportAcopioOrg']); //reportAcopioOrg
 
     Route::get('/runsas', [RunsaController::class, 'index']);
     Route::post('/runsas', [RunsaController::class, 'store']);

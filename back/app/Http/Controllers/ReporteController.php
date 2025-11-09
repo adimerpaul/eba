@@ -105,5 +105,77 @@ class ReporteController extends Controller
             'productores' => $productores,
         ]);
     }
+
+    public function reportEdad(Request $request){
+        $res = DB::SELECT("SELECT rango_edad, COUNT(*) AS total, ROUND((COUNT(*) * 100.0 / SUM(COUNT(*)) OVER ()), 1) AS porcentaje																														
+FROM ( SELECT CASE																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 18 AND 19 THEN '18 a 19'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 20 AND 24 THEN '20 a 24'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 25 AND 29 THEN '25 a 29'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 30 AND 34 THEN '30 a 34'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 35 AND 39 THEN '35 a 39'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 40 AND 44 THEN '40 a 44'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 45 AND 49 THEN '45 a 49'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 50 AND 54 THEN '50 a 54'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 55 AND 59 THEN '55 a 59'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 60 AND 64 THEN '60 a 64'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 65 AND 69 THEN '65 a 69'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 70 AND 74 THEN '70 a 74'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 75 AND 79 THEN '75 a 79'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 80 AND 84 THEN '80 a 84'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 85 AND 89 THEN '85 a 89'																														
+WHEN EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 90 AND 94 THEN '90 a 94'																														
+ELSE 'Fuera de rango' END AS rango_edad																														
+FROM public.productores																														
+WHERE fec_nacimiento IS NOT NULL																														
+AND EXTRACT(YEAR FROM AGE(now()::DATE, fec_nacimiento)) BETWEEN 18 AND 94																														
+) AS age_groups																														
+GROUP BY rango_edad																														
+ORDER BY																														
+CASE																														
+WHEN rango_edad = '18 a 19' THEN 1																														
+WHEN rango_edad = '20 a 24' THEN 2																														
+WHEN rango_edad = '25 a 29' THEN 3																														
+WHEN rango_edad = '30 a 34' THEN 4																														
+WHEN rango_edad = '35 a 39' THEN 5																														
+WHEN rango_edad = '40 a 44' THEN 6																														
+WHEN rango_edad = '45 a 49' THEN 7																														
+WHEN rango_edad = '50 a 54' THEN 8																														
+WHEN rango_edad = '55 a 59' THEN 9																														
+WHEN rango_edad = '60 a 64' THEN 10																														
+WHEN rango_edad = '65 a 69' THEN 11																														
+WHEN rango_edad = '70 a 74' THEN 12																														
+WHEN rango_edad = '75 a 79' THEN 13																														
+WHEN rango_edad = '80 a 84' THEN 14																														
+WHEN rango_edad = '85 a 89' THEN 15																														
+WHEN rango_edad = '90 a 94' THEN 16																														
+ELSE 17																														
+END ;" );
+        return $res;
+    }
+
+    public function reportAcopioOrg(Request $request){
+        $res= DB::SELECT("SELECT o.asociacion,
+    SUM(CASE WHEN ac.mes = 'ene' THEN ac.cantidad_kg ELSE 0 END) AS ene,
+    SUM(CASE WHEN ac.mes = 'feb' THEN ac.cantidad_kg ELSE 0 END) AS feb,
+    SUM(CASE WHEN ac.mes = 'mar' THEN ac.cantidad_kg ELSE 0 END) AS mar,
+    SUM(CASE WHEN ac.mes = 'abr' THEN ac.cantidad_kg ELSE 0 END) AS abr,
+    SUM(CASE WHEN ac.mes = 'may' THEN ac.cantidad_kg ELSE 0 END) AS may,
+    SUM(CASE WHEN ac.mes = 'jun' THEN ac.cantidad_kg ELSE 0 END) AS jun,
+    SUM(CASE WHEN ac.mes = 'jul' THEN ac.cantidad_kg ELSE 0 END) AS jul,
+    SUM(CASE WHEN ac.mes = 'ago' THEN ac.cantidad_kg ELSE 0 END) AS ago,
+    SUM(CASE WHEN ac.mes = 'sep' THEN ac.cantidad_kg ELSE 0 END) AS sep,
+    SUM(CASE WHEN ac.mes = 'oct' THEN ac.cantidad_kg ELSE 0 END) AS oct,
+    SUM(CASE WHEN ac.mes = 'nov' THEN ac.cantidad_kg ELSE 0 END) AS nov,
+    SUM(CASE WHEN ac.mes = 'dic' THEN ac.cantidad_kg ELSE 0 END) AS dic
+FROM public.organizaciones o
+left JOIN public.productores p ON o.id = p.organizacion_id
+left JOIN public.apiarios a ON a.productor_id = p.id
+left JOIN public.v_acopio_cosechas_gestion_mes ac ON ac.apiario_id = a.id
+WHERE ac.gestion = $request->gestion
+and ac.producto_id = $request->producto_id
+GROUP BY o.asociacion" );
+        return $res;
+    }
 }
 
