@@ -22,7 +22,7 @@
       </div>
 
       <div class="row">
-        <div class="col-md-12 col-xs-12 text-center text-h6 text-bold">PRODUCTORES POR GENERO <q-btn color="info" icon="update"  @click="reportEdad"  dense :loading="loading"/></div>
+        <div class="col-md-12 col-xs-12 text-center text-h6 text-bold">PRODUCTORES POR EDAD <q-btn color="info" icon="update"  @click="reportEdad"  dense :loading="loading"/></div>
         <div class="col-md-6 col-xs-12"><q-table
             :rows="list_edad"
             row-key="name"
@@ -41,7 +41,7 @@
       />
       <div class="row">
         <div class="col-12 q-pa-xs"><q-table
-            title="LISTADO DE APICULTORES POR DEPARTAMENTO Y GENERO"
+            title="CANTIDAD      DE APICULTORES POR DEPARTAMENTO Y GENERO"
             :rows="reporte1"
             row-key="name"
         /></div>
@@ -49,7 +49,7 @@
 
         <div class="col-12 q-pa-xs">
             <q-table
-                title="LISTADO DE COLMENAS POR DEPARTAMENTO PORCENTAJE"
+                title="CANITDAD DE COLMENAS POR DEPARTAMENTO PORCENTAJE"
                 :rows="reporte4"
                 row-key="name"
             />
