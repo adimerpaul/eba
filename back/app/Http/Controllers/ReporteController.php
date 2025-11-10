@@ -154,6 +154,7 @@ END ;" );
         return $res;
     }
 
+    // reoprte acopio por organizacion
     public function reportAcopioOrg(Request $request){
         $res= DB::SELECT("SELECT o.asociacion,
     SUM(CASE WHEN ac.mes = 'ene' THEN ac.cantidad_kg ELSE 0 END) AS ene,
@@ -176,6 +177,92 @@ WHERE ac.gestion = $request->gestion
 and ac.producto_id = $request->producto_id
 GROUP BY o.asociacion" );
         return $res;
+    }
+
+    // apivultores por departamento
+    public function reportApicultorDep(){
+        $res = DB::SELECT("SELECT d.nombre_departamento, count(*) num_apicultor,			
+        COUNT(CASE WHEN runsa IS NOT NULL AND runsa <> '0' THEN 1 END) AS con_rumsa,
+        SUM(a.numero_colmenas_prod) AS num_col_prod, 
+        SUM(a.numero_colmenas_runsa) AS prod_promedio,			
+        SUM(CASE WHEN sexo = 1 THEN 1 ELSE 0 END) varon, 
+        SUM(CASE WHEN sexo = 2 THEN 1 ELSE 0 END) mujer			
+        from public.productores p			
+        left join public.municipios m ON p.municipio_id = m.id	
+        left join public.departamentos d ON m.departamento_id = d.id	
+        left join public.apiarios a ON a.productor_id  = p.id
+        where p.id != 0 and a.id != 0
+        group by d.nombre_departamento;");
+        return $res;
+    }
+
+    // porcentaje apicultores por departamento y producicion por genero
+    public function reportApicultorDepGenero(){
+        $res = DB::SELECT("SELECT d.nombre_departamento, count(*) num_apicultor,			
+            COUNT(runsa) AS con_rumsa,SUM(a.numero_colmenas_prod) AS num_col_prod,
+            SUM(a.numero_colmenas_runsa) AS prod_promedio,			
+            SUM(CASE WHEN sexo = 1 THEN 1 ELSE 0 END) varon, 
+            SUM(CASE WHEN sexo = 2 THEN 1 ELSE 0 END) mujer			
+            from public.productores p			
+            left join public.municipios m ON p.municipio_id = m.id	
+            left join public.departamentos d ON m.departamento_id = d.id	
+            left join public.apiarios a ON a.productor_id  = p.id
+            where p.id != 0 and a.id != 0
+            group by d.nombre_departamento;");
+        return $res;
+    }
+    
+    // porcentaje apicultores por departamento
+    public function reportePorcentualApicultorDep(){
+        $res = DB::SELECT("SELECT  d.nombre_departamento, COUNT(*) AS num_apicultor,			
+            SUM(COUNT(*)) OVER() AS total_general, ROUND((COUNT(*) * 100.0 / SUM(COUNT(*)) OVER()), 2) AS porcentaje			
+            from public.productores p			
+            left join public.municipios m ON p.municipio_id = m.id	
+            left join public.departamentos d ON m.departamento_id = d.id	
+            left join public.apiarios a ON a.productor_id  = p.id
+            where p.id != 0 and a.id != 0		
+            group by d.nombre_departamento	;");
+        return $res;
+    }
+
+    // porcentaje colmenas por departamento
+    public function reportePorcentualColmenasDep(){
+        $res = DB::SELECT("SELECT  d.nombre_departamento, SUM(a.numero_colmenas_prod) AS num_colmenas,			
+            SUM(SUM(a.numero_colmenas_prod)) OVER() AS total_general, ROUND((SUM(a.numero_colmenas_prod) * 100.0 / SUM(SUM(a.numero_colmenas_prod)) OVER()), 2) AS porcentaje			
+            from public.productores p			
+            left join public.municipios m ON p.municipio_id = m.id	
+            left join public.departamentos d ON m.departamento_id = d.id	
+            left join public.apiarios a ON a.productor_id  = p.id
+            where p.id != 0 and a.id != 0				
+            group by  d.nombre_departamento	;");
+        return $res;
+    }
+
+    // porcentaje apicultores por departamento con acopio
+    public function reportePorcentualApicultorDepAcopio(){
+        $res = DB::SELECT("SELECT  d.nombre_departamento, COUNT(*) AS num_apicultor, COUNT(runsa) AS con_runsa,	
+            SUM(COUNT(*)) OVER() AS total_general, ROUND((COUNT(*) * 100.0 / SUM(COUNT(*)) OVER()), 2) AS porcentaje	
+            from public.productores p			
+            left join public.municipios m ON p.municipio_id = m.id	
+            left join public.departamentos d ON m.departamento_id = d.id	
+            left join public.apiarios a ON a.productor_id  = p.id
+            where p.id != 0 and a.id != 0				
+            group by  d.nombre_departamento	;");
+        return $res;
+    }
+
+    // porcentaje apicultores por departamento con acopio
+    public function reportePorcentualApicultorDepAcopio2(){
+        return DB::SELECT("SELECT d.nombre_departamento, COUNT(*) AS num_apicultor, COUNT(runsa) AS con_runsa,	
+            SUM(COUNT(*)) OVER() AS total_general, ROUND((COUNT(*) * 100.0 / SUM(COUNT(*)) OVER()), 2) AS porcentaje	
+            from public.productores p			
+            left join public.municipios m ON p.municipio_id = m.id	
+            left join public.departamentos d ON m.departamento_id = d.id	
+            JOIN public.apiarios a ON a.productor_id = p.id
+            JOIN public.v_acopio_cosechas_gestion_mes ac ON ac.apiario_id = a.id
+            where p.id != 0 and a.id != 0				
+            group by  d.nombre_departamento
+            ;");
     }
 }
 

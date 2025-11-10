@@ -20,7 +20,7 @@
       </div>
 
       <div class="row">
-        <div class="col-md-12 col-xs-12 text-center text-h6 text-bold">PRODUCTORES POR GENERO <q-btn color="info" icon="upload"  @click="reportEdad"  dense/></div>
+        <div class="col-md-12 col-xs-12 text-center text-h6 text-bold">PRODUCTORES POR GENERO <q-btn color="info" icon="update"  @click="reportEdad"  dense :loading="loading"/></div>
         <div class="col-md-6 col-xs-12"><q-table
             :rows="list_edad"
             row-key="name"
@@ -29,7 +29,7 @@
         /></div>
         <div class="col-md-6 col-xs-12"><canvas ref="grafico2" height="180"></canvas></div>
       </div>
-      <div class="text-center text-bold text-h6">ORGANIZACION ACOPIO <q-btn color="info" icon="update"  @click="reportOrg"  dense/></div>
+      <div class="text-center text-bold text-h6">ORGANIZACION ACOPIO <q-btn color="info" icon="update"  @click="reportOrg"  dense :loading="loading"/></div>
       <q-table
         :rows="list_org"
         row-key="name"
@@ -37,6 +37,24 @@
         :loading="loading"
         v-if="list_org.length>0"
       />
+      <div class="row">
+        <div class="col-12 q-pa-xs"><q-table
+            title="LISTADO DE APICULTORES POR DEPARTAMENTO Y GENERO"
+            :rows="reporte1"
+            row-key="name"
+        /></div>
+
+
+        <div class="col-12 q-pa-xs">
+            <q-table
+                title="LISTADO DE COLMENAS POR DEPARTAMENTO PORCENTAJE"
+                :rows="reporte4"
+                row-key="name"
+            />
+        </div>
+
+
+      </div>
     </q-page>
 </template>
 <script>
@@ -65,15 +83,77 @@ data    () {
             { name: 'nombre', label: 'Producto', align: 'left', field: 'nombre' },
             { name: 'acciones', label: 'Acciones', align: 'center', field: 'acciones' },
         ],
+        reporte1: [],
+        reporte2: [],
+        reporte3: [],
+        reporte4: [],
+        reporte5: [],
+        reporte6: [],
     }
 },
 mounted() {
     this.getProductos();
+    this.getReporte1();
+    this.getReporte2();
+    this.getReporte3();
+    this.getReporte4();
+    this.getReporte5();
+    this.getReporte6();
 },
   methods: {
+    getReporte1() {
+        this.loading = true;
+        this.$axios.post('/reportApicultorDep').then(({ data }) => {
+            this.reporte1 = data.data || data || []
+        })  .finally(() => {
+            this.loading = false;
+        });
+    },
+    getReporte2() {
+        this.loading = true;
+        this.$axios.post('/reportApicultorDepGenero').then(({ data }) => {
+            this.reporte2 = data.data || data || []
+        })  .finally(() => {
+            this.loading = false;
+        });
+    },
+    getReporte3() {
+        this.loading = true;
+        this.$axios.post('/reportePorcentualApicultorDep').then(({ data }) => {
+            this.reporte3 = data.data || data || []
+        })  .finally(() => {
+            this.loading = false;
+        });
+    },
+    getReporte4() {
+        this.loading = true;
+        this.$axios.post('/reportePorcentualColmenasDep').then(({ data }) => {
+            this.reporte4 = data.data || data || []
+        })  .finally(() => {
+            this.loading = false;
+        });
+    },
+    getReporte5() {
+        this.loading = true;
+        this.$axios.post('/reportePorcentualApicultorDepAcopio').then(({ data }) => {
+            this.reporte5 = data.data || data || []
+        })  .finally(() => {
+            this.loading = false;
+        });
+    },
+    getReporte6() {
+        this.loading = true;
+        this.$axios.post('/reportePorcentualApicultorDepAcopio2').then(({ data }) => {
+            this.reporte6 = data.data || data || []
+        })  .finally(() => {
+            this.loading = false;
+        });
+    },
     reportOrg() {
-        if(!this.producto.id) return;
-        if(!this.gestion) return;
+        if(!this.producto.id) {
+            this.$alert?.error?.('Seleccione un producto');
+            return;}
+        if(!this.gestion){ this.$alert?.error?.('Seleccione una gestion'); return;}
         this.loading = true;
         this.$axios.post('/reportAcopioOrg',{gestion: this.gestion,producto_id: this.producto.id}).then(({ data }) => {
             this.list_org = data.data || data || []
@@ -156,8 +236,10 @@ mounted() {
       });
     },
     getReporte() {
-        if(!this.producto.id) return;
-        if(!this.gestion) return;
+        if(!this.producto.id) {
+            this.$alert?.error?.('Seleccione un producto');
+            return;}
+        if(!this.gestion){ this.$alert?.error?.('Seleccione una gestion'); return;}
         this.loading = true;
         this.$axios.post('/reporteAcopioProveedorDep', {
             producto_id: this.producto.id,
@@ -172,8 +254,10 @@ mounted() {
     },
     getReporteTabla() {
 
-        if(!this.producto.id) return;
-        if(!this.gestion) return;
+        if(!this.producto.id) {
+            this.$alert?.error?.('Seleccione un producto');
+            return;}
+        if(!this.gestion){ this.$alert?.error?.('Seleccione una gestion'); return;}
         this.loading = true;
         this.$axios.post('/reportePorcentual', {
             producto_id: this.producto.id,

@@ -205,6 +205,13 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::post('/reportePorcentual', [ReporteController::class, 'reportePorcentual']); //reportePorcentual
     Route::post('/reportEdad', [ReporteController::class, 'reportEdad']); //reportEdad
     Route::post('/reportAcopioOrg', [ReporteController::class, 'reportAcopioOrg']); //reportAcopioOrg
+    Route::post('/reportApicultorDep', [ReporteController::class, 'reportApicultorDep']); //reportApicultorDep
+    Route::post('/reportApicultorDepGenero', [ReporteController::class, 'reportApicultorDepGenero']); //reportApicultorDepGenero
+    Route::post('/reportePorcentualApicultorDep', [ReporteController::class, 'reportePorcentualApicultorDep']); //reportePorcentualApicultorDep
+    Route::post('/reportePorcentualColmenasDep', [ReporteController::class, 'reportePorcentualColmenasDep']); //reportePorcentualColmenasDep
+    Route::post('/reportePorcentualApicultorDepAcopio', [ReporteController::class, 'reportePorcentualApicultorDepAcopio']); //reportePorcentualApicultorDepAcopio
+    Route::post('/reportePorcentualApicultorDepAcopio2', [ReporteController::class, 'reportePorcentualApicultorDepAcopio2']); //reportePorcentualApicultorDepAcopio2
+
 
     Route::get('/runsas', [RunsaController::class, 'index']);
     Route::post('/runsas', [RunsaController::class, 'store']);
