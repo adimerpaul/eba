@@ -99,7 +99,6 @@ mounted() {
     this.reportOrg();
     this.graficoEdad()
     this.getReporte()
-    this.getReporteTabla()
     this.getReporte1();
     this.getReporte2();
     this.getReporte3();
