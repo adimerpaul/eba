@@ -237,8 +237,8 @@ mounted() {
             }
             })
     },
-    getProductos() {
-      async () => await this.$axios.get('/productos/tipo/1').then(({ data }) => {
+    async getProductos() {
+       await this.$axios.get('/productos/tipo/1').then(({ data }) => {
         this.productos = data?.data || data || []
         if(this.productos.length>0) this.producto = this.productos[0];
       });
