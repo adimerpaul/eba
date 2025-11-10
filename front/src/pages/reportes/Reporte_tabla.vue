@@ -16,7 +16,7 @@
       >
 
       </q-table>
-      <div v-if="listado2.length>0">
+      <div >
           <div class="text-center text-bold text-h6"> Grafica ACOPIO GESTION PRODUCTO POR DEPARTAMENTO {{producto.nombre_producto}} GESTION {{gestion}} </div>
          <canvas ref="grafico"></canvas>
       </div>
@@ -54,8 +54,6 @@
                 row-key="name"
             />
         </div>
-
-
       </div>
     </q-page>
 </template>
@@ -98,7 +96,6 @@ mounted() {
     this.reportEdad();
     this.reportOrg();
     this.graficoEdad()
-    this.getReporte()
     this.getReporte1();
     this.getReporte2();
     this.getReporte3();
@@ -107,6 +104,92 @@ mounted() {
     this.getReporte6();
 },
   methods: {
+    
+    getReporteTabla() {
+
+        if(!this.producto.id) {
+            this.$alert?.error?.('Seleccione un producto');
+            return;}
+        if(!this.gestion){ this.$alert?.error?.('Seleccione una gestion'); return;}
+        this.loading = true;
+        this.$axios.post('/reportePorcentual', {
+            producto_id: this.producto.id,
+            inicio: this.gestion + '-01-01',
+            fin: this.gestion + '-12-31',
+            }).then(({ data }) => {
+            console.log(data);
+             this.listado2 = data.data || data || []
+             this.crearGrafico()
+        }).finally(() => {
+            this.loading = false;
+        });
+    },
+     crearGrafico() {
+            if (!this.$refs.grafico) {
+                console.error('Canvas aún no está montado')
+                return
+            }
+            if (this.chartInstance) this.chartInstance.destroy()
+
+            this.chartInstance = new Chart(this.$refs.grafico, {
+                type: 'bar',
+                data: {
+                labels: this.listado2.labels,
+                datasets: [
+                    {
+                    label: 'Porcentaje de acopio (%)',
+                    data: this.listado2.porcentaje,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    yAxisID: 'y'
+                    },
+                    {
+                    label: 'Total de productores',
+                    data: this.listado2.productores,
+                    backgroundColor: 'rgba(255, 159, 64, 0.6)',
+                    yAxisID: 'y1'
+                    }
+                ]
+                },
+                options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                stacked: false,
+                scales: {
+                    y: {
+                    type: 'linear',
+                    position: 'left',
+                    title: { display: true, text: 'Porcentaje (%)' }
+                    },
+                    y1: {
+                    type: 'linear',
+                    position: 'right',
+                    title: { display: true, text: 'Productores (total)' },
+                    grid: { drawOnChartArea: false }
+                    }
+                }
+                }
+            })
+        },
+            getReporte() {
+        if(!this.producto.id) {
+            this.$alert?.error?.('Seleccione un producto');
+            return;}
+        if(!this.gestion){ this.$alert?.error?.('Seleccione una gestion'); return;}
+        this.loading = true;
+        this.$axios.post('/reporteAcopioProveedorDep', {
+            producto_id: this.producto.id,
+            inicio: this.gestion + '-01-01',
+            fin: this.gestion + '-12-31',
+            }).then(({ data }) => {
+                console.log(data);
+            this.listado1 = data.data || data || []
+        }).finally(() => {
+            this.loading = false;
+        });
+    },
     getReporte1() {
         this.loading = true;
         this.$axios.post('/reportApicultorDep').then(({ data }) => {
@@ -242,90 +325,7 @@ mounted() {
         if(this.productos.length>0) this.producto = this.productos[0];
       });
     },
-    getReporte() {
-        if(!this.producto.id) {
-            this.$alert?.error?.('Seleccione un producto');
-            return;}
-        if(!this.gestion){ this.$alert?.error?.('Seleccione una gestion'); return;}
-        this.loading = true;
-        this.$axios.post('/reporteAcopioProveedorDep', {
-            producto_id: this.producto.id,
-            inicio: this.gestion + '-01-01',
-            fin: this.gestion + '-12-31',
-            }).then(({ data }) => {
-                console.log(data);
-            this.listado1 = data.data || data || []
-        }).finally(() => {
-            this.loading = false;
-        });
-    },
-    getReporteTabla() {
 
-        if(!this.producto.id) {
-            this.$alert?.error?.('Seleccione un producto');
-            return;}
-        if(!this.gestion){ this.$alert?.error?.('Seleccione una gestion'); return;}
-        this.loading = true;
-        this.$axios.post('/reportePorcentual', {
-            producto_id: this.producto.id,
-            inicio: this.gestion + '-01-01',
-            fin: this.gestion + '-12-31',
-            }).then(({ data }) => {
-            console.log(data);
-             this.listado2 = data.data || data || []
-             this.crearGrafico()
-        }).finally(() => {
-            this.loading = false;
-        });
-    },
-     crearGrafico() {
-        if (!this.$refs.grafico) {
-                console.error('Canvas aún no está montado')
-                return
-            }
-            if (this.chartInstance) this.chartInstance.destroy()
-
-            this.chartInstance = new Chart(this.$refs.grafico, {
-                type: 'bar',
-                data: {
-                labels: this.listado2.labels,
-                datasets: [
-                    {
-                    label: 'Porcentaje de acopio (%)',
-                    data: this.listado2.porcentaje,
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    yAxisID: 'y'
-                    },
-                    {
-                    label: 'Total de productores',
-                    data: this.listado2.productores,
-                    backgroundColor: 'rgba(255, 159, 64, 0.6)',
-                    yAxisID: 'y1'
-                    }
-                ]
-                },
-                options: {
-                responsive: true,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                },
-                stacked: false,
-                scales: {
-                    y: {
-                    type: 'linear',
-                    position: 'left',
-                    title: { display: true, text: 'Porcentaje (%)' }
-                    },
-                    y1: {
-                    type: 'linear',
-                    position: 'right',
-                    title: { display: true, text: 'Productores (total)' },
-                    grid: { drawOnChartArea: false }
-                    }
-                }
-                }
-            })
-        }}
+}
 }
 </script>
