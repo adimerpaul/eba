@@ -3,19 +3,21 @@
         <div class="row">
             <div class="col-4"><q-input v-model="gestion" type="number" label="Gestion" dense /></div>
             <div class="col-4"><q-select v-model="producto" :options="productos" option-label="nombre_producto" label="Productos" dense /></div>
-            <div class="col-4"><q-btn color="primary" label="Generar" @click="getReporte" :loading="loading"/> <q-btn color="primary" label="Generar2" @click="getReporteTabla" :loading="loading"/></div>
+            <div class="col-4"><q-btn color="primary" label="ACOPIO GESTION" @click="getReporte" :loading="loading"/> <q-btn color="primary" label="GRAFICA" @click="getReporteTabla" :loading="loading"/></div>
         </div>
       <q-table
         :rows="listado1"
         row-key="id"
         flat bordered dense wrap-cells
         :rows-per-page-options="[0]"
-        title="Reporte"
+        :title="`REPORTE ACOPIO GESTION PRODUCTO POR DEPARTAMENTO ${producto.nombre_producto} GESTION ${gestion}`"
         :loading="loading"
+        v-if="listado1.length>0"
       >
 
       </q-table>
-      <div>
+      <div v-if="listado2.length>0">
+          <div class="text-center text-bold text-h6"> Grafica ACOPIO GESTION PRODUCTO POR DEPARTAMENTO {{producto.nombre_producto}} GESTION {{gestion}} </div>
          <canvas ref="grafico"></canvas>
       </div>
 
@@ -93,6 +95,11 @@ data    () {
 },
 mounted() {
     this.getProductos();
+    this.reportEdad();
+    this.reportOrg();
+    this.graficoEdad()
+    this.getReporte()
+    this.getReporteTabla()
     this.getReporte1();
     this.getReporte2();
     this.getReporte3();
@@ -233,6 +240,7 @@ mounted() {
     getProductos() {
       this.$axios.get('/productos/tipo/1').then(({ data }) => {
         this.productos = data?.data || data || []
+        if(this.productos.length>0) this.producto = this.productos[0];
       });
     },
     getReporte() {
