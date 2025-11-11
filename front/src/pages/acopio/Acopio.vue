@@ -36,6 +36,50 @@
                 outlined
                 clearable
               />
+              </div>
+                        <!-- PRODUCTOR (búsqueda) -->
+          <div class="col-12 col-md-3">
+            <q-select
+              v-model="productor"
+              :options="productorOptions"
+              option-label="label"
+              emit-value
+              map-options
+              use-input
+              input-debounce="400"
+              @filter="filterProductores"
+              label="Productor"
+              dense outlined
+              :loading="loadingProductores"
+              clearable
+            >
+              <template v-slot:no-option>
+                <q-item>
+                  <q-item-section class="text-grey">Escriba al menos 2 caracteres…</q-item-section>
+                </q-item>
+              </template>
+            </q-select>
+          </div>
+                    <div class="col-6 col-md-3">
+            <q-select
+              v-model="producto"
+              :options="productos.map(p => ({ label: p.nombre_producto, value: p.id }))"
+              label="Producto"
+              dense outlined
+              emit-value
+              map-options
+            />
+<!--            <pre>{{form.producto_id}}</pre>-->
+          </div>
+            <div class="col-12 col-md-3">
+              <q-input
+                v-model="numActa"
+                label="Número de Acta"
+                type="text"
+                dense
+                outlined
+              />
+
             </div>
             <div class="col-12 col-md-2 flex flex-center">
               <q-btn
@@ -108,7 +152,7 @@
               <td>{{ cosecha.num_acta }}</td>
               <td>{{ cosecha.condiciones_almacenaje }}</td>
               <td>
-                <q-chip :color="cosecha.estado === 'BUENO' ? 'green' : (cosecha.estado === 'EN_PROCESO' ? 'orange' : 'red')" text-color="white" dense size="10px">
+                <q-chip :color="cosecha.estado === 'SIN OBSERVACION' ? 'green' : 'red'" text-color="white" dense size="10px">
                   {{ cosecha.estado.replace('_', ' ') }}
                 </q-chip>
               </td>
@@ -130,7 +174,13 @@ export default {
   name: 'AcopioPage',
   data: function () {
     return {
+      numActa: null,
       acopioCosechas:[],
+      loadingProductores: false,
+      productor: null,
+      productorOptions: [],
+      productos: [],
+      producto: null,
       loading: false,
       fechaInicio: moment().startOf('month').format('YYYY-MM-DD'),
       fechaFin: moment().endOf('month').format('YYYY-MM-DD'),
@@ -144,8 +194,51 @@ export default {
   },
   mounted() {
     this.buscarCosechas();
+    this.productoGet();
+
   },
   methods: {
+        filterProductores (val, update, abort) {
+      if (!val || val.length < 2) {
+        update(() => { this.productorOptions = [] })
+        return
+      }
+      update(async () => {
+        this.loadingProductores = true
+        try {
+          const { data } = await this.$axios.get('/productores', {
+            params: {
+              search: val,
+              per_page: 20
+            }
+          })
+          const items = (data?.data || data || []).map(p => ({
+            value: p.id,
+            label: `${p.nombre ?? ''} ${p.apellidos ?? ''} — ${p.municipio?.nombre_municipio ?? ''}`.trim(),
+            raw: p
+          }))
+          this.productorOptions = items
+        } catch (e) {
+          this.$q.notify({ type: 'negative', message: 'No se pudo cargar productores' })
+        } finally {
+          this.loadingProductores = false
+        }
+      })
+    },
+
+      async productoGet() {
+        // agregar un registro vacio
+
+      this.$axios.get('/productos/tipo/1').then(({ data }) => {
+        console.log(data);
+        this.productos = data?.data || data || []
+        // un registro vacio al inicio
+        this.productos.unshift({ id: null, nombre_producto: 'Todos' })
+        this.producto ={ value: null, label: 'Todos' };
+      }).catch(() => {
+        this.$q.notify({ type: 'negative', message: 'No se pudieron cargar los productos' })
+      })
+    },
     async generarExcel() {
       this.loading = true;
       await this.$axios.post('acopioExcel',{fecha_inicio: this.fechaInicio,
@@ -172,14 +265,20 @@ export default {
     },
     buscarCosechas(){
       this.loading = true;
+      console.log(this.producto);
       this.$axios.get('/acopio/cosechas', {
         params: {
           fecha_inicio: this.fechaInicio,
           fecha_fin: this.fechaFin,
           estado: this.estadoSeleccionado,
+          productor_id: this.productor,
+          num_acta: this.numActa,
+          producto_id: this.producto
         }
       })
       .then((response) => {
+        console.log(response.data);
+       // return
         this.acopioCosechas = response.data;
       }).finally(() => {
         this.loading = false;

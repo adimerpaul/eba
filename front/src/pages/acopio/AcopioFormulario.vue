@@ -164,7 +164,7 @@
               label="Tipo de envase"
               dense outlined
               maxlength="100"
-              :options="['VALDE','OTRO']"
+              :options="['BALDE','OTRO']"
             />
           </div>
 

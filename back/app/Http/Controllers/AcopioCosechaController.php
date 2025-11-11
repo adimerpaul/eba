@@ -22,13 +22,30 @@ class AcopioCosechaController extends Controller{
         return response()->json($acopio);
     }
     function index(Request $request){
+        //return $request;
         $fecha_inicio = $request->input('fecha_inicio');
         $fecha_fin = $request->input('fecha_fin');
         $estado = $request->input('estado');
-        $acopiosCosechas = AcopioCosecha::whereBetween('fecha_cosecha', [$fecha_inicio, $fecha_fin])->with('apiario.productor');
+        $productor_id = $request->input('productor_id');
+        $producto_id = $request->input('producto_id');
+        $acopiosCosechas = AcopioCosecha::whereBetween('fecha_cosecha', [$fecha_inicio, $fecha_fin])->with('apiario.productor','producto');
         if($estado){
             $acopiosCosechas = $acopiosCosechas->where('estado', $estado);
         }
+        if($request->num_acta != null || $request->num_acta != ''){
+            $acopiosCosechas = $acopiosCosechas->where('num_acta', $request->num_acta);
+        }
+        if($productor_id){
+            // se tiene los apiarios relacionados con el productor
+            $productor = \App\Models\Productor::find($productor_id);
+            $apiarios = $productor->apiarios->pluck('id')->toArray();
+            $acopiosCosechas = $acopiosCosechas->whereIn('apiario_id', $apiarios);
+            //$acopiosCosechas = $acopiosCosechas->where('productor_id', $productor_id);
+        }
+        if($producto_id){
+            $acopiosCosechas = $acopiosCosechas->where('producto_id', $producto_id);
+        }
+        
         $acopiosCosechas = $acopiosCosechas->get();
         return $acopiosCosechas;
     }
