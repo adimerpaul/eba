@@ -233,8 +233,8 @@ export default {
         console.log(data);
         this.productos = data?.data || data || []
         // un registro vacio al inicio
-        this.productos.unshift({ value: null, label: 'Todos' })
-        this.producto ={ value: null, label: 'Todos' };
+        this.productos.unshift({ id: null, nombre_producto: 'Todos' })
+        this.producto = this.productos[0];
       }).catch(() => {
         this.$q.notify({ type: 'negative', message: 'No se pudieron cargar los productos' })
       })
