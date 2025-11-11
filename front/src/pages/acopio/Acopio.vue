@@ -234,7 +234,7 @@ export default {
         this.productos = data?.data || data || []
         // un registro vacio al inicio
         this.productos.unshift({ id: null, nombre_producto: 'Todos' })
-        this.producto = this.productos[0];
+        this.producto = null;
       }).catch(() => {
         this.$q.notify({ type: 'negative', message: 'No se pudieron cargar los productos' })
       })
