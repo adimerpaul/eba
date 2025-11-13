@@ -16,6 +16,8 @@ return new class extends Migration
 
             // Datos base
             $table->date('fecha_cosecha');
+//            condiciones_almacenaje
+            $table->string('condiciones_almacenaje')->nullable();
 
             // Relaciones
             $table->unsignedBigInteger('apiario_id')->nullable();

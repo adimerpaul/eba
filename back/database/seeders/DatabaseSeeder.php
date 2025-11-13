@@ -97,8 +97,6 @@ class DatabaseSeeder extends Seeder
         DB::unprepared($sql);
         $sql = File::get(database_path('seeders/apiarios_202510060401.sql'));
         DB::unprepared($sql);
-//        $sql = File::get(database_path('seeders/acopio_cosechas_202510170333.sql'));;
-//        DB::unprepared($sql);
 
 //        INSERT INTO public.tipo_productos (id, codigo_tipo, nombre_tipo, detalles) VALUES(1, '0001', 'Materia Prima', 'Meil, Polen, Propoleo');
 //INSERT INTO public.tipo_productos (id, codigo_tipo, nombre_tipo, detalles) VALUES(2, '0002', 'en Proceso', 'En planta rpocesamiento');
@@ -171,6 +169,10 @@ class DatabaseSeeder extends Seeder
         Producto::create(['tipo_id' => 3, 'codigo_producto' => '08', 'nombre_producto' => 'Miel con Maca 200 GR', 'presentacion' => 'Pieza', 'cantidad' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
         Producto::create(['tipo_id' => 3, 'codigo_producto' => '09', 'nombre_producto' => 'Miel con Chocolate 50 GR', 'presentacion' => 'Pieza', 'cantidad' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
         Producto::create(['tipo_id' => 3, 'codigo_producto' => '10', 'nombre_producto' => 'Miel Cremosa 100 GR', 'presentacion' => 'Pieza', 'cantidad' => 0.00, 'costo' => 0.00, 'precio' => 0.00, 'fecha_vencimiento' => null, 'nro_lote' => null, 'codigo_barra' => null, 'imagen' => null]);
+
+
+        $sql = File::get(database_path('seeders/acopio_cosechas_202510170333.sql'));;
+        DB::unprepared($sql);
 
 
 //        INSERT INTO public.plantas (id, codigo_planta, nombre, registro_sanitario, direccion, municipio_id) VALUES(1, '07', 'Planta Samuzabety', '123456', 'Eterazama, Villa Tunari Cochabamba', 31003);
