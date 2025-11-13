@@ -81,6 +81,31 @@
               />
 
             </div>
+              <div class="col-12 col-md-3">
+              <q-select
+                v-model="departamentoSeleccionado"
+                label="Departamento"
+                :options="departamentos.map(d => ({ label: d.nombre_departamento, value: d.id }))"
+                dense
+                outlined
+                @focus="getDepartamentos()"
+                clearable
+                @update:model-value="getMunicipios()"
+              />
+            </div>
+              <div class="col-12 col-md-3">
+              <q-select
+                v-model="municipioSeleccionado"
+                label="Municipio"
+                :options="municipios.map(m => ({ label: m.nombre_municipio, value: m.id }))"
+                dense
+                outlined
+                clearable
+              />
+            </div>
+              <div class="col-12 col-md-3">
+                <q-input v-model="search" label="CI/NOMBRE/APELLIDO PRODUCTOR" dense outlined  />
+                </div>
             <div class="col-12 col-md-2 flex flex-center">
               <q-btn
                 :loading="loading"
@@ -174,6 +199,7 @@ export default {
   name: 'AcopioPage',
   data: function () {
     return {
+      search: '',
       numActa: null,
       acopioCosechas:[],
       loadingProductores: false,
@@ -190,6 +216,12 @@ export default {
         { label: 'CANCELADO', value: 'CANCELADO' },
       ],
       estadoSeleccionado: null,
+      departamentos: [],
+      departamentoSeleccionado: null,
+      provincias: [],
+      provinciaSeleccionado: null,
+      municipios: [],
+      municipioSeleccionado: null
     }
   },
   mounted() {
@@ -198,6 +230,25 @@ export default {
 
   },
   methods: {
+      getDepartamentos() {
+        this.$axios.get('/departamentos').then(({ data }) => {
+          this.departamentos = data?.data || data || []
+        }).catch(() => {
+          this.$q.notify({ type: 'negative', message: 'No se pudieron cargar los departamentos' })
+        })
+      },
+      getMunicipios() {
+        if(!this.departamentoSeleccionado) {
+          this.municipios = [];
+          return;
+        }
+        this.$axios.get('/municipios', { params: { departamento_id: this.departamentoSeleccionado.value } }).then(({ data }) => {
+          console.log(data);
+          this.municipios = data?.data || data || []
+        }).catch(() => {
+          this.$q.notify({ type: 'negative', message: 'No se pudieron cargar los municipios' })
+        })
+      },
         filterProductores (val, update, abort) {
       if (!val || val.length < 2) {
         update(() => { this.productorOptions = [] })
@@ -273,7 +324,10 @@ export default {
           estado: this.estadoSeleccionado,
           productor_id: this.productor,
           num_acta: this.numActa,
-          producto_id: this.producto
+          producto_id: this.producto,
+          departamento_id: this.departamentoSeleccionado,
+          municipio_id: this.municipioSeleccionado,
+          search: this.search,
         }
       })
       .then((response) => {
