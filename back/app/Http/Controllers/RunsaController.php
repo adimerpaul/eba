@@ -7,6 +7,52 @@ use Illuminate\Http\Request;
 
 class RunsaController extends Controller
 {
+    use Illuminate\Support\Facades\Http;
+
+function consumirApi($url, $method = 'GET', $data = [], $token = null)
+{
+    try {
+        $client = Http::withHeaders([
+            'Accept' => 'application/json',
+            'Authorization' => $token ? "Bearer $token" : null,
+        ]);
+
+        // Selección del método dinámico
+        switch (strtoupper($method)) {
+            case 'POST':
+                $response = $client->post($url, $data);
+                break;
+            case 'PUT':
+                $response = $client->put($url, $data);
+                break;
+            case 'DELETE':
+                $response = $client->delete($url, $data);
+                break;
+            default: // GET
+                $response = $client->get($url, $data);
+                break;
+        }
+
+        if ($response->successful()) {
+            return $response->json(); // Devuelve la respuesta como array
+        }
+
+        return [
+            'error' => true,
+            'status' => $response->status(),
+            'message' => $response->body(),
+        ];
+
+    } catch (\Exception $e) {
+        return [
+            'error' => true,
+            'message' => $e->getMessage(),
+        ];
+    }
+}
+
+
+
     /**
      * Display a listing of the resource.
      */

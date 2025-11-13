@@ -14,6 +14,7 @@
         <q-tab name="certs" icon="verified" label="3) Certificaciones" no-caps />
         <q-tab name="apiarios" icon="hive" label="4) Apiarios" no-caps />
         <q-tab name="mapa" icon="map" label="5) Mapa" no-caps />
+        <q-tab name="acopio" icon="send" label="6) Acopio" no-caps />
       </q-tabs>
       <q-separator />
 
