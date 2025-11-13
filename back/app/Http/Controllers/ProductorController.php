@@ -14,9 +14,8 @@ class ProductorController extends Controller
     {
         $q = Productor::query()
             ->with([
-                'municipio:id,nombre_municipio,provincia_id,departamento_id',
-                'organizacion:id,nombre_organiza'
-            ]);
+                'municipio:id,nombre_municipio,provincia_id,departamento_id'
+            ])->with('organizacion');
 
         // Búsqueda libre
         if ($search = trim((string) $request->get('search', ''))) {
@@ -167,7 +166,7 @@ class ProductorController extends Controller
     {
         return $productor->load([
             'municipio:id,nombre_municipio,provincia_id,departamento_id',
-            'organizacion:id,nombre_organiza',
+            'organizacion',
             'certificaciones',
             'apiarios.colmenas.tipoMiel'
         ]);

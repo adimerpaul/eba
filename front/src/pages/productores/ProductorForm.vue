@@ -253,6 +253,7 @@ export default {
 
     initFromProp () {
       const p = this.productor
+      console.log(p);
       if (!p) {
         this.form = this.emptyForm()
         return
@@ -277,6 +278,7 @@ export default {
         otros: p.otros ?? '',
         seleccion: p.seleccion ?? 0,
         organizacion_id: p.organizacion?.id || p.organizacion_id || null,
+        organizacion:  p.organizacion || null,
         fecha_registro: p.fecha_registro ?? new Date().toISOString().slice(0,10),
         fecha_expiracion: p.fecha_expiracion ?? null,
         estado: p.estado ?? 'VIGENTE',

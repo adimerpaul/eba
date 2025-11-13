@@ -152,7 +152,7 @@
               <td>{{ cosecha.num_acta }}</td>
               <td>{{ cosecha.condiciones_almacenaje }}</td>
               <td>
-                <q-chip :color="cosecha.estado === 'SIN OBSERVACION' ? 'green' : 'red'" text-color="white" dense size="10px">
+                <q-chip :color="cosecha.estado === 'BUENO' ? 'green' : 'red'" text-color="white" dense size="10px">
                   {{ cosecha.estado.replace('_', ' ') }}
                 </q-chip>
               </td>
