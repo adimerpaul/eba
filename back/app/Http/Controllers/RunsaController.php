@@ -9,7 +9,7 @@ class RunsaController extends Controller
 {
     use Illuminate\Support\Facades\Http;
 
-function consumirApi($url, $method = 'GET', $data = [], $token = null)
+public function consumirApi($url, $method = 'GET', $data = [], $token = null)
 {
     try {
         $client = Http::withHeaders([

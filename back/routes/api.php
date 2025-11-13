@@ -134,7 +134,7 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::delete('/colmenas/{colmena}', [\App\Http\Controllers\ColmenaController::class, 'destroy']);
 
     Route::get('/acopio/cosechas', [\App\Http\Controllers\AcopioCosechaController::class, 'index']);
-
+    Route::post('productorAcopios', [AcopioCosechaController::class, 'productorAcopios']);
     Route::get('/analisis-calidad', [AnalisisCalidadController::class, 'index']);
     Route::post('/analisis-calidad', [AnalisisCalidadController::class, 'store']);
     Route::get('/analisis-calidad/{id}', [AnalisisCalidadController::class, 'show']);

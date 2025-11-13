@@ -138,24 +138,15 @@ export default {
         async fetchAcopio(){
       this.loading = true;
       console.log(this.productor);
-      await this.$axios.get('/acopio/cosechas', {
-        params: {
-          fecha_inicio: '0001-01-01',
-          fecha_fin: moment().format('YYYY-MM-DD'),
-          //estado: this.estadoSeleccionado,
-          //productor_id: this.productor,
-          //num_acta: this.numActa,
-          //producto_id: this.producto,
-          //departamento_id: this.departamentoSeleccionado,
-          //municipio_id: this.municipioSeleccionado,
-          //search: this.search,
-          productor_id: this.productor.id 
-        }
+      await this.$axios.post('/productorAcopios', 
+         {
+          productor_id: this.productor.id,
+        
       })
       .then((response) => {
         //console.log(params)
-        console.log(response.data);
-       // return
+        console.log(response);
+        //return
         this.acopioCosechas = response.data;
       })
       .catch((error) => {
@@ -167,8 +158,7 @@ export default {
       });
     },
     hydrateFromProductor () {
-      if (this.productor?.acopios) this.acopioCosechas = this.productor.acopios
-      else this.fetchAcopio()
+       this.fetchAcopio()
     },
     async fetchRunsas () {
         console.log(this.productor)
