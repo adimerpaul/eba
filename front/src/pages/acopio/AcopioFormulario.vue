@@ -82,7 +82,7 @@
           <!-- Cantidad KG -->
           <div class="col-6 col-md-3">
             <q-input
-              v-model.number="form.cantidad_kg"
+              v-model.number="form.cantidad"
               type="number"
               min="0"
               step="0.01"
@@ -236,7 +236,7 @@ export default {
         fecha_cosecha: moment().format('YYYY-MM-DD'),
         productor_id: null,
         apiario_id: null,
-        cantidad_kg: null,
+        cantidad: null,
         precio_compra: 32,
         humedad: null,
         temperatura_almacenaje: null,
@@ -260,7 +260,7 @@ export default {
         // productor_id: this.cosecha.apiario?.productor_id || null,
         // apiario_id: this.cosecha.apiario_id || null,
         producto_id: this.cosecha.producto_id || null,
-        cantidad_kg: this.cosecha.cantidad_kg || null,
+        cantidad: this.cosecha.cantidad || null,
         precio_compra: this.cosecha.precio_compra || 32,
         humedad: this.cosecha.humedad || null,
         temperatura_almacenaje: this.cosecha.temperatura_almacenaje || null,
@@ -328,7 +328,7 @@ export default {
       //     "codigo_producto": "0001",
       //     "nombre_producto": "Miel de Abeja",
       //     "presentacion": "Kilos",
-      //     "cantidad_kg": "0.00",
+      //     "cantidad": "0.00",
       //     "costo": "0.00",
       //     "precio": "0.00",
       //     "fecha_vencimiento": null,
@@ -346,7 +346,7 @@ export default {
         fecha_cosecha: moment().format('YYYY-MM-DD'),
         productor_id: null,
         apiario_id: null,
-        cantidad_kg: null,
+        cantidad: null,
         precio_compra: 32,
         humedad: null,
         temperatura_almacenaje: null,

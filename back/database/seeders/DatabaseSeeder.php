@@ -27,20 +27,21 @@ class DatabaseSeeder extends Seeder
     private function fixSequences(): void
     {
         foreach ([
-            'departamentos',
-            'provincias',
-            'municipios',
-            'organizaciones',
-            'productores',
-            'tipo_manejos',
-            'tipo_miel',
-            'apiarios',
-//            'acopio_cosechas'
+                     'departamentos',
+                     'provincias',
+                     'municipios',
+                     'organizaciones',
+                     'productores',
+                     'tipo_manejos',
+                     'tipo_miel',
+                     'apiarios',
+                     'acopio_cosechas',
                  ] as $table) {
             DB::statement("
             SELECT setval(
                 pg_get_serial_sequence('{$table}', 'id'),
-                COALESCE((SELECT MAX(id) FROM {$table}), 0)
+                COALESCE((SELECT MAX(id) FROM {$table}), 1),
+                (SELECT MAX(id) IS NOT NULL FROM {$table})
             );
         ");
         }
