@@ -45,8 +45,11 @@
         <q-tab-panel name="mapa" class="q-pa-none">
           <ProductorMapa :productor="productor" @updated="fetchProductor" />
         </q-tab-panel>
-      </q-tab-panels>
 
+        <q-tab-panel name="acopio" class="q-pa-none">
+          <ProductorAcopios :productor="productor" @updated="fetchProductor" />
+        </q-tab-panel>
+      </q-tab-panels>
     </q-card>
   </q-page>
 </template>
@@ -57,10 +60,11 @@ import ProductorCertificaciones from 'pages/productores/tabs/ProductorCertificac
 import ProductorApiarios from 'pages/productores/tabs/ProductorApiarios.vue'
 import ProductorMapa from 'pages/productores/tabs/ProductorMapa.vue'
 import ProductorRunsa from 'pages/productores/tabs/ProductorRunsa.vue'
+import ProductorAcopios from 'pages/productores/tabs/ProductorAcopios.vue'
 
 export default {
   name: 'ProductorShow',
-  components: { ProductorMapa, ProductorApiarios, ProductorCertificaciones, ProductorForm, ProductorRunsa },
+  components: { ProductorMapa, ProductorApiarios, ProductorCertificaciones, ProductorForm, ProductorRunsa, ProductorAcopios },
   data () {
     return {
       tab: 'general',

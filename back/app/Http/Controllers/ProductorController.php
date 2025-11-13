@@ -20,6 +20,9 @@ class ProductorController extends Controller
         // Búsqueda libre MEJORADA
         // MODIFICACIÓN 2025-11-13: Agregada búsqueda por nombre completo concatenado
         // para permitir búsquedas como "ZUNY MARIA" que encuentre "ZUNY MARIA HURTADO"
+        if($request->productor_id){
+            $q->where('id', $request->productor_id);
+        }
         if ($search = trim((string) $request->get('search', ''))) {
             // Normalizar búsqueda: eliminar espacios extras entre palabras
             $searchNormalized = preg_replace('/\s+/', ' ', $search);

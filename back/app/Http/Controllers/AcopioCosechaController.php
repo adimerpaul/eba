@@ -45,9 +45,6 @@ class AcopioCosechaController extends Controller{
             $acopiosCosechas = $acopiosCosechas->whereIn('apiario_id', $apiarios);
             //$acopiosCosechas = $acopiosCosechas->where('productor_id', $productor_id);
         }
-        if($producto_id){
-            $acopiosCosechas = $acopiosCosechas->where('producto_id', $producto_id);
-        }
         if($municipio_id){
             $acopiosCosechas = $acopiosCosechas->whereHas('apiario', function ($query) use ($municipio_id) {
                 $query->where('municipio_id', $municipio_id);

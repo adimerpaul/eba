@@ -1,8 +1,11 @@
 <template>
-      <q-card-section>
-        <div class="text-h6">Acopio de Cosechas</div>
-      </q-card-section>
-      <q-separator />
+  <q-card-section>
+    <div class="row items-center q-gutter-sm q-mb-sm">
+      <div class="text-subtitle1">Acopios Proveedor</div>
+      <q-space />
+    </div>
+
+    <!-- Tabla -->
         <q-markup-table v-if="acopioCosechas.length > 0" dense wrap-cells flat bordered>
           <thead>
             <tr class="bg-primary text-white">
@@ -53,99 +56,203 @@
           <q-icon name="info" size="48px" color="grey-5" />
           <div class="text-subtitle2 text-grey-5">No se encontraron cosechas.</div>
         </div>
-    </div>
+
+    <!-- Dialog Crear/Editar -->
+    <q-dialog v-model="dlg.open" persistent>
+      <q-card style="min-width: 720px; max-width: 95vw">
+        <q-card-section class="row items-center q-gutter-sm">
+          <div class="text-h6">
+            {{ form.id ? 'Editar runsa' : 'Nueva runsa' }}
+          </div>
+          <q-space />
+          <q-btn flat round dense icon="close" v-close-popup />
+        </q-card-section>
+        <q-separator />
+
+        <q-card-section>
+          <q-form @submit="submit" class="row q-col-gutter-sm">
+            <div class="col-12 col-sm-4">
+              <q-input
+                v-model="form.codigo"
+                dense outlined label="Codigo"
+                :rules="[v=>!!v || 'Requerido']"
+              />
+            </div>
+            <div class="col-12 col-sm-8">
+              <q-input
+                v-model="form.subcodigo"
+                dense outlined label="Subcodigo"
+              />
+            </div>
+
+            <div class="col-6 col-sm-3">
+              <q-input v-model="form.fecha_registro" type="date" dense outlined label="Fec Registro" />
+            </div>
+            <div class="col-6 col-sm-3">
+              <q-input v-model="form.fecha_vencimiento" type="date" dense outlined label="Fec Vencimiento" />
+            </div>
+
+            <div class="col-12 col-sm-3">
+              <q-select
+                v-model="form.estado"
+                :options="['VIGENTE','VENCIDO','SUSPENDIDO']"
+                dense outlined label="Estado"
+              />
+            </div>
+
+            <div class="col-12 text-right q-gutter-sm q-mt-sm">
+              <q-btn flat color="grey" label="Cancelar" v-close-popup :disable="saving" />
+              <q-btn color="primary" :label="form.id ? 'Guardar cambios' : 'Crear'"
+                     type="submit" :loading="saving" />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+  </q-card-section>
 </template>
+
 <script>
-import moment from "moment";
+import moment from 'moment';
+
 
 export default {
-  name: 'ProductorAcopioPage',
-    props: { productor: { type: Object, required: true } },
+  name: 'ProductorAcopios',
+  props: {
+    productor: { type: Object, required: true }
+  },
   emits: ['updated'],
-  data: function () {
+  data () {
     return {
-      numActa: null,
-      acopioCosechas:[],
-      loadingProductores: false,
-      productor: null,
-      productorOptions: [],
-      productos: [],
-      producto: null,
       loading: false,
-      fechaInicio: moment().startOf('month').format('YYYY-MM-DD'),
-      fechaFin: moment().endOf('month').format('YYYY-MM-DD'),
-      estados: [
-        { label: 'BUENO', value: 'BUENO' },
-        { label: 'EN PROCESO', value: 'EN_PROCESO' },
-        { label: 'CANCELADO', value: 'CANCELADO' },
-      ],
-      estadoSeleccionado: null,
-      departamentos: [],
-      departamentoSeleccionado: null,
-      provincias: [],
-      provinciaSeleccionado: null,
-      municipios: [],
-      municipioSeleccionado: null
+      saving: false,
+      list: [],
+      dlg: { open: false },
+      form: this.emptyForm(),
+      acopioCosechas: []
     }
   },
-  mounted () { this.hydrateFromProductor()
-    this.buscarCosechas();
-
-   },
+    mounted () { this.hydrateFromProductor() },
   watch: { productor () { this.hydrateFromProductor() } },
-
   methods: {
-        hydrateFromProductor () {
-      if (this.productor?.apiarios) this.list = this.productor.apiarios
-      else this.fetchApiarios()
-    },
-    async generarExcel() {
+        async fetchAcopio(){
       this.loading = true;
-      await this.$axios.post('acopioExcel',{fecha_inicio: this.fechaInicio,
-          fecha_fin: this.fechaFin,
-          estado: this.estadoSeleccionado,}, {
-        responseType: 'blob' // 👈 importante para manejar archivos binarios
-      })
-      .then((res) => {
-        // Crear blob y enlace de descarga
-        const blob = new Blob([res.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.setAttribute('download', 'acopio.xlsx') // nombre del archivo
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        window.URL.revokeObjectURL(url)
-      }).catch((e) => {
-        this.$alert?.error?.(e.response?.data?.message || 'No se pudo generar el reporte.')
-      }).finally(() => {
-        this.loading = false
-      })
-    },
-    buscarCosechas(){
-      this.loading = true;
-      console.log(this.producto);
-      this.$axios.get('/acopio/cosechas', {
+      console.log(this.productor);
+      await this.$axios.get('/acopio/cosechas', {
         params: {
           fecha_inicio: '0001-01-01',
-          fecha_fin: this.fechaFin,
-          estado: null,
-          productor_id: null,
-          num_acta: null,
-          producto_id: null,
-          departamento_id: null,
-          municipio_id: null
+          fecha_fin: moment().format('YYYY-MM-DD'),
+          //estado: this.estadoSeleccionado,
+          //productor_id: this.productor,
+          //num_acta: this.numActa,
+          //producto_id: this.producto,
+          //departamento_id: this.departamentoSeleccionado,
+          //municipio_id: this.municipioSeleccionado,
+          //search: this.search,
+          productor_id: this.productor.id 
         }
       })
       .then((response) => {
+        //console.log(params)
         console.log(response.data);
        // return
         this.acopioCosechas = response.data;
-      }).finally(() => {
+      })
+      .catch((error) => {
+        console.log(error)
+        this.$alert?.error?.(error.response?.data?.message || 'No se pudo cargar las cosechas');
+      })
+      .finally(() => {
         this.loading = false;
       });
-    }
+    },
+    hydrateFromProductor () {
+      if (this.productor?.acopios) this.acopioCosechas = this.productor.acopios
+      else this.fetchAcopio()
+    },
+    async fetchRunsas () {
+        console.log(this.productor)
+      this.loading = true
+      try {
+        const { data } = await this.$axios.get('runsas', {
+          params: { productor_id: this.productor.id, paginate: false }
+        })
+        console.log(data)   
+        this.list = Array.isArray(data) ? data : (data?.data || [])
+      } catch (e) {
+        console.log(e)
+        this.list = []
+        this.$alert?.error?.(e.response?.data?.message || 'No se pudo cargar runsas')
+      } finally { this.loading = false }
+    },
+    emptyForm () {
+      return {
+        id: null,
+        productor_id: this.productor?.id || null,
+        codigo: null,
+        subcodigo: '',
+        fecha_registro: null,
+        fecha_vencimiento: null,
+        estado: 'VIGENTE'
+      }
+    },
+    chip (estado) {
+      if (estado === 'VIGENTE') return 'green'
+      if (estado === 'VENCIDO') return 'red'
+      if (estado === 'SUSPENDIDO') return 'orange'
+      return 'grey'
+    },
+
+    startCreate () {
+      this.form = this.emptyForm()
+      this.form.productor_id = this.productor?.id || null
+      this.dlg.open = true
+    },
+    startEdit (row) {
+      this.form = {
+        id: row.id,
+        productor_id: this.productor?.id || row.productor_id,
+        codigo: row.codigo || null,
+        subcodigo: row.subcodigo || '',
+        fecha_registro: row.fecha_registro || null,
+        fecha_vencimiento: row.fecha_vencimiento || null,
+        estado: row.estado || 'VIGENTE'
+      }
+      this.dlg.open = true
+    },
+
+    async submit () {
+      if (!this.productor?.id) return
+      this.saving = true
+      try {
+        const payload = { ...this.form, productor_id: this.productor.id }
+        if (payload.id) {
+          await this.$axios.put(`runsas/${payload.id}`, payload)
+        } else {
+          await this.$axios.post('runsas', payload)
+        }
+        this.$alert?.success?.(payload.id ? 'Runsa actualizada' : 'Runsa creada')
+        this.dlg.open = false
+        this.$emit('updated') // el padre vuelve a llamar GET /productores/{id}
+      } catch (e) {
+        this.$alert?.error?.(e.response?.data?.message || 'No se pudo guardar')
+      } finally {
+        this.saving = false
+      }
+    },
+
+    remove (row) {
+      this.$alert?.dialog?.('¿Eliminar runsa?')?.onOk(async () => {
+        try {
+          await this.$axios.delete(`runsas/${row.id}`)
+          this.$alert?.success?.('Eliminado')
+          this.$emit('updated')
+        } catch (e) {
+          this.$alert?.error?.(e.response?.data?.message || 'No se pudo eliminar')
+        }
+      })
+    },
+
   }
 }
 </script>
