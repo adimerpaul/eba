@@ -18,7 +18,33 @@ class ProductorController extends Controller
                 'organizacion:id,nombre_organiza'
             ]);
 
-        // Búsqueda libre
+        // Búsqueda libre MEJORADA
+        // MODIFICACIÓN 2025-11-13: Agregada búsqueda por nombre completo concatenado
+        // para permitir búsquedas como "ZUNY MARIA" que encuentre "ZUNY MARIA HURTADO"
+        if ($search = trim((string) $request->get('search', ''))) {
+            // Normalizar búsqueda: eliminar espacios extras entre palabras
+            $searchNormalized = preg_replace('/\s+/', ' ', $search);
+            
+            $q->where(function ($s) use ($search, $searchNormalized) {
+                // NUEVO: Búsqueda por nombre completo concatenado (nombre + apellidos)
+                // Esto permite buscar "ZUNY MARIA" y encontrar registros donde 
+                // nombre="ZUNY" y apellidos="MARIA HURTADO PADILLA"
+                $s->whereRaw("CONCAT(COALESCE(nombre,''), ' ', COALESCE(apellidos,'')) ILIKE ?", ["%{$searchNormalized}%"])
+                  
+                  // Búsquedas originales mantenidas para compatibilidad
+                  ->orWhere('runsa', 'ilike', "%{$search}%")
+                  ->orWhere('sub_codigo', 'ilike', "%{$search}%")
+                  ->orWhere('nombre', 'ilike', "%{$search}%")
+                  ->orWhere('apellidos', 'ilike', "%{$search}%")
+                  ->orWhere('numcarnet', 'ilike', "%{$search}%")
+                  ->orWhere('comunidad', 'ilike', "%{$search}%")
+                  ->orWhere('proveedor', 'ilike', "%{$search}%")
+                  ->orWhere('cip_acopio', 'ilike', "%{$search}%")
+                  ->orWhere('num_celular', 'ilike', "%{$search}%");
+            });
+        }
+        
+        /* CÓDIGO ORIGINAL ANTES DE LA MEJORA (comentado para referencia):
         if ($search = trim((string) $request->get('search', ''))) {
             $q->where(function ($s) use ($search) {
                 $s->where('runsa', 'ilike', "%{$search}%")
@@ -32,6 +58,7 @@ class ProductorController extends Controller
                     ->orWhere('num_celular', 'ilike', "%{$search}%");
             });
         }
+        */
 
         // Filtros administrativos
         if ($depId = $request->get('departamento_id')) {
