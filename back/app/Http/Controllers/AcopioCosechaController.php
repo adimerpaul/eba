@@ -45,7 +45,7 @@ class AcopioCosechaController extends Controller{
         if($producto_id){
             $acopiosCosechas = $acopiosCosechas->where('producto_id', $producto_id);
         }
-        
+
         $acopiosCosechas = $acopiosCosechas->get();
         return $acopiosCosechas;
     }
@@ -93,6 +93,7 @@ class AcopioCosechaController extends Controller{
     public function store(Request $request)
     {
         $qr_code = uniqid();
+        error_log(json_encode($request->all()));
         $request->merge(['qr_code' => $qr_code]);
         $acopio = AcopioCosecha::create($request->all());
         return response()->json($acopio->fresh(['apiario.productor','apiario.municipio']), 201);
