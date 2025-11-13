@@ -9,7 +9,6 @@
         <q-markup-table v-if="acopioCosechas.length > 0" dense wrap-cells flat bordered>
           <thead>
             <tr class="bg-primary text-white">
-              <th>Opciones</th>
               <th>Fecha Cosecha</th>
               <th>Productor</th>
               <th>Cantidad (kg)</th>
@@ -22,18 +21,6 @@
           </thead>
           <tbody>
             <tr v-for="cosecha in acopioCosechas" :key="cosecha.id">
-              <td>
-                <q-btn-dropdown dense label="Opciones" color="primary" no-caps size="10px">
-                  <q-list>
-                    <q-item clickable v-ripple :to="`/acopio/cosechas/${cosecha.id}`">
-                      <q-item-section avatar>
-                        <q-icon name="visibility" />
-                      </q-item-section>
-                      <q-item-section>Ver Detalles</q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-btn-dropdown>
-              </td>
               <td>{{ cosecha.fecha_cosecha }}</td>
               <td>
                 {{ cosecha.apiario?.productor.nombre }}
