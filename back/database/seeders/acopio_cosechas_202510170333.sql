@@ -1,4 +1,4 @@
-INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
 	 (1317,'2022-11-30',31,39.24,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (1318,'2022-11-30',149,53.04,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (1319,'2022-11-30',186,186.04,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
@@ -999,7 +999,7 @@ INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,hume
 	 (997,'2022-10-31',3940,352.82,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (998,'2022-10-31',4049,93.20,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (999,'2022-10-31',4099,127.30,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL);
-INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
 	 (1000,'2022-10-31',4102,76.54,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (1001,'2022-10-31',4121,71.56,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (1002,'2022-10-31',4142,76.18,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
@@ -2000,7 +2000,7 @@ INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,hume
 	 (2001,'2022-12-31',7827,465.96,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (2002,'2022-12-31',7894,255.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (2003,'2022-12-31',7913,389.80,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL);
-INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
 	 (2004,'2022-12-31',7951,140.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (2005,'2022-12-31',8004,331.50,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (2006,'2022-12-31',8017,41.95,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
@@ -3001,7 +3001,7 @@ INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,hume
 	 (3002,'2023-06-30',10887,60.82,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (3003,'2023-06-30',11062,47.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (3004,'2023-06-30',11136,288.80,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL);
-INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
 	 (3005,'2023-06-30',11137,288.80,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (3006,'2023-06-30',11138,288.80,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (3007,'2023-06-30',11139,288.80,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
@@ -4002,7 +4002,7 @@ INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,hume
 	 (4002,'2023-11-30',10575,479.02,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (4003,'2023-11-30',10576,479.02,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (4004,'2023-11-30',10577,479.02,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL);
-INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
 	 (4005,'2023-11-30',10590,211.46,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (4006,'2023-11-30',10600,331.20,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (4007,'2023-11-30',10601,331.20,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
@@ -5003,7 +5003,7 @@ INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,hume
 	 (5002,'2024-04-30',6274,759.32,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (5003,'2024-04-30',6296,1008.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (5004,'2024-04-30',6297,1008.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL);
-INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
 	 (5005,'2024-04-30',6298,1008.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (5006,'2024-04-30',6299,1008.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (5007,'2024-04-30',6300,1008.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
@@ -6004,7 +6004,7 @@ INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,hume
 	 (6001,'2024-08-31',7878,854.62,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (6002,'2024-08-31',8148,24.30,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (6003,'2024-08-31',9054,40.80,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL);
-INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
 	 (6004,'2024-08-31',9590,113.75,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (6005,'2024-08-31',10018,74.30,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (6006,'2024-08-31',10059,99.70,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
@@ -7005,7 +7005,7 @@ INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,hume
 	 (7001,'2024-12-31',1334,50.88,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (7002,'2024-12-31',1348,330.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (7003,'2024-12-31',1375,300.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL);
-INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
 	 (7004,'2024-12-31',1488,51.88,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (7005,'2024-12-31',1493,500.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (7006,'2024-12-31',1516,131.31,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
@@ -8006,7 +8006,7 @@ INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,hume
 	 (8000,'2025-05-31',431,78.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (8001,'2025-05-31',436,328.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (8002,'2025-05-31',448,178.30,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL);
-INSERT INTO public.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.acopio_cosechas (id,fecha_cosecha,apiario_id,cantidad_kg,humedad,temperatura_almacenaje,num_acta,condiciones_almacenaje,estado,deleted_at,created_at,updated_at) VALUES
 	 (8003,'2025-05-31',468,101.00,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (8004,'2025-05-31',565,75.10,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),
 	 (8005,'2025-05-31',566,75.10,0.00,0.00,'0','Normales','BUENO',NULL,NULL,NULL),

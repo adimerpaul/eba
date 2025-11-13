@@ -1,4 +1,4 @@
-INSERT INTO public.municipios (id,nombre_municipio,provincia_id,departamento_id,zona,region,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.municipios (id,nombre_municipio,provincia_id,departamento_id,zona,region,deleted_at,created_at,updated_at) VALUES
 	 (10304,'ICLA',103,1,'','',NULL,NULL,NULL),
 	 (10601,'TARABUCO',106,1,'','',NULL,NULL,NULL),
 	 (10602,'YAMPARAEZ',106,1,'','',NULL,NULL,NULL),

@@ -1,4 +1,4 @@
-INSERT INTO public.organizaciones (id,municipio_id,nombre_organiza,asociacion,programa,nombre_presidente,descripcion,celular,num_apicultor,num_colmena,pj_actual,convenio,estado,fecha_registro,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.organizaciones (id,municipio_id,nombre_organiza,asociacion,programa,nombre_presidente,descripcion,celular,num_apicultor,num_colmena,pj_actual,convenio,estado,fecha_registro,deleted_at,created_at,updated_at) VALUES
 	 (1,10201,'AAPIFRUCH','AAPIFRUCH',NULL,'CLIVER PEREZ ROJAS ','ASOCIACIÓN DE APICULTORES Y FRUTICULTORES DE CHUQUISACA "AAPIFRUCH" RAG – CH/N° 161/ DE 23/5/2022','68645156',NULL,NULL,0,0,'ACTIVO','2025-09-14',NULL,NULL,NULL),
 	 (2,30602,'APIDT','APIDT',NULL,NULL,'Asociación de Productores Integrales de Distrito Tapacari APIDT   R.D. N° 3575/2018',NULL,NULL,NULL,0,0,'ACTIVO','2025-09-14',NULL,NULL,NULL),
 	 (3,10701,'AMP-T','AMP-T',NULL,'JOSEFA CRUZ MIRANDA','ASOCIACIÓN DE MUJERES PRODUCTORAS DE TACOMAYO bajo la sigla "AMP-T".- RAG CH/Nº 273.','74450671',NULL,NULL,0,0,'ACTIVO','2025-09-14',NULL,NULL,NULL),
