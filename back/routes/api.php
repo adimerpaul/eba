@@ -220,8 +220,13 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::put('/runsas/{runsa}', [RunsaController::class, 'update']);
     Route::delete('/runsas/{runsa}', [RunsaController::class, 'destroy']);
 
+    // Usuarios internos
     Route::get('bp-usuarios', [BpUsuarioController::class, 'index']);
-    Route::put('bp-usuarios/{usuario}/traza', [BpUsuarioController::class, 'updateTraza']);
+    Route::put('bp-usuarios/{id}/traza', [BpUsuarioController::class, 'updateTraza']);
+
+// 🔐 Permisos de BpUsuarios
+    Route::get('bp-usuarios/{id}/permissions', [BpUsuarioController::class, 'getPermissions']);
+    Route::put('bp-usuarios/{id}/permissions', [BpUsuarioController::class, 'syncPermissions']);
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 Route::get('/ventas/{venta}/nota', [VentaController::class, 'notaPdf'])->name('ventas.nota');

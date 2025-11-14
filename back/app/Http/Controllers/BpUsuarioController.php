@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BpUsuarios;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
 
 class BpUsuarioController extends Controller
 {
@@ -12,7 +13,12 @@ class BpUsuarioController extends Controller
      */
     public function index()
     {
-        $users = BpUsuarios::select('usr_id', 'usr_usuario', 'usr_estado', 'usr_access_sistem')
+        $users = BpUsuarios::select(
+            'usr_id',
+            'usr_usuario',
+            'usr_estado',
+            'usr_access_sistem'
+        )
             ->where('usr_estado', 'A') // opcional: solo activos
             ->get()
             ->map(function ($u) {
@@ -74,6 +80,36 @@ class BpUsuarioController extends Controller
             'usr_id'            => $user->usr_id,
             'traza_activado'    => $request->activado,
             'usr_access_sistem' => $systems,
+        ]);
+    }
+
+    /**
+     * Obtener IDs de permisos Spatie del usuario interno.
+     */
+    public function getPermissions($id)
+    {
+        $user = BpUsuarios::findOrFail($id);
+        return $user->permissions()->pluck('id');
+    }
+
+    /**
+     * Sincronizar permisos Spatie del usuario interno.
+     */
+    public function syncPermissions(Request $request, $id)
+    {
+        $request->validate([
+            'permissions'   => 'array',
+            'permissions.*' => 'integer|exists:permissions,id',
+        ]);
+
+        $user = BpUsuarios::findOrFail($id);
+        $perms = Permission::whereIn('id', $request->permissions ?? [])->get();
+
+        $user->syncPermissions($perms);
+
+        return response()->json([
+            'message'     => 'Permisos internos actualizados',
+            'permissions' => $user->permissions()->pluck('name'),
         ]);
     }
 }

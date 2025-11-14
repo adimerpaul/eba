@@ -2,15 +2,19 @@
 
 namespace App\Models;
 
-// OJO: ya no usamos Model aquí
+use App\Models\User; // 👈 IMPORTANTE para la relación externoUser
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class BpUsuarios extends Authenticatable
 {
-    use SoftDeletes, HasApiTokens, Notifiable;
+    use SoftDeletes, HasApiTokens, Notifiable, HasRoles;
+
+    // Si tu guard por defecto de Spatie es "web", lo dejamos explícito
+    protected string $guard_name = 'web';
 
     protected $table = 'public._bp_usuarios';
     protected $primaryKey = 'usr_id';
@@ -49,4 +53,10 @@ class BpUsuarios extends Authenticatable
     protected $casts = [
         'usr_access_sistem' => 'array',
     ];
+
+    // Relación opcional al usuario externo (traza.users)
+    public function externoUser()
+    {
+        return $this->belongsTo(User::class, 'usr_externo_id');
+    }
 }

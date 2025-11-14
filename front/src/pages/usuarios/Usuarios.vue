@@ -20,165 +20,55 @@
       <!-- ========== TAB 1: USUARIOS EXTERNOS (TU CÓDIGO ACTUAL) ========== -->
       <q-tab-panel name="externos">
         <q-table
-          :rows="users"
-          :columns="columns"
+          :rows="bpUsersFiltered"
+          :columns="bpColumns"
+          row-key="usr_id"
           dense
-          wrap-cells
           flat
-          bordered
           :rows-per-page-options="[0]"
-          title="Usuarios externos"
-          :filter="filter"
         >
-          <template v-slot:top-right>
-            <q-btn
-              color="positive"
-              label="Nuevo"
-              @click="userNew"
-              no-caps
-              icon="add_circle_outline"
-              :loading="loading"
-              class="q-mr-sm"
-            />
-            <q-btn
-              color="primary"
-              label="Actualizar"
-              @click="usersGet"
-              no-caps
-              icon="refresh"
-              :loading="loading"
-              class="q-mr-sm"
-            />
-            <q-input v-model="filter" label="Buscar" dense outlined>
-              <template v-slot:append>
-                <q-icon name="search" />
-              </template>
-            </q-input>
-          </template>
-
-          <template v-slot:body-cell-actions="props">
+          <!-- ACCIONES: PERMISOS PARA INTERNOS -->
+          <template #body-cell-actions="props">
             <q-td :props="props">
-              <q-btn-dropdown label="Opciones" no-caps size="10px" dense color="primary">
-                <q-list>
-                  <q-item clickable @click="userEdit(props.row)" v-close-popup>
-                    <q-item-section avatar>
-                      <q-icon name="edit" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>Editar</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item clickable @click="userDelete(props.row.id)" v-close-popup>
-                    <q-item-section avatar>
-                      <q-icon name="delete" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>Eliminar</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item clickable @click="userEditPassword(props.row)" v-close-popup>
-                    <q-item-section avatar>
-                      <q-icon name="lock_reset" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>Cambiar contraseña</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item clickable @click="cambiarAvatar(props.row)" v-close-popup>
-                    <q-item-section avatar>
-                      <q-icon name="image" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>Cambiar avatar</q-item-label>
-                    </q-item-section>
-                  </q-item>
-
-                  <q-item clickable @click="permisosShow(props.row)" v-close-popup>
-                    <q-item-section avatar>
-                      <q-icon name="lock" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label>Permisos</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-btn-dropdown>
-            </q-td>
-          </template>
-
-          <template v-slot:body-cell-role="props">
-            <q-td :props="props">
-              <q-chip
-                :label="props.row.role"
-                :color="$filters.color(props.row.role)"
-                text-color="white"
-                dense
-                size="14px"
+              <q-btn
+                color="primary"
+                label="Permisos"
+                no-caps
+                size="10px"
+                @click="permisosShow(props.row)"
               />
             </q-td>
           </template>
 
-          <template v-slot:body-cell-avatar="props">
+          <template #body-cell-traza="props">
             <q-td :props="props">
-              <q-avatar rounded>
-                <q-img
-                  :src="`${$url}/../images/${props.row.avatar}`"
-                  width="40px"
-                  height="40px"
-                  v-if="props.row.avatar"
-                />
-                <q-icon name="person" size="40px" v-else />
-              </q-avatar>
+              <q-toggle
+                v-model="props.row.traza_activado"
+                color="primary"
+                label="TRAZA"
+                @update:model-value="val => toggleTraza(props.row, val)"
+              />
             </q-td>
           </template>
 
-          <template v-slot:body-cell-permissions="props">
+          <template #body-cell-sistemas="props">
             <q-td :props="props">
-              <div class="row items-center q-col-gutter-xs">
-                <!-- hasta 3 chips visibles -->
-                <q-chip
-                  v-for="(perm, idx) in (props.row.permissions || []).slice(0, 3)"
-                  :key="perm.id"
-                  dense
-                  color="grey-3"
-                  text-color="black"
-                  size="12px"
-                  class="q-mr-xs q-mb-xs"
-                >
-                  {{ perm.name }}
-                </q-chip>
-
-                <!-- si hay más, badge + tooltip con el listado completo -->
-                <template v-if="(props.row.permissions || []).length > 3">
-                  <q-badge outline color="primary" class="q-ml-xs">
-                    +{{ (props.row.permissions || []).length - 3 }}
-                    <q-tooltip anchor="top middle" self="bottom middle" :offset="[0,8]">
-                      <div class="text-left">
-                        <div
-                          v-for="perm in props.row.permissions"
-                          :key="perm.id"
-                        >• {{ perm.name }}</div>
-                      </div>
-                    </q-tooltip>
-                  </q-badge>
-                </template>
-
-                <!-- sin permisos -->
-                <q-badge
-                  v-if="!(props.row.permissions || []).length"
-                  color="grey-5"
-                  text-color="white"
-                  outline
-                >
-                  Sin permisos
-                </q-badge>
-              </div>
+              <q-chip
+                v-for="(s,i) in (props.row.usr_access_sistem || [])"
+                :key="i"
+                dense
+                outline
+                :color="s.sistema === 'TRAZA' ? (s.activado ? 'green-5' : 'red-5') : 'grey-4'"
+                text-color="black"
+                class="q-mr-xs q-mb-xs"
+                size="11px"
+              >
+                {{ s.sistema }} ({{ s.activado ? 'ON' : 'OFF' }})
+              </q-chip>
             </q-td>
           </template>
         </q-table>
+
 
         <!-- Diálogo crear/editar usuario externo -->
         <!-- (igual que ya lo tienes) -->
@@ -311,53 +201,6 @@
         </q-dialog>
 
         <!-- DIALOG PERMISOS EXTERNOS -->
-        <q-dialog v-model="dialogPermisos" persistent>
-          <q-card style="min-width: 420px">
-            <q-card-section class="q-pb-none row items-center text-bold">
-              Permisos de {{ user.username }}
-              <q-space />
-              <q-btn icon="close" flat round dense @click="dialogPermisos = false" />
-            </q-card-section>
-
-            <q-card-section class="q-pt-none">
-              <q-input
-                v-model="permFilter"
-                dense
-                outlined
-                placeholder="Filtrar permisos..."
-                class="q-mb-sm"
-              >
-                <template v-slot:append><q-icon name="search" /></template>
-              </q-input>
-
-              <q-list dense bordered>
-                <q-item v-for="perm in filteredPermissions" :key="perm.id">
-                  <q-item-section>{{ perm.name }}</q-item-section>
-                  <q-item-section side>
-                    <q-toggle v-model="perm.checked" />
-                  </q-item-section>
-                </q-item>
-              </q-list>
-            </q-card-section>
-
-            <q-card-actions align="right">
-              <q-btn
-                color="negative"
-                label="Cancelar"
-                @click="dialogPermisos = false"
-                no-caps
-                :loading="loading"
-              />
-              <q-btn
-                color="primary"
-                label="Guardar"
-                @click="permisosPost"
-                no-caps
-                :loading="loading"
-              />
-            </q-card-actions>
-          </q-card>
-        </q-dialog>
       </q-tab-panel>
 
       <!-- ========== TAB 2: USUARIOS INTERNOS (BpUsuarios) ========== -->
@@ -397,6 +240,18 @@
             flat
             :rows-per-page-options="[0]"
           >
+<!--            acciones colcaor permisos-->
+            <template #body-cell-actions="props">
+              <q-td :props="props">
+                <q-btn
+                  color="primary"
+                  label="Permisos"
+                  no-caps
+                  size="10px"
+                  @click="permisosShow(props.row)"
+                />
+              </q-td>
+            </template>
             <template #body-cell-traza="props">
               <q-td :props="props">
                 <q-toggle
@@ -428,6 +283,53 @@
         </q-card>
       </q-tab-panel>
     </q-tab-panels>
+    <q-dialog v-model="dialogPermisos" persistent>
+      <q-card style="min-width: 420px">
+        <q-card-section class="q-pb-none row items-center text-bold">
+          Permisos de {{ user.username }}
+          <q-space />
+          <q-btn icon="close" flat round dense @click="dialogPermisos = false" />
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input
+            v-model="permFilter"
+            dense
+            outlined
+            placeholder="Filtrar permisos..."
+            class="q-mb-sm"
+          >
+            <template v-slot:append><q-icon name="search" /></template>
+          </q-input>
+
+          <q-list dense bordered>
+            <q-item v-for="perm in filteredPermissions" :key="perm.id">
+              <q-item-section>{{ perm.name }}</q-item-section>
+              <q-item-section side>
+                <q-toggle v-model="perm.checked" />
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card-section>
+
+        <q-card-actions align="right">
+          <q-btn
+            color="negative"
+            label="Cancelar"
+            @click="dialogPermisos = false"
+            no-caps
+            :loading="loading"
+          />
+          <q-btn
+            color="primary"
+            label="Guardar"
+            @click="permisosPost"
+            no-caps
+            :loading="loading"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 <script>
@@ -468,11 +370,16 @@ export default {
       cambioAvatarDialogo: false,
       docentes: [],
 
+      // Target para el diálogo de permisos (externo o interno)
+      permisosTargetType: null, // 'external' | 'internal'
+      permisosTargetId: null,
+
       // INTERNOS
       bpUsers: [],
       loadingInternos: false,
       filterInterno: '',
       bpColumns: [
+        { name: 'actions', label: 'Acciones', align: 'center' },
         { name: 'usr_id', label: 'ID', field: 'usr_id', align: 'left' },
         { name: 'usr_usuario', label: 'Usuario', field: 'usr_usuario', align: 'left' },
         { name: 'traza', label: 'TRAZA', field: 'traza_activado', align: 'center' },
@@ -560,13 +467,41 @@ export default {
         this.loading = false
       })
     },
-    async permisosShow (user) {
-      this.user = { ...user }
+
+    // 🔐 DIÁLOGO DE PERMISOS (EXTERNOS e INTERNOS)
+    async permisosShow (row) {
+      // row puede ser:
+      // - user externo: { id, username, ... }
+      // - user interno: { usr_id, usr_usuario, ... }
+
       this.dialogPermisos = true
       this.loading = true
+
+      // Configuramos el target
+      if (row.id) {
+        // EXTERNO
+        this.permisosTargetType = 'external'
+        this.permisosTargetId = row.id
+        this.user = { ...row } // para mostrar username en el título
+      } else {
+        // INTERNO
+        this.permisosTargetType = 'internal'
+        this.permisosTargetId = row.usr_id
+        this.user = {
+          username: row.usr_usuario
+        }
+      }
+
       try {
         const all = await this.$axios.get('permissions').then(r => r.data)
-        const userPermIds = await this.$axios.get(`users/${user.id}/permissions`).then(r => r.data)
+
+        const endpoint =
+          this.permisosTargetType === 'external'
+            ? `users/${this.permisosTargetId}/permissions`
+            : `bp-usuarios/${this.permisosTargetId}/permissions`
+
+        const userPermIds = await this.$axios.get(endpoint).then(r => r.data)
+
         this.permissions = all.map(p => ({
           ...p,
           checked: userPermIds.includes(p.id)
@@ -581,19 +516,33 @@ export default {
       this.loading = true
       try {
         const ids = this.permissions.filter(p => p.checked).map(p => p.id)
-        await this.$axios.put(`users/${this.user.id}/permissions`, { permissions: ids })
+
+        const endpoint =
+          this.permisosTargetType === 'external'
+            ? `users/${this.permisosTargetId}/permissions`
+            : `bp-usuarios/${this.permisosTargetId}/permissions`
+
+        await this.$axios.put(endpoint, { permissions: ids })
+
         this.dialogPermisos = false
         this.$alert.success('Permisos actualizados')
-        this.usersGet()
+        // Refrescamos según el tipo
+        if (this.permisosTargetType === 'external') {
+          this.usersGet()
+        } else {
+          this.bpUsersGet()
+        }
       } catch (e) {
         this.$alert.error(e.response?.data?.message || 'No se pudo guardar')
       } finally {
         this.loading = false
       }
     },
+
     userEditPassword (user) {
       this.user = { ...user }
-      this.$alert.dialogPrompt('Nueva contraseña', 'Ingrese la nueva contraseña', 'password')
+      this.$alert
+        .dialogPrompt('Nueva contraseña', 'Ingrese la nueva contraseña', 'password')
         .onOk(password => {
           this.$axios.put('updatePassword/' + user.id, {
             password
@@ -611,7 +560,8 @@ export default {
       this.userDialog = true
     },
     userDelete (id) {
-      this.$alert.dialog('¿Desea eliminar el user?')
+      this.$alert
+        .dialog('¿Desea eliminar el user?')
         .onOk(() => {
           this.loading = true
           this.$axios.delete('users/' + id).then(res => {
