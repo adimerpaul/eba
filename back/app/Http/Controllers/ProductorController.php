@@ -127,14 +127,92 @@ class ProductorController extends Controller
                 $pagina++;
             } while ($pagina <= $lastPage);
 
-            $template = storage_path('app/excel/proveedores.xlsx');
-                $output   = public_path('reportes/reporte_proveedor.xlsx');
+            // VERIFICAR SI SE SOLICITA INCLUIR TRAZABILIDAD
+            // Permite exportar con columnas mensuales cuando el modo esta activo en frontend
+            $incluirTrazabilidad = $request->has('incluir_trazabilidad') && $request->input('incluir_trazabilidad') == true;
+            
+            if ($incluirTrazabilidad) {
+                // EXPORTACION CON TRAZABILIDAD MENSUAL
+                $gestion = (int) $request->input('gestion', date('Y'));
+                $productoId = (int) $request->input('producto_id', 1);
+                
+                // Obtener acopios mensuales para todos los productores
+                $productorIds = $todos->pluck('id')->toArray();
+                $acopiosRequest = new Request([
+                    'productor_ids' => $productorIds,
+                    'gestion' => $gestion,
+                    'producto_id' => $productoId
+                ]);
+                $acopiosResponse = $this->acopiosGestionLote($acopiosRequest);
+                $acopiosData = json_decode($acopiosResponse->getContent(), true);
+                
+                // Mapear acopios por productor_id para acceso rapido
+                $acopiosPorProductor = [];
+                foreach ($acopiosData as $item) {
+                    $acopiosPorProductor[$item['productor_id']] = $item;
+                }
+                
+                // CORRECCION 2025-11-14: Ruta incorrecta - los templates estan en public/excel/ no en storage/app/excel/
+                // Error detectado: File "...\eba\back\storage\app/excel/proveedores.xlsx" does not exist
+                // $template = storage_path('app/excel/proveedores.xlsx'); // RUTA INCORRECTA
+                $template = public_path('excel/proveedores.xlsx'); // RUTA CORRECTA
+                $output = public_path('reportes/reporte_proveedor_trazabilidad.xlsx');
 
-                // Cargar la plantilla
                 $spreadsheet = IOFactory::load($template);
                 $sheet = $spreadsheet->getActiveSheet();
 
-                // Escribir datos (ejemplo a partir de fila 2)
+                // COLUMNAS ORIGINALES + 13 COLUMNAS ADICIONALES (12 meses + total)
+                $fila = 7;
+                foreach ($todos as $u) {
+                    $sheet->setCellValue("B{$fila}", $u->id);
+                    $sheet->setCellValue("C{$fila}", $u->runsa);
+                    $sheet->setCellValue("D{$fila}", $u->sub_codigo);
+                    $sheet->setCellValue("E{$fila}", $u->municipio['nombre_municipio'] ?? '');
+                    $sheet->setCellValue("F{$fila}", $u->nombre_completo);
+                    $sheet->setCellValue("G{$fila}", $u->numcarnet);
+                    $sheet->setCellValue("H{$fila}", $u->num_celular);
+                    $sheet->setCellValue("I{$fila}", $u->comunidad ?? '');
+                    $sheet->setCellValue("J{$fila}", $u->estado);
+                    $sheet->setCellValue("K{$fila}", $u->fecha_registro);
+                    
+                    // AGREGAR COLUMNAS MENSUALES (L-W) Y TOTAL (X)
+                    $acopios = $acopiosPorProductor[$u->id] ?? null;
+                    if ($acopios) {
+                        $meses = $acopios['meses_array'];
+                        $columnas = ['L','M','N','O','P','Q','R','S','T','U','V','W'];
+                        for ($i = 0; $i <= 11; $i++) {
+                            $sheet->setCellValue("{$columnas[$i]}{$fila}", $meses[$i] ?? 0);
+                        }
+                        $sheet->setCellValue("X{$fila}", $acopios['total_kg']);
+                    } else {
+                        // Sin acopios, llenar con ceros
+                        $columnas = ['L','M','N','O','P','Q','R','S','T','U','V','W'];
+                        for ($i = 0; $i <= 11; $i++) {
+                            $sheet->setCellValue("{$columnas[$i]}{$fila}", 0);
+                        }
+                        $sheet->setCellValue("X{$fila}", 0);
+                    }
+                    
+                    $fila++;
+                }
+
+                $writer = new Xlsx($spreadsheet);
+                $writer->save($output);
+
+                return response()->download($output);
+                
+            } else {
+                // EXPORTACION ORIGINAL SIN TRAZABILIDAD
+                // Codigo mantenido para no afectar funcionalidad existente
+                // CORRECCION 2025-11-14: Ruta incorrecta - los templates estan en public/excel/ no en storage/app/excel/
+                // Error detectado: File "...\www\eba\back\storage\app/excel/proveedores.xlsx" does not exist
+                // $template = storage_path('app/excel/proveedores.xlsx'); // RUTA INCORRECTA
+                $template = public_path('excel/proveedores.xlsx'); // RUTA CORRECTA
+                $output = public_path('reportes/reporte_proveedor.xlsx');
+
+                $spreadsheet = IOFactory::load($template);
+                $sheet = $spreadsheet->getActiveSheet();
+
                 $fila = 7;
                 foreach ($todos as $u) {
                     $sheet->setCellValue("B{$fila}", $u->id);
@@ -150,14 +228,11 @@ class ProductorController extends Controller
                     $fila++;
                 }
 
-                // Guardar en public/
                 $writer = new Xlsx($spreadsheet);
                 $writer->save($output);
 
-                // Retornar link para descarga
                 return response()->download($output);
-
-            //return $todos;
+            }
     }
     public function store(Request $request)
     {
@@ -529,5 +604,107 @@ class ProductorController extends Controller
 
         // Retornar archivo para descarga
         return response()->download($output)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Obtiene acopios mensuales de multiples productores en lote
+     * Optimizado para carga masiva en tabla principal
+     * Permite visualizar trazabilidad de entregas por temporada
+     * 
+     * POST /api/productores/acopios-gestion-lote
+     * Body: { productor_ids: [1,2,3,...], gestion: 2025, producto_id: 1 }
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function acopiosGestionLote(Request $request)
+    {
+        // Validar parametros de entrada
+        $request->validate([
+            'productor_ids' => 'required|array|min:1|max:200',
+            'productor_ids.*' => 'integer|exists:productores,id',
+            'gestion' => 'required|integer|min:2020|max:2030',
+            'producto_id' => 'nullable|integer|exists:productos,id'
+        ]);
+
+        $productorIds = $request->input('productor_ids');
+        $gestion = (int) $request->input('gestion');
+        $productoId = $request->input('producto_id', 1);
+
+        // Calcular rango de fechas para la gestion apicola (julio a junio)
+        $fechaInicio = "{$gestion}-07-01";
+        $fechaFin = ($gestion + 1) . "-06-30";
+
+        // Query SQL optimizado para obtener acopios de multiples productores
+        // Agrupa por productor y mes (offset 0-11 donde 0=Julio, 11=Junio)
+        $resultados = DB::select("
+            WITH productores_input AS (
+                SELECT unnest(ARRAY[" . implode(',', array_map('intval', $productorIds)) . "]) AS productor_id
+            ),
+            apiarios_productores AS (
+                SELECT 
+                    p.productor_id,
+                    array_agg(a.id) FILTER (WHERE a.id IS NOT NULL) AS apiario_ids
+                FROM productores_input p
+                LEFT JOIN apiarios a ON a.productor_id = p.productor_id AND a.deleted_at IS NULL
+                GROUP BY p.productor_id
+            ),
+            acopios_mensuales AS (
+                SELECT 
+                    ap.productor_id,
+                    CASE 
+                        WHEN EXTRACT(MONTH FROM ac.fecha_cosecha) >= 7 
+                        THEN EXTRACT(MONTH FROM ac.fecha_cosecha) - 7
+                        ELSE EXTRACT(MONTH FROM ac.fecha_cosecha) + 5
+                    END AS offset_mes,
+                    SUM(ac.cantidad_kg) AS cantidad_kg
+                FROM apiarios_productores ap
+                LEFT JOIN acopio_cosechas ac ON ac.apiario_id = ANY(ap.apiario_ids)
+                    AND ac.producto_id = :producto_id
+                    AND ac.fecha_cosecha >= :fecha_inicio::date
+                    AND ac.fecha_cosecha <= :fecha_fin::date
+                    AND ac.deleted_at IS NULL
+                WHERE ap.apiario_ids IS NOT NULL
+                GROUP BY ap.productor_id, offset_mes
+            )
+            SELECT 
+                pi.productor_id,
+                COALESCE(
+                    jsonb_object_agg(
+                        am.offset_mes::text, 
+                        COALESCE(am.cantidad_kg, 0)
+                    ) FILTER (WHERE am.offset_mes IS NOT NULL),
+                    '{}'::jsonb
+                ) AS meses_json,
+                COALESCE(SUM(am.cantidad_kg), 0)::numeric(10,2) AS total_kg
+            FROM productores_input pi
+            LEFT JOIN acopios_mensuales am ON am.productor_id = pi.productor_id
+            GROUP BY pi.productor_id
+        ", [
+            'producto_id' => $productoId,
+            'fecha_inicio' => $fechaInicio,
+            'fecha_fin' => $fechaFin
+        ]);
+
+        // Transformar resultados a formato array con indices 0-11 para facilitar acceso desde frontend
+        $response = array_map(function($row) {
+            $mesesJson = json_decode($row->meses_json, true);
+            
+            // Convertir a array con indices 0-11 garantizando todos los meses
+            $mesesArray = [];
+            for ($i = 0; $i <= 11; $i++) {
+                $mesesArray[$i] = isset($mesesJson[(string)$i]) 
+                    ? (float) $mesesJson[(string)$i] 
+                    : 0.0;
+            }
+            
+            return [
+                'productor_id' => (int) $row->productor_id,
+                'meses_array' => $mesesArray,
+                'total_kg' => (float) $row->total_kg
+            ];
+        }, $resultados);
+
+        return response()->json($response);
     }
 }

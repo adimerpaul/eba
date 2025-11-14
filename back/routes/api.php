@@ -104,6 +104,9 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     // NUEVO: Endpoint para exportar acopios mensuales por gestión a Excel
     // Ejemplo: POST /api/productores/11613/acopios-gestion-excel con body: {gestion: 2025, producto_id: 1}
     Route::post('/productores/{productor}/acopios-gestion-excel', [ProductorController::class, 'acopiosGestionExcel']);
+    // NUEVO: Endpoint para obtener acopios de multiples productores en lote (tabla principal)
+    // Ejemplo: POST /api/productores/acopios-gestion-lote con body: {productor_ids: [1,2,3], gestion: 2025, producto_id: 1}
+    Route::post('productores/acopios-gestion-lote', [ProductorController::class, 'acopiosGestionLote']);
 
 //    Route::get('/certificaciones', [CertificacionController::class, 'index']);
     Route::post('/certificaciones', [CertificacionController::class, 'store']);
