@@ -38,6 +38,38 @@ class ReporteController extends Controller
         return $res;
     }
 
+        public function reporteAcopioProveedorMun(Request $request){
+        // Lógica para generar el reporte de productos
+        $res = DB::SELECT("SELECT 
+            m.nombre_municipio municipio,
+            COUNT(DISTINCT p.id) AS productores,
+            SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 1) AS enero,
+            SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 2) AS febrero,
+            SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 3) AS marzo,
+            SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 4) AS abril,
+            SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 5) AS mayo,
+            SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 6) AS junio,
+            SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 7) AS julio,
+            SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 8) AS agosto,
+            SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 9) AS septiembre,
+            SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 10) AS octubre,
+            SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 11) AS noviembre,
+            SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 12) AS diciembre,
+            SUM(ac.cantidad_kg) AS total
+            FROM departamentos d 
+            INNER JOIN municipios m ON d.id = m.departamento_id
+            INNER JOIN productores p ON p.municipio_id = m.id 
+            INNER JOIN apiarios a ON a.productor_id = p.id
+            INNER JOIN acopio_cosechas ac ON ac.apiario_id = a.id
+            WHERE ac.producto_id = $request->producto_id
+            AND ac.fecha_cosecha BETWEEN '$request->inicio' AND '$request->fin'
+            GROUP BY m.nombre_municipio
+            ORDER BY m.nombre_municipio;");
+        return $res;
+    }
+
+
+
     public function reportePorcentual(Request $request){
         // Lógica para generar el reporte de productos
         $request->validate([
