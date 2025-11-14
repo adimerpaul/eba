@@ -1,50 +1,127 @@
 <template>
   <q-card-section>
+    <!-- HEADER CON RESUMEN -->
     <div class="row items-center q-gutter-sm q-mb-sm">
-      <div class="text-subtitle1">Acopios Proveedor</div>
+      <div class="text-subtitle1">
+        Acopios proveedor
+        <span v-if="productor">
+          — {{ productor.nombre_completo || (productor.nombre + ' ' + productor.apellidos) }}
+        </span>
+      </div>
       <q-space />
+      <q-chip color="primary" text-color="white" dense>
+        Total Kg: {{ totals.totalKg.toFixed(2) }}
+      </q-chip>
+      <q-chip color="amber-7" text-color="black" dense>
+        Total compra: {{ totals.totalMonto.toFixed(2) }} Bs
+      </q-chip>
+      <q-chip color="grey-8" text-color="white" dense>
+        Nº cosechas: {{ acopioCosechas.length }}
+      </q-chip>
     </div>
 
-    <!-- Tabla -->
+    <!-- TABS -->
+    <q-tabs
+      v-model="tab"
+      dense
+      align="left"
+      active-color="primary"
+      indicator-color="primary"
+      class="text-primary q-mb-sm"
+    >
+      <q-tab name="detalle" label="Detalle" icon="table_view" />
+      <q-tab name="resumen" label="Resumen mensual" icon="analytics" />
+    </q-tabs>
+    <q-separator class="q-mb-md" />
+
+    <q-tab-panels v-model="tab" animated>
+
+      <!-- ================= DETALLE ================= -->
+      <q-tab-panel name="detalle">
         <q-markup-table v-if="acopioCosechas.length > 0" dense wrap-cells flat bordered>
           <thead>
-            <tr class="bg-primary text-white">
-              <th>Fecha Cosecha</th>
-              <th>Productor</th>
-              <th>Cantidad (kg)</th>
-              <th>Humedad (%)</th>
-              <th>Temperatura Almacenaje (°C)</th>
-              <th>Número Acta</th>
-              <th>Condiciones Almacenaje</th>
-              <th>Estado</th>
-            </tr>
+          <tr class="bg-primary text-white">
+            <th>Fecha Cosecha</th>
+            <th>Productor</th>
+            <th>Cantidad (kg)</th>
+            <th>Humedad (%)</th>
+            <th>Temperatura Almacenaje (°C)</th>
+            <th>Número Acta</th>
+            <th>Condiciones Almacenaje</th>
+            <th>Estado</th>
+          </tr>
           </thead>
           <tbody>
-            <tr v-for="cosecha in acopioCosechas" :key="cosecha.id">
-              <td>{{ cosecha.fecha_cosecha }}</td>
-              <td>
-                {{ cosecha.apiario?.productor.nombre }}
-                {{ cosecha.apiario?.productor.apellidos }}
-              </td>
-              <td>{{ cosecha.cantidad_kg }}</td>
-              <td>{{ cosecha.humedad }}</td>
-              <td>{{ cosecha.temperatura_almacenaje }}</td>
-              <td>{{ cosecha.num_acta }}</td>
-              <td>{{ cosecha.condiciones_almacenaje }}</td>
-              <td>
-                <q-chip :color="cosecha.estado === 'BUENO' ? 'green' : 'red'" text-color="white" dense size="10px">
-                  {{ cosecha.estado.replace('_', ' ') }}
-                </q-chip>
-              </td>
-            </tr>
+          <tr v-for="cosecha in acopioCosechas" :key="cosecha.id">
+            <td>{{ cosecha.fecha_cosecha }}</td>
+            <td>
+              {{ cosecha.apiario?.productor.nombre }}
+              {{ cosecha.apiario?.productor.apellidos }}
+            </td>
+            <td>{{ Number(cosecha.cantidad_kg).toFixed(2) }}</td>
+            <td>{{ cosecha.humedad }}</td>
+            <td>{{ cosecha.temperatura_almacenaje }}</td>
+            <td>{{ cosecha.num_acta }}</td>
+            <td>{{ cosecha.condiciones_almacenaje }}</td>
+            <td>
+              <q-chip
+                :color="cosecha.estado === 'BUENO' ? 'green' : 'red'"
+                text-color="white"
+                dense size="10px"
+              >
+                {{ cosecha.estado.replace('_', ' ') }}
+              </q-chip>
+            </td>
+          </tr>
           </tbody>
         </q-markup-table>
         <div v-else class="text-center q-pa-md">
           <q-icon name="info" size="48px" color="grey-5" />
           <div class="text-subtitle2 text-grey-5">No se encontraron cosechas.</div>
         </div>
+      </q-tab-panel>
 
-    <!-- Dialog Crear/Editar -->
+      <!-- ================= RESUMEN MENSUAL ================= -->
+      <q-tab-panel name="resumen">
+        <div v-if="monthlyAggregates.length">
+          <!-- Tabla resumen -->
+          <q-markup-table dense flat bordered class="q-mb-md">
+            <thead>
+            <tr class="bg-primary text-white">
+              <th>Mes</th>
+              <th>Total Kg</th>
+              <th>Total compra (Bs)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="row in monthlyAggregates" :key="row.key">
+              <td>{{ row.label }}</td>
+              <td>{{ row.totalKg.toFixed(2) }}</td>
+              <td>{{ row.totalMonto.toFixed(2) }}</td>
+            </tr>
+            </tbody>
+          </q-markup-table>
+
+          <!-- Gráfico Apex -->
+          <div class="q-mt-md">
+            <apexchart
+              type="line"
+              height="320"
+              :options="monthlyChartOptions"
+              :series="monthlyChartSeries"
+            />
+          </div>
+        </div>
+        <div v-else class="text-center q-pa-md">
+          <q-icon name="insert_chart_outlined" size="48px" color="grey-5" />
+          <div class="text-subtitle2 text-grey-5">
+            Aún no hay datos suficientes para el resumen mensual.
+          </div>
+        </div>
+      </q-tab-panel>
+    </q-tab-panels>
+
+    <!-- Dialog Crear/Editar RUNSA (lo dejo tal cual lo tenías) -->
     <q-dialog v-model="dlg.open" persistent>
       <q-card style="min-width: 720px; max-width: 95vw">
         <q-card-section class="row items-center q-gutter-sm">
@@ -98,10 +175,8 @@
     </q-dialog>
   </q-card-section>
 </template>
-
 <script>
-import moment from 'moment';
-
+import moment from 'moment'
 
 export default {
   name: 'ProductorAcopios',
@@ -116,51 +191,151 @@ export default {
       list: [],
       dlg: { open: false },
       form: this.emptyForm(),
-      acopioCosechas: []
+      acopioCosechas: [],
+      tab: 'detalle'
     }
   },
-    mounted () { this.hydrateFromProductor() },
-  watch: { productor () { this.hydrateFromProductor() } },
+  mounted () { this.hydrateFromProductor() },
+  watch: {
+    productor () { this.hydrateFromProductor() }
+  },
+  computed: {
+    // Totales globales
+    totals () {
+      let totalKg = 0
+      let totalMonto = 0
+      this.acopioCosechas.forEach(c => {
+        const kg = parseFloat(c.cantidad_kg || 0)
+        const precio = parseFloat(c.precio_compra || 0)
+        totalKg += kg
+        totalMonto += kg * precio
+      })
+      return { totalKg, totalMonto }
+    },
+
+    // Array de meses agregados
+    monthlyAggregates () {
+      const map = {}
+
+      this.acopioCosechas.forEach(c => {
+        if (!c.fecha_cosecha) return
+
+        const m = moment(c.fecha_cosecha)
+        if (!m.isValid()) return
+
+        const key = m.format('YYYY-MM')       // para ordenar
+        const label = m.format('MMM YYYY')   // lo que se muestra
+        const kg = parseFloat(c.cantidad_kg || 0)
+        const precio = parseFloat(c.precio_compra || 0)
+        const monto = kg * precio
+
+        if (!map[key]) {
+          map[key] = {
+            key,
+            label,
+            totalKg: 0,
+            totalMonto: 0
+          }
+        }
+
+        map[key].totalKg += kg
+        map[key].totalMonto += monto
+      })
+
+      // Ordenamos por key (año-mes)
+      return Object.values(map).sort((a, b) => a.key.localeCompare(b.key))
+    },
+
+    // Opciones del gráfico
+    monthlyChartOptions () {
+      return {
+        chart: {
+          id: 'acopios-mensuales',
+          toolbar: { show: false }
+        },
+        xaxis: {
+          categories: this.monthlyAggregates.map(m => m.label)
+        },
+        dataLabels: {
+          enabled: true,
+          enabledOnSeries: [0] // solo en barras (kg)
+        },
+        stroke: {
+          width: [0, 3] // barras sin borde, línea con grosor 3
+        },
+        yaxis: [
+          {
+            title: { text: 'Kg' }
+          },
+          {
+            opposite: true,
+            title: { text: 'Bs' }
+          }
+        ],
+        legend: {
+          position: 'top'
+        },
+        tooltip: {
+          shared: true,
+          intersect: false
+        }
+      }
+    },
+
+    // Series del gráfico
+    monthlyChartSeries () {
+      const kgData = this.monthlyAggregates.map(m => m.totalKg)
+      const montoData = this.monthlyAggregates.map(m => m.totalMonto)
+
+      return [
+        {
+          name: 'Kg',
+          type: 'column',
+          data: kgData
+        },
+        {
+          name: 'Monto (Bs)',
+          type: 'line',
+          data: montoData
+        }
+      ]
+    }
+  },
   methods: {
-        async fetchAcopio(){
-      this.loading = true;
-      console.log(this.productor);
-      await this.$axios.post('/productorAcopios', 
-         {
-          productor_id: this.productor.id,
-        
-      })
-      .then((response) => {
-        //console.log(params)
-        console.log(response);
-        //return
-        this.acopioCosechas = response.data;
-      })
-      .catch((error) => {
+    async fetchAcopio () {
+      if (!this.productor?.id) return
+      this.loading = true
+      try {
+        const { data } = await this.$axios.post('/productorAcopios', {
+          productor_id: this.productor.id
+        })
+        this.acopioCosechas = data
+      } catch (error) {
         console.log(error)
-        this.$alert?.error?.(error.response?.data?.message || 'No se pudo cargar las cosechas');
-      })
-      .finally(() => {
-        this.loading = false;
-      });
+        this.$alert?.error?.(error.response?.data?.message || 'No se pudo cargar las cosechas')
+      } finally {
+        this.loading = false
+      }
     },
     hydrateFromProductor () {
-       this.fetchAcopio()
+      this.fetchAcopio()
     },
+
     async fetchRunsas () {
-        console.log(this.productor)
+      if (!this.productor?.id) return
       this.loading = true
       try {
         const { data } = await this.$axios.get('runsas', {
           params: { productor_id: this.productor.id, paginate: false }
         })
-        console.log(data)   
         this.list = Array.isArray(data) ? data : (data?.data || [])
       } catch (e) {
         console.log(e)
         this.list = []
         this.$alert?.error?.(e.response?.data?.message || 'No se pudo cargar runsas')
-      } finally { this.loading = false }
+      } finally {
+        this.loading = false
+      }
     },
     emptyForm () {
       return {
@@ -210,7 +385,7 @@ export default {
         }
         this.$alert?.success?.(payload.id ? 'Runsa actualizada' : 'Runsa creada')
         this.dlg.open = false
-        this.$emit('updated') // el padre vuelve a llamar GET /productores/{id}
+        this.$emit('updated')
       } catch (e) {
         this.$alert?.error?.(e.response?.data?.message || 'No se pudo guardar')
       } finally {
@@ -228,8 +403,7 @@ export default {
           this.$alert?.error?.(e.response?.data?.message || 'No se pudo eliminar')
         }
       })
-    },
-
+    }
   }
 }
 </script>
