@@ -20,55 +20,165 @@
       <!-- ========== TAB 1: USUARIOS EXTERNOS (TU CÓDIGO ACTUAL) ========== -->
       <q-tab-panel name="externos">
         <q-table
-          :rows="bpUsersFiltered"
-          :columns="bpColumns"
-          row-key="usr_id"
+          :rows="users"
+          :columns="columns"
           dense
+          wrap-cells
           flat
+          bordered
           :rows-per-page-options="[0]"
+          title="Usuarios externos"
+          :filter="filter"
         >
-          <!-- ACCIONES: PERMISOS PARA INTERNOS -->
-          <template #body-cell-actions="props">
+          <template v-slot:top-right>
+            <q-btn
+              color="positive"
+              label="Nuevo"
+              @click="userNew"
+              no-caps
+              icon="add_circle_outline"
+              :loading="loading"
+              class="q-mr-sm"
+            />
+            <q-btn
+              color="primary"
+              label="Actualizar"
+              @click="usersGet"
+              no-caps
+              icon="refresh"
+              :loading="loading"
+              class="q-mr-sm"
+            />
+            <q-input v-model="filter" label="Buscar" dense outlined>
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </template>
+
+          <template v-slot:body-cell-actions="props">
             <q-td :props="props">
-              <q-btn
-                color="primary"
-                label="Permisos"
-                no-caps
-                size="10px"
-                @click="permisosShow(props.row)"
-              />
+              <q-btn-dropdown label="Opciones" no-caps size="10px" dense color="primary">
+                <q-list>
+                  <q-item clickable @click="userEdit(props.row)" v-close-popup>
+                    <q-item-section avatar>
+                      <q-icon name="edit" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>Editar</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item clickable @click="userDelete(props.row.id)" v-close-popup>
+                    <q-item-section avatar>
+                      <q-icon name="delete" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>Eliminar</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item clickable @click="userEditPassword(props.row)" v-close-popup>
+                    <q-item-section avatar>
+                      <q-icon name="lock_reset" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>Cambiar contraseña</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item clickable @click="cambiarAvatar(props.row)" v-close-popup>
+                    <q-item-section avatar>
+                      <q-icon name="image" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>Cambiar avatar</q-item-label>
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item clickable @click="permisosShow(props.row)" v-close-popup>
+                    <q-item-section avatar>
+                      <q-icon name="lock" />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label>Permisos</q-item-label>
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-btn-dropdown>
             </q-td>
           </template>
 
-          <template #body-cell-traza="props">
-            <q-td :props="props">
-              <q-toggle
-                v-model="props.row.traza_activado"
-                color="primary"
-                label="TRAZA"
-                @update:model-value="val => toggleTraza(props.row, val)"
-              />
-            </q-td>
-          </template>
-
-          <template #body-cell-sistemas="props">
+          <template v-slot:body-cell-role="props">
             <q-td :props="props">
               <q-chip
-                v-for="(s,i) in (props.row.usr_access_sistem || [])"
-                :key="i"
+                :label="props.row.role"
+                :color="$filters.color(props.row.role)"
+                text-color="white"
                 dense
-                outline
-                :color="s.sistema === 'TRAZA' ? (s.activado ? 'green-5' : 'red-5') : 'grey-4'"
-                text-color="black"
-                class="q-mr-xs q-mb-xs"
-                size="11px"
-              >
-                {{ s.sistema }} ({{ s.activado ? 'ON' : 'OFF' }})
-              </q-chip>
+                size="14px"
+              />
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-avatar="props">
+            <q-td :props="props">
+              <q-avatar rounded>
+                <q-img
+                  :src="`${$url}/../images/${props.row.avatar}`"
+                  width="40px"
+                  height="40px"
+                  v-if="props.row.avatar"
+                />
+                <q-icon name="person" size="40px" v-else />
+              </q-avatar>
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-permissions="props">
+            <q-td :props="props">
+              <div class="row items-center q-col-gutter-xs">
+                <!-- hasta 3 chips visibles -->
+                <q-chip
+                  v-for="(perm, idx) in (props.row.permissions || []).slice(0, 3)"
+                  :key="perm.id"
+                  dense
+                  color="grey-3"
+                  text-color="black"
+                  size="12px"
+                  class="q-mr-xs q-mb-xs"
+                >
+                  {{ perm.name }}
+                </q-chip>
+
+                <!-- si hay más, badge + tooltip con el listado completo -->
+                <template v-if="(props.row.permissions || []).length > 3">
+                  <q-badge outline color="primary" class="q-ml-xs">
+                    +{{ (props.row.permissions || []).length - 3 }}
+                    <q-tooltip anchor="top middle" self="bottom middle" :offset="[0,8]">
+                      <div class="text-left">
+                        <div
+                          v-for="perm in props.row.permissions"
+                          :key="perm.id"
+                        >• {{ perm.name }}</div>
+                      </div>
+                    </q-tooltip>
+                  </q-badge>
+                </template>
+
+                <!-- sin permisos -->
+                <q-badge
+                  v-if="!(props.row.permissions || []).length"
+                  color="grey-5"
+                  text-color="white"
+                  outline
+                >
+                  Sin permisos
+                </q-badge>
+              </div>
             </q-td>
           </template>
         </q-table>
-
 
         <!-- Diálogo crear/editar usuario externo -->
         <!-- (igual que ya lo tienes) -->
@@ -199,8 +309,6 @@
             </q-card-section>
           </q-card>
         </q-dialog>
-
-        <!-- DIALOG PERMISOS EXTERNOS -->
       </q-tab-panel>
 
       <!-- ========== TAB 2: USUARIOS INTERNOS (BpUsuarios) ========== -->
@@ -283,6 +391,7 @@
         </q-card>
       </q-tab-panel>
     </q-tab-panels>
+    <!-- DIALOG PERMISOS EXTERNOS -->
     <q-dialog v-model="dialogPermisos" persistent>
       <q-card style="min-width: 420px">
         <q-card-section class="q-pb-none row items-center text-bold">
