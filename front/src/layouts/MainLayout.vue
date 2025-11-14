@@ -265,6 +265,14 @@
         <q-expansion-item dense expand-separator icon="store" label="Módulo Reportes" active-class="menu-active" >
           <q-list>
 <!--            crear ventas-->
+            <q-item :inset-level="0.3" dense to="/reportesActuales" clickable class="menu-item" active-class="menu-active" v-close-popup >
+              <q-item-section avatar>
+                <q-icon name="print" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Reporte Actuales</q-item-label>
+              </q-item-section>
+            </q-item>
             <q-item :inset-level="0.3" dense to="/reportes" clickable class="menu-item" active-class="menu-active" v-close-popup >
               <q-item-section avatar>
                 <q-icon name="point_of_sale" class="text-white"/>

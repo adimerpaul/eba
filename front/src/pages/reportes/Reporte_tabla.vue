@@ -1,90 +1,112 @@
 <template>
-    <q-page class="q-pa-md">
-        <div class="row">
-            <div class="col-4"><q-input v-model="gestion" type="number" label="Gestion" dense /></div>
-            <div class="col-4"><q-select v-model="producto" :options="productos" option-label="nombre_producto" label="Productos" dense /></div>
-            <div class="col-4"><q-btn color="primary" label="ACOPIO GESTION" @click="getReporte" :loading="loading"/> <q-btn color="primary" label="GRAFICA" @click="getReporteTabla" :loading="loading"/></div>
-        </div>
-      <q-table
-        :rows="listado1"
-        :columns="columns2"
-        row-key="id"
-        flat bordered dense wrap-cells
-        :rows-per-page-options="[0]"
-        :title="`REPORTE ACOPIO GESTION PRODUCTO POR DEPARTAMENTO ${producto.nombre_producto} GESTION ${gestion}`"
-        :loading="loading"
-        :filter="filter"
-        v-if="listado1.length>0"
-      >
-       <template v-slot:top-right>
-        <q-btn color="info" icon="print"  @click="impresion"  dense :loading="loading" />
-        <q-input dense debounce="300" v-model="filter" placeholder="Buscar..." outlined
-            clearable
-            clear-icon="close"
-            append-icon="search"
-        />
-       </template>
-       <!--Sumatorias de las columnas -->
-        <template v-slot:bottom-row>
-          <q-tr>
-            <q-td class="text-right"><strong>TOTALES</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + row.productores, 0) }}</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.enero) || 0), 0) }}</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.febrero) || 0), 0) }}</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.marzo) || 0), 0) }}</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat( row.abril) || 0), 0) }}</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.mayo) || 0), 0) }}</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.junio) || 0), 0) }}</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.julio) || 0), 0) }}</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.agosto) || 0), 0) }}</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.septiembre) || 0), 0) }}</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.octubre) || 0), 0) }}</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.noviembre) || 0), 0) }}</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.diciembre) || 0), 0) }}</strong></q-td>
-            <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.total) || 0), 0) }}</strong></q-td>
-          </q-tr>
-        </template>
+    <q-page class="q-pa-xs">
+      <q-card flat bordered>
+        <q-card-section class="q-pa-none">
+          <div class="row">
+            <div class="col-4"><q-input v-model="gestion" type="number" label="Gestion" dense outlined /></div>
+            <div class="col-4"><q-select v-model="producto" :options="productos" option-label="nombre_producto" label="Productos" dense  outlined/></div>
+            <div class="col-4">
+              <q-btn color="primary" label="Acopios" @click="getReporte" :loading="loading" no-caps icon="table_chart"/>
+<!--              <q-btn color="primary" label="Grafica" @click="getReporteTabla" :loading="loading" no-caps icon="bar_chart"/>-->
+            </div>
+          </div>
+<!--          <q-table-->
+<!--            :rows="listado1"-->
+<!--            :columns="columns2"-->
+<!--            row-key="id"-->
+<!--            flat bordered dense wrap-cells-->
+<!--            :rows-per-page-options="[0]"-->
+<!--            :title="`REPORTE ACOPIO GESTION PRODUCTO POR DEPARTAMENTO ${producto.nombre_producto} GESTION ${gestion}`"-->
+<!--            :loading="loading"-->
+<!--            :filter="filter"-->
+<!--            v-if="listado1.length>0"-->
+<!--          >-->
+<!--            <template v-slot:top-right>-->
+<!--              <q-btn color="info" icon="print"  @click="impresion"  dense :loading="loading" />-->
+<!--              <q-input dense debounce="300" v-model="filter" placeholder="Buscar..." outlined-->
+<!--                       clearable-->
+<!--                       clear-icon="close"-->
+<!--                       append-icon="search"-->
+<!--              />-->
+<!--            </template>-->
+<!--            &lt;!&ndash;Sumatorias de las columnas &ndash;&gt;-->
+<!--            <template v-slot:bottom-row>-->
+<!--              <q-tr>-->
+<!--                <q-td class="text-right"><strong>TOTALES</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + row.productores, 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.enero) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.febrero) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.marzo) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat( row.abril) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.mayo) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.junio) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.julio) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.agosto) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.septiembre) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.octubre) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.noviembre) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.diciembre) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.total) || 0), 0) }}</strong></q-td>-->
+<!--              </q-tr>-->
+<!--            </template>-->
 
-      </q-table>
-      <div >
-          <div class="text-center text-bold text-h6"> Grafica ACOPIO GESTION PRODUCTO POR DEPARTAMENTO {{producto.nombre_producto}} GESTION {{gestion}} </div>
-         <canvas ref="grafico"></canvas>
-      </div>
+<!--          </q-table>-->
+          <q-markup-table dense flat bordered>
+            <thead>
+              <tr>
+                <th class="text-center">MUNICIPIO</th>
+                <th class="text-center">PORCENTAJE ACOPIO (%)</th>
+                <th class="text-center">TOTAL PRODUCTORES</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, index) in listado2.labels" :key="index">
+                <td class="text-left">{{ row }}</td>
+                <td class="text-right">{{ listado2.porcentaje[index] ?? 0 }}</td>
+                <td class="text-right">{{ listado2.productores[index] ?? 0 }}</td>
+              </tr>
+            </tbody>
+          </q-markup-table>
+<!--          <div >-->
+<!--            <div class="text-center text-bold text-h6"> Grafica ACOPIO GESTION PRODUCTO POR DEPARTAMENTO {{producto.nombre_producto}} GESTION {{gestion}} </div>-->
+<!--            <canvas ref="grafico"></canvas>-->
+<!--          </div>-->
+<!--          <div class="row">-->
+<!--            <div class="col-md-12 col-xs-12 text-center text-h6 text-bold">PRODUCTORES POR EDAD <q-btn color="info" icon="update"  @click="reportEdad"  dense :loading="loading"/></div>-->
+<!--            <div class="col-md-6 col-xs-12"><q-table-->
+<!--              :rows="list_edad"-->
+<!--              row-key="name"-->
+<!--              dense-->
+<!--              v-if="list_edad.length>0"-->
+<!--            /></div>-->
+<!--            <div class="col-md-6 col-xs-12"><canvas ref="grafico2" height="180"></canvas></div>-->
+<!--          </div>-->
+<!--          <div class="text-center text-bold text-h6">ORGANIZACION ACOPIO <q-btn color="info" icon="update"  @click="reportOrg"  dense :loading="loading"/></div>-->
+<!--          <q-table-->
+<!--            :rows="list_org"-->
+<!--            row-key="name"-->
+<!--            dense-->
+<!--            :loading="loading"-->
+<!--            v-if="list_org.length>0"-->
+<!--          />-->
+<!--          <div class="row">-->
+<!--            <div class="col-12 q-pa-xs"><q-table-->
+<!--              title="CANTIDAD      DE APICULTORES POR DEPARTAMENTO Y GENERO"-->
+<!--              :rows="reporte1"-->
+<!--              row-key="name"-->
+<!--            /></div>-->
 
-      <div class="row">
-        <div class="col-md-12 col-xs-12 text-center text-h6 text-bold">PRODUCTORES POR EDAD <q-btn color="info" icon="update"  @click="reportEdad"  dense :loading="loading"/></div>
-        <div class="col-md-6 col-xs-12"><q-table
-            :rows="list_edad"
-            row-key="name"
-            dense
-            v-if="list_edad.length>0"
-        /></div>
-        <div class="col-md-6 col-xs-12"><canvas ref="grafico2" height="180"></canvas></div>
-      </div>
-      <div class="text-center text-bold text-h6">ORGANIZACION ACOPIO <q-btn color="info" icon="update"  @click="reportOrg"  dense :loading="loading"/></div>
-      <q-table
-        :rows="list_org"
-        row-key="name"
-        dense
-        :loading="loading"
-        v-if="list_org.length>0"
-      />
-      <div class="row">
-        <div class="col-12 q-pa-xs"><q-table
-            title="CANTIDAD      DE APICULTORES POR DEPARTAMENTO Y GENERO"
-            :rows="reporte1"
-            row-key="name"
-        /></div>
 
-
-        <div class="col-12 q-pa-xs">
-            <q-table
-                title="CANITDAD DE COLMENAS POR DEPARTAMENTO PORCENTAJE"
-                :rows="reporte4"
-                row-key="name"
-            />
-        </div>
-      </div>
+<!--            <div class="col-12 q-pa-xs">-->
+<!--              <q-table-->
+<!--                title="CANITDAD DE COLMENAS POR DEPARTAMENTO PORCENTAJE"-->
+<!--                :rows="reporte4"-->
+<!--                row-key="name"-->
+<!--              />-->
+<!--            </div>-->
+<!--          </div>-->
+        </q-card-section>
+      </q-card>
     </q-page>
 </template>
 <script>
@@ -141,15 +163,15 @@ data    () {
 },
 mounted() {
     this.getProductos();
-    this.reportEdad();
-    this.reportOrg();
-    this.graficoEdad()
-    this.getReporte1();
-    this.getReporte2();
-    this.getReporte3();
-    this.getReporte4();
-    this.getReporte5();
-    this.getReporte6();
+    // this.reportEdad();
+    // this.reportOrg();
+    // this.graficoEdad()
+    // this.getReporte1();
+    // this.getReporte2();
+    // this.getReporte3();
+    // this.getReporte4();
+    // this.getReporte5();
+    // this.getReporte6();
 },
   methods: {
     impresion() {
@@ -242,13 +264,13 @@ mounted() {
         </tr>`;
         cadena+=`</table>
         `
-        // impresion 
+        // impresion
         let ventana = window.open('', '_blank');
         ventana.document.write(cadena);
         ventana.document.close();
         ventana.print();
 
-    },    
+    },
     getReporteTabla() {
 
         if(!this.producto.id) {
@@ -398,7 +420,7 @@ mounted() {
         this.loading = true;
         this.$axios.post('/reportEdad').then(({ data }) => {
             this.list_edad = data.data || data || []
-            this.graficoEdad() 
+            this.graficoEdad()
         })  .finally(() => {
             this.loading = false;
         });
@@ -458,7 +480,7 @@ mounted() {
                     display: true,
                     text: 'Distribución porcentual por rango de edad'
                     }
-                
+
                 }
             }
             })
