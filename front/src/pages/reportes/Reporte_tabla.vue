@@ -6,7 +6,6 @@
             <div class="col-4"><q-input v-model="gestion" type="number" label="Gestion" dense outlined /></div>
             <div class="col-4"><q-select v-model="producto" :options="productos" option-label="nombre_producto" label="Productos" dense  outlined/></div>
             <div class="col-4">
-              <q-btn color="primary" label="Acopios" @click="getRepDept" :loading="loading" no-caps icon="table_chart"/>
 <!--              <q-btn color="primary" label="Grafica" @click="getReporteTabla" :loading="loading" no-caps icon="bar_chart"/>-->
             </div>
           </div>
@@ -20,7 +19,8 @@
           </q-tabs>
             <q-separator />
         <q-tab-panels v-model="tab" animated>
-          <q-tab-panel name="detarmentos">
+          <q-tab-panel name="departamentos">
+            <q-btn color="primary" label="Acopios" @click="getRepDept" :loading="loading" no-caps icon="table_chart"/>
               <q-markup-table dense flat bordered>
                 <thead>
                   <tr style="font-weight: bold;">
@@ -101,6 +101,67 @@
             </tbody>
           </q-markup-table>
           </q-tab-panel>
+          <q-tab-panel name="municipios">
+            <q-btn color="primary" label="Acopios" @click="getReporte" :loading="loading" no-caps icon="table_chart"/>
+            <q-markup-table dense flat bordered>
+              <thead>
+                <tr>
+                  <th class="text-center">MUNICIPIO</th>
+                  <th class="text-center">PRODUCTORES</th>
+                  <th class="text-center">ENERO</th>
+                  <th class="text-center">FEBRERO</th>
+                  <th class="text-center">MARZO</th>
+                  <th class="text-center">ABRIL</th>
+                  <th class="text-center">MAYO</th>
+                  <th class="text-center">JUNIO</th>
+                  <th class="text-center">JULIO</th>
+                  <th class="text-center">AGOSTO</th>
+                  <th class="text-center">SEPTIEMBRE</th>
+                  <th class="text-center">OCTUBRE</th>
+                  <th class="text-center">NOVIEMBRE</th>
+                    <th class="text-center">DICIEMBRE</th>
+                  <th class="text-center">TOTAL</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in listMun" :key="row.id">
+                  <td class="text-left">{{ row.municipio }}</td>
+                  <td class="text-right">{{ row.productores }}</td>
+                  <td class="text-right">{{ row.enero }}</td>
+                  <td class="text-right">{{ row.febrero }}</td>
+                  <td class="text-right">{{ row.marzo }}</td>
+                  <td class="text-right">{{ row.abril }}</td>
+                  <td class="text-right">{{ row.mayo }}</td>
+                  <td class="text-right">{{ row.junio }}</td>
+                  <td class="text-right">{{ row.julio }}</td>
+                  <td class="text-right">{{ row.agosto }}</td>
+                  <td class="text-right">{{ row.septiembre }}</td>
+                  <td class="text-right">{{ row.octubre }}</td>
+                  <td class="text-right">{{ row.noviembre }}</td>
+                  <td class="text-right">{{ row.diciembre }}</td>
+                  <td class="text-right">{{ row.total }}</td>
+                </tr>
+                <tr>
+                  <td class="text-right"><strong>TOTALES</strong></td>
+                  <td class="text-right"><strong>{{ sumarCampos(listMun, 'productores') }}</strong></td>
+                  <td class="text-right"><strong>{{ sumarCampos(listMun, 'enero') }}</strong></td>
+                  <td class="text-right"><strong>{{ sumarCampos(listMun, 'febrero') }}</strong></td>
+                  <td class="text-right"><strong>{{ sumarCampos(listMun, 'marzo') }}</strong></td>
+                  <td class="text-right"><strong>{{ sumarCampos(listMun, 'abril') }}</strong></td>
+                  <td class="text-right"><strong>{{ sumarCampos(listMun, 'mayo') }}</strong></td>
+                  <td class="text-right"><strong>{{ sumarCampos(listMun, 'junio') }}</strong></td>
+                  <td class="text-right"><strong>{{ sumarCampos(listMun, 'julio') }}</strong></td>
+                  <td class="text-right"><strong>{{ sumarCampos(listMun, 'agosto') }}</strong></td>
+                  <td class="text-right"><strong>{{ sumarCampos(listMun, 'septiembre') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listMun, 'octubre') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listMun, 'noviembre') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listMun, 'diciembre') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listMun, 'total') }}</strong></td>
+                </tr>
+
+              </tbody>
+            </q-markup-table>
+            </q-tab-panel>
           </q-tab-panels>   
 <!--          <q-table-->
 <!--            :rows="listado1"-->
@@ -201,6 +262,7 @@ data    () {
         listado2: {labels: [], porcentaje: [], productores: []},
         list_edad: [],
         list_org: [],
+        listMun: [],
         loading: false,
         gestion: moment().format('YYYY'),
         productos:[],
@@ -436,7 +498,7 @@ mounted() {
             fin: this.gestion + '-12-31',
             }).then(({ data }) => {
                 console.log(data);
-            this.listado2 = data.data || data || []
+            this.listMun = data.data || data || []
         }).finally(() => {
             this.loading = false;
         });
