@@ -6,10 +6,102 @@
             <div class="col-4"><q-input v-model="gestion" type="number" label="Gestion" dense outlined /></div>
             <div class="col-4"><q-select v-model="producto" :options="productos" option-label="nombre_producto" label="Productos" dense  outlined/></div>
             <div class="col-4">
-              <q-btn color="primary" label="Acopios" @click="getReporte" :loading="loading" no-caps icon="table_chart"/>
+              <q-btn color="primary" label="Acopios" @click="getRepDept" :loading="loading" no-caps icon="table_chart"/>
 <!--              <q-btn color="primary" label="Grafica" @click="getReporteTabla" :loading="loading" no-caps icon="bar_chart"/>-->
             </div>
           </div>
+          <q-tabs
+            v-model="tab"
+            class="text-teal"
+          >
+            <q-tab name="departamentos" icon="south_america" label="departamentos" />
+            <q-tab name="municipios" icon="location_city" label="municipios" />
+            <q-tab name="grafica" icon="bar_chart" label="grafica" />
+          </q-tabs>
+            <q-separator />
+        <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="detarmentos">
+              <q-markup-table dense flat bordered>
+                <thead>
+                  <tr style="font-weight: bold;">
+                    <th class="text-center">DEPARTAMENTO</th>
+                    <th class="text-center">PRODUCTORES</th>
+                    <th class="text-center">ENERO</th>
+                    <th class="text-center">FEBRERO</th>
+                    <th class="text-center">MARZO</th>
+                    <th class="text-center">ABRIL</th>
+                    <th class="text-center">MAYO</th>   
+                    <th class="text-center">JUNIO</th>
+                    <th class="text-center">JULIO</th>
+                    <th class="text-center">AGOSTO</th>
+                    <th class="text-center">SEPTIEMBRE</th>
+                    <th class="text-center">OCTUBRE</th>
+                    <th class="text-center">NOVIEMBRE</th>
+                    <th class="text-center">DICIEMBRE</th>
+                    <th class="text-center">TOTAL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(row, index) in listado1" :key="index">
+                    <td class="text-left">{{ row.departamento }}</td>
+                    <td class="text-center">{{ row.productores }}</td>
+                    <td class="text-right">{{ row.enero }}</td>
+                    <td class="text-right">{{ row.febrero }}</td>
+                    <td class="text-right">{{ row.marzo }}</td>
+                    <td class="text-right">{{ row.abril }}</td>
+                    <td class="text-right">{{ row.mayo }}</td>
+                    <td class="text-right">{{ row.junio }}</td>  
+                    <td class="text-right">{{ row.julio }}</td>
+                    <td class="text-right">{{ row.agosto }}</td>
+                    <td class="text-right">{{ row.septiembre }}</td>
+                    <td class="text-right">{{ row.octubre }}</td>
+                    <td class="text-right">{{ row.noviembre }}</td>
+                    <td class="text-right">{{ row.diciembre }}</td>
+                    <td class="text-right">{{ row.total }}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-right"><strong>TOTALES</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'productores') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'enero') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'febrero') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'marzo') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'abril') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'mayo') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'junio') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'julio') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'agosto') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'septiembre') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'octubre') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'noviembre') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'diciembre') }}</strong></td>
+                    <td class="text-right"><strong>{{ sumarCampos(listado1, 'total') }}</strong></td>
+
+                  </tr>
+                </tbody>
+                </q-markup-table>
+            <br>
+            <div >
+          <div class="text-center text-bold text-h6"> Grafica ACOPIO GESTION PRODUCTO POR DEPARTAMENTO {{producto.nombre_producto}} GESTION {{gestion}} </div>
+            <canvas ref="grafico"></canvas>
+          </div>
+                    <q-markup-table dense flat bordered>
+            <thead>
+              <tr>
+                <th class="text-center">MES</th>
+                <th class="text-center">PORCENTAJE ACOPIO (%)</th>
+                <th class="text-center">TOTAL PRODUCTORES</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, index) in listado2.labels" :key="index">
+                <td class="text-left">{{ row }}</td>
+                <td class="text-right">{{ listado2.porcentaje[index] ?? 0 }}</td>
+                <td class="text-right">{{ listado2.productores[index] ?? 0 }}</td>
+              </tr>
+            </tbody>
+          </q-markup-table>
+          </q-tab-panel>
+          </q-tab-panels>   
 <!--          <q-table-->
 <!--            :rows="listado1"-->
 <!--            :columns="columns2"-->
@@ -51,22 +143,7 @@
 <!--            </template>-->
 
 <!--          </q-table>-->
-          <q-markup-table dense flat bordered>
-            <thead>
-              <tr>
-                <th class="text-center">MUNICIPIO</th>
-                <th class="text-center">PORCENTAJE ACOPIO (%)</th>
-                <th class="text-center">TOTAL PRODUCTORES</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(row, index) in listado2.labels" :key="index">
-                <td class="text-left">{{ row }}</td>
-                <td class="text-right">{{ listado2.porcentaje[index] ?? 0 }}</td>
-                <td class="text-right">{{ listado2.productores[index] ?? 0 }}</td>
-              </tr>
-            </tbody>
-          </q-markup-table>
+
 <!--          <div >-->
 <!--            <div class="text-center text-bold text-h6"> Grafica ACOPIO GESTION PRODUCTO POR DEPARTAMENTO {{producto.nombre_producto}} GESTION {{gestion}} </div>-->
 <!--            <canvas ref="grafico"></canvas>-->
@@ -116,6 +193,7 @@ export default {
   name: 'ReporteTabla',
 data    () {
     return {
+        tab: 'departamentos',
         grafico: null,
         grafico2: null,
         grafico3: null,
@@ -174,6 +252,13 @@ mounted() {
     // this.getReporte6();
 },
   methods: {
+    sumarCampos(listado,campo){
+        let total = 0;
+        listado.forEach(element => {
+            total += parseFloat(element[campo]??0);
+        });
+        return total.toFixed(2);
+    },
     impresion() {
         let fecha = moment().format('DD/MM/YYYY');
         let lugar = '__________';
@@ -351,7 +436,25 @@ mounted() {
             fin: this.gestion + '-12-31',
             }).then(({ data }) => {
                 console.log(data);
+            this.listado2 = data.data || data || []
+        }).finally(() => {
+            this.loading = false;
+        });
+    },
+    getRepDept() {
+        if(!this.producto.id) {
+            this.$alert?.error?.('Seleccione un producto');
+            return;}
+        if(!this.gestion){ this.$alert?.error?.('Seleccione una gestion'); return;}
+        this.loading = true;
+        this.$axios.post('/reporteAcopioProveedorDep', {
+            producto_id: this.producto.id,
+            inicio: this.gestion + '-01-01',
+            fin: this.gestion + '-12-31',
+            }).then(({ data }) => {
+                console.log(data);
             this.listado1 = data.data || data || []
+            this.getReporteTabla()
         }).finally(() => {
             this.loading = false;
         });

@@ -50,12 +50,12 @@
         <q-tab-panel name="acopios" class="q-pa-none">
           <ProductorAcopiosGestion v-if="!loading && productor" :productor="productor" @updated="fetchProductor" />
         </q-tab-panel>
-      </q-tab-panels>
 
         <q-tab-panel name="acopio" class="q-pa-none">
           <ProductorAcopios :productor="productor" @updated="fetchProductor" />
         </q-tab-panel>
 <!--      </q-tab-panels>-->
+      </q-tab-panels>
     </q-card>
   </q-page>
 </template>

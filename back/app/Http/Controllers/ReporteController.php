@@ -11,7 +11,7 @@ class ReporteController extends Controller
     public function reporteAcopioProveedorDep(Request $request){
         // Lógica para generar el reporte de productos
         $res = DB::SELECT("SELECT
-            d.nombre_departamento,
+            d.nombre_departamento departamento,
             COUNT(DISTINCT p.id) AS productores,
             SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 1) AS enero,
             SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 2) AS febrero,
@@ -25,7 +25,7 @@ class ReporteController extends Controller
             SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 10) AS octubre,
             SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 11) AS noviembre,
             SUM(ac.cantidad_kg) FILTER (WHERE EXTRACT(MONTH FROM ac.fecha_cosecha) = 12) AS diciembre,
-            SUM(ac.cantidad_kg) AS total_anual
+            SUM(ac.cantidad_kg) AS total
             FROM departamentos d
             INNER JOIN municipios m ON d.id = m.departamento_id
             INNER JOIN productores p ON p.municipio_id = m.id
