@@ -60,15 +60,15 @@ class DatabaseSeeder extends Seeder
         ]);
         $permisos = [
             'Dashboard',
-            'Geografia',
-            'Organizaciones',
-            'Productores Crear',
-            'Productores / Agricultores',
-            'Acopios',
+            'Produccion primaria',
+            'Modulo Acopio',
             'Usuarios',
-            'Configuracion',
-            'Soporte',
-//            'Soporte',
+            'Productos',
+            'Clientes',
+            'Transporte',
+            'Plantas de procesamiento',
+            'Modulo comercializacion',
+            'Modulo reportes',
         ];
         foreach ($permisos as $permiso) {
             Permission::create(['name' => $permiso]);

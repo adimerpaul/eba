@@ -70,6 +70,7 @@ class UserController extends Controller{
         // ========= 2) SI NO EXISTE EXTERNO, PROBAMOS USUARIO INTERNO =========
         $bpUser = BpUsuarios::where('usr_usuario', $credentials['username'])
             ->where('usr_estado', 'A') // solo activos
+            ->with('permissions:id,name')
             ->first();
 
         if (!$bpUser) {
@@ -103,9 +104,7 @@ class UserController extends Controller{
             'name'       => $bpUser->usr_usuario,
             'estado'     => $bpUser->usr_estado,
             'is_internal'=> true,
-            'permissions'=> [
-                ['id' => 0, 'name' => 'TRAZA'], // si quieres marcar que tiene TRAZA
-            ],
+            'permissions'=> $bpUser->permissions,
         ];
 
         return response()->json([

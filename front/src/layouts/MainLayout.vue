@@ -131,7 +131,19 @@
 <!--            </q-item-section>-->
 <!--          </q-item>-->
 <!--        </template>-->
-        <q-item dense to="/" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+<!--        $permisos = [-->
+<!--        'Dashboard',-->
+<!--        'Produccion primaria',-->
+<!--        'Modulo Acopio',-->
+<!--        'Usuarios',-->
+<!--        'Productos',-->
+<!--        'Clientes',-->
+<!--        'Transporte',-->
+<!--        'Plantas de procesamiento',-->
+<!--        'Modulo comercializacion',-->
+<!--        'Modulo reportes',-->
+<!--        ];-->
+        <q-item dense to="/" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Dashboard')">
           <q-item-section avatar>
             <q-icon name="dashboard" class="text-white"/>
           </q-item-section>
@@ -139,7 +151,7 @@
             <q-item-label class="text-white">Dashboard</q-item-label>
           </q-item-section>
         </q-item>
-        <q-expansion-item dense expand-separator icon="gavel" label="Modulo Producción Primaria" active-class="menu-active" >
+        <q-expansion-item dense expand-separator icon="gavel" label="Modulo Producción Primaria" active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
           <q-list>
             <q-item :inset-level="0.3" dense to="/productores/crear" clickable class="menu-item" active-class="menu-active" v-close-popup >
               <q-item-section avatar>
@@ -177,7 +189,7 @@
             </q-item>
           </q-list>
         </q-expansion-item>
-        <q-expansion-item dense expand-separator icon="inbox" label="Módulo Acopio" active-class="menu-active" >
+        <q-expansion-item dense expand-separator icon="inbox" label="Módulo Acopio" active-class="menu-active" v-if="hasPerm('Modulo Acopio')">
           <q-list>
             <q-item :inset-level="0.3" dense to="/recoleccion" clickable class="menu-item" active-class="menu-active" v-close-popup >
               <q-item-section avatar>
@@ -197,7 +209,7 @@
             </q-item>
           </q-list>
         </q-expansion-item>
-        <q-item dense to="/usuarios" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+        <q-item dense to="/usuarios" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Usuarios')">
           <q-item-section avatar>
             <q-icon name="people" class="text-white"/>
           </q-item-section>
@@ -206,7 +218,7 @@
           </q-item-section>
         </q-item>
 <!--        productos cleintes transporte-->
-        <q-item dense to="/productos" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+        <q-item dense to="/productos" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Productos')">
           <q-item-section avatar>
             <q-icon name="inventory" class="text-white"/>
           </q-item-section>
@@ -214,7 +226,7 @@
             <q-item-label class="text-white">Productos</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item dense to="/clientes" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+        <q-item dense to="/clientes" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Clientes')">
           <q-item-section avatar>
             <q-icon name="storefront" class="text-white"/>
           </q-item-section>
@@ -222,7 +234,7 @@
             <q-item-label class="text-white">Clientes</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item dense to="/transportes" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+        <q-item dense to="/transportes" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Transporte')">
           <q-item-section avatar>
             <q-icon name="local_shipping" class="text-white"/>
           </q-item-section>
@@ -231,7 +243,7 @@
           </q-item-section>
         </q-item>
 <!--        plantas-->
-        <q-item dense to="/plantas" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+        <q-item dense to="/plantas" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Plantas de procesamiento')">
           <q-item-section avatar>
             <q-icon name="factory" class="text-white"/>
           </q-item-section>
@@ -240,7 +252,7 @@
           </q-item-section>
         </q-item>
 <!--        COMERZILIZACION-->
-        <q-expansion-item dense expand-separator icon="store" label="Módulo Comercialización" active-class="menu-active" >
+        <q-expansion-item dense expand-separator icon="store" label="Módulo Comercialización" active-class="menu-active" v-if="hasPerm('Modulo comercializacion')">
           <q-list>
 <!--            crear ventas-->
             <q-item :inset-level="0.3" dense to="/ventas/crear" clickable class="menu-item" active-class="menu-active" v-close-popup >
@@ -252,7 +264,7 @@
               </q-item-section>
             </q-item>
 <!--            gestionar ventas-->
-            <q-item :inset-level="0.3" dense to="/ventas" clickable class="menu-item" active-class="menu-active" v-close-popup >
+            <q-item :inset-level="0.3" dense to="/ventas" clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Gestionar Ventas')">
               <q-item-section avatar>
                 <q-icon name="sell" class="text-white"/>
               </q-item-section>
@@ -262,17 +274,17 @@
             </q-item>
           </q-list>
         </q-expansion-item>
-        <q-expansion-item dense expand-separator icon="store" label="Módulo Reportes" active-class="menu-active" >
+        <q-expansion-item dense expand-separator icon="store" label="Módulo Reportes" active-class="menu-active" v-if="hasPerm('Modulo reportes')">
           <q-list>
 <!--            crear ventas-->
-            <q-item :inset-level="0.3" dense to="/reportesActuales" clickable class="menu-item" active-class="menu-active" v-close-popup >
-              <q-item-section avatar>
-                <q-icon name="print" class="text-white"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label class="text-white">Reporte Actuales</q-item-label>
-              </q-item-section>
-            </q-item>
+<!--            <q-item :inset-level="0.3" dense to="/reportesActuales" clickable class="menu-item" active-class="menu-active" v-close-popup >-->
+<!--              <q-item-section avatar>-->
+<!--                <q-icon name="print" class="text-white"/>-->
+<!--              </q-item-section>-->
+<!--              <q-item-section>-->
+<!--                <q-item-label class="text-white">Reporte Actuales</q-item-label>-->
+<!--              </q-item-section>-->
+<!--            </q-item>-->
             <q-item :inset-level="0.3" dense to="/reportes" clickable class="menu-item" active-class="menu-active" v-close-popup >
               <q-item-section avatar>
                 <q-icon name="point_of_sale" class="text-white"/>
