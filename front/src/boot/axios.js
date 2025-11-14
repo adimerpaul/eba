@@ -3,6 +3,8 @@ import axios from 'axios'
 import {Alert} from "src/addons/Alert";
 import {useCounterStore} from "stores/example-store";
 import moment from "moment";
+import VueApexCharts from "vue3-apexcharts";
+
 import {computed} from "vue";
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
@@ -13,6 +15,7 @@ import {computed} from "vue";
 const api = axios.create({ baseURL: 'https://api.example.com' })
 
 export default boot(({ app, router }) => {
+  app.use(VueApexCharts);
   // for use inside Vue files (Options API) through this.$axios and this.$api
 
   app.config.globalProperties.$axios = axios.create({ baseURL: import.meta.env.VITE_API_BACK })

@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class BpUsuarios extends Model
 {
-    use SoftDeletes,HasApiTokens;
+    use SoftDeletes,HasApiTokens, HasRoles;
     //-- public._bp_usuarios definition
     //
     //-- Drop table

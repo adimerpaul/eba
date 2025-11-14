@@ -34,6 +34,8 @@
                 <div class="text-left" style="line-height: 1">
                   <div class="ellipsis" style="max-width: 130px;">
                     {{ $store.user.username }}
+<!--                    usr_usuario-->
+                    {{ $store.user.usr_usuario }}
                   </div>
 <!--                  <q-chip dense size="10px" :color="$filters.color($store.user.role)" text-color="white">-->
 <!--                    {{ $store.user.role }}-->
