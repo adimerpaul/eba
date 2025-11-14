@@ -14,6 +14,7 @@ class User extends Authenticatable implements Auditable
 {
     use HasFactory, Notifiable, SoftDeletes, HasApiTokens, HasRoles;
     use AuditableTrait;
+    protected $table = 'traza.users';
 
     /**
      * The attributes that are mass assignable.

@@ -211,7 +211,7 @@
                   outlined
                   :rules="[val => !!val || 'Campo requerido']"
                 />
-                <q-input v-model="user.email" label="Email" dense outlined />
+                <q-input v-model="user.email" label="Email" dense outlined hint=""/>
                 <q-input
                   v-model="user.password"
                   label="Contraseña"

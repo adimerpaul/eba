@@ -192,7 +192,16 @@ class UserController extends Controller{
         return $user;
     }
     function destroy($id){
-        return User::destroy($id);
+        $user = User::find($id);
+        $userAll = User::all();
+        error_log('Users total ' . json_encode($userAll));
+//        error_log('Delete User ' . json_encode($user));
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+        $user->delete();
+        return response()->json(['message' => 'Usuario eliminado']);
+//        return User::destroy($id);
     }
     public function getPermissions($userId)
     {
