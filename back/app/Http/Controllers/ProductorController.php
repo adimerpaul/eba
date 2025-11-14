@@ -15,13 +15,15 @@ class ProductorController extends Controller
     {
         $q = Productor::query()
             ->with([
-                'municipio:id,nombre_municipio,provincia_id,departamento_id',
-                'organizacion:id,nombre_organiza'
-            ]);
+                'municipio:id,nombre_municipio,provincia_id,departamento_id'
+            ])->with('organizacion');
 
         // Búsqueda libre MEJORADA
         // MODIFICACIÓN 2025-11-13: Agregada búsqueda por nombre completo concatenado
         // para permitir búsquedas como "ZUNY MARIA" que encuentre "ZUNY MARIA HURTADO"
+        if($request->productor_id){
+            $q->where('id', $request->productor_id);
+        }
         if ($search = trim((string) $request->get('search', ''))) {
             // Normalizar búsqueda: eliminar espacios extras entre palabras
             $searchNormalized = preg_replace('/\s+/', ' ', $search);
@@ -195,7 +197,7 @@ class ProductorController extends Controller
     {
         return $productor->load([
             'municipio:id,nombre_municipio,provincia_id,departamento_id',
-            'organizacion:id,nombre_organiza',
+            'organizacion',
             'certificaciones',
             'apiarios.colmenas.tipoMiel'
         ]);

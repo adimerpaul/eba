@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\UserCreatedMail;
+use App\Models\BpUsuarios;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -40,20 +41,101 @@ class UserController extends Controller{
 
         return response()->json(['message' => 'No se ha enviado un archivo'], 400);
     }
-    function login(Request $request){
+    public function login(Request $request)
+    {
         $credentials = $request->only('username', 'password');
-        $user = User::where('username', $credentials['username'])->with('permissions:id,name')->first();
-        if (!$user || !password_verify($credentials['password'], $user->password)) {
+
+        // ========= 1) INTENTO CON USUARIO EXTERNO (tabla users) =========
+        $user = User::where('username', $credentials['username'])
+            ->with('permissions:id,name')
+            ->first();
+
+        if ($user) {
+            // Si el usuario externo existe, solo aceptamos su propio password
+            if (!password_verify($credentials['password'], $user->password)) {
+                return response()->json([
+                    'message' => 'Usuario o contraseña incorrectos',
+                ], 401);
+            }
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'token' => $token,
+                'user'  => $user,
+                'source'=> 'externo',
+            ]);
+        }
+
+        // ========= 2) SI NO EXISTE EXTERNO, PROBAMOS USUARIO INTERNO =========
+        $bpUser = BpUsuarios::where('usr_usuario', $credentials['username'])
+            ->where('usr_estado', 'A') // solo activos
+            ->first();
+
+        if (!$bpUser) {
+            // No existe en internos tampoco
             return response()->json([
                 'message' => 'Usuario o contraseña incorrectos',
             ], 401);
         }
-        $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Verificar password interno
+        if (!$this->checkInternalPassword($credentials['password'], $bpUser->password)) {
+            return response()->json([
+                'message' => 'Usuario o contraseña incorrectos',
+            ], 401);
+        }
+
+        // Verificar que tenga acceso al sistema TRAZA
+        if (!$this->hasTrazaAccess($bpUser)) {
+            return response()->json([
+                'message' => 'El usuario no tiene acceso al sistema TRAZA',
+            ], 403);
+        }
+
+        // Crear token Sanctum para el usuario interno
+        $token = $bpUser->createToken('auth_token')->plainTextToken;
+
+        // Armamos un "user" sencillo para el frontend
+        $internalUserPayload = [
+            'id'         => $bpUser->usr_id,
+            'username'   => $bpUser->usr_usuario,
+            'name'       => $bpUser->usr_usuario,
+            'estado'     => $bpUser->usr_estado,
+            'is_internal'=> true,
+            'permissions'=> [
+                ['id' => 0, 'name' => 'TRAZA'], // si quieres marcar que tiene TRAZA
+            ],
+        ];
+
         return response()->json([
             'token' => $token,
-            'user' => $user,
+            'user'  => $internalUserPayload,
+            'source'=> 'interno',
         ]);
     }
+    private function checkInternalPassword(string $plain, string $hash): bool
+    {
+        // crypt usa el hash como "salt"
+        return hash_equals($hash, crypt($plain, $hash));
+    }
+
+    /**
+     * Verifica si el usuario interno tiene activado el sistema TRAZA.
+     */
+    private function hasTrazaAccess(BpUsuarios $user): bool
+    {
+        $systems = $user->usr_access_sistem ?? [];
+
+        foreach ($systems as $s) {
+            if (($s['sistema'] ?? null) === 'TRAZA') {
+                return (bool) ($s['activado'] ?? false);
+            }
+        }
+
+        return false;
+    }
+
     function logout(Request $request){
         $request->user()->currentAccessToken()->delete();
         return response()->json([
@@ -110,7 +192,16 @@ class UserController extends Controller{
         return $user;
     }
     function destroy($id){
-        return User::destroy($id);
+        $user = User::find($id);
+        $userAll = User::all();
+        error_log('Users total ' . json_encode($userAll));
+//        error_log('Delete User ' . json_encode($user));
+        if (!$user) {
+            return response()->json(['message' => 'Usuario no encontrado'], 404);
+        }
+        $user->delete();
+        return response()->json(['message' => 'Usuario eliminado']);
+//        return User::destroy($id);
     }
     public function getPermissions($userId)
     {

@@ -1,4 +1,4 @@
-INSERT INTO public.provincias (id,nombre_provincia,departamento_id,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.provincias (id,nombre_provincia,departamento_id,deleted_at,created_at,updated_at) VALUES
 	 (901,'NICOLAS SUAREZ',9,NULL,NULL,NULL),
 	 (902,'MANURIPI',9,NULL,NULL,NULL),
 	 (903,'MADRE DE DIOS',9,NULL,NULL,NULL),

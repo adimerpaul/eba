@@ -47,7 +47,7 @@ class Productor extends Model implements Auditable
 
     public function organizacion()
     {
-        return $this->belongsTo(Organizacion::class, 'organizacion_id');
+        return $this->belongsTo(Organizacion::class, 'organizacion_id')->with('provincia')->with('departamento')->with('municipio');
     }
 
     // Accesor de nombre completo (útil en la tabla)

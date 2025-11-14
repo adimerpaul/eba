@@ -3,6 +3,7 @@
 use App\Http\Controllers\AcopioCosechaController;
 use App\Http\Controllers\AnalisisCalidadController;
 use App\Http\Controllers\ApicultorController;
+use App\Http\Controllers\BpUsuarioController;
 use App\Http\Controllers\CertificacionController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClienteController;
@@ -140,7 +141,7 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::delete('/colmenas/{colmena}', [\App\Http\Controllers\ColmenaController::class, 'destroy']);
 
     Route::get('/acopio/cosechas', [\App\Http\Controllers\AcopioCosechaController::class, 'index']);
-
+    Route::post('productorAcopios', [AcopioCosechaController::class, 'productorAcopios']);
     Route::get('/analisis-calidad', [AnalisisCalidadController::class, 'index']);
     Route::post('/analisis-calidad', [AnalisisCalidadController::class, 'store']);
     Route::get('/analisis-calidad/{id}', [AnalisisCalidadController::class, 'show']);
@@ -204,10 +205,11 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::post('acopioExcel', [AcopioCosechaController::class, 'acopioExcel']);
     Route::post('productoExcel', [ProductoController::class, 'productoExcel']);
     Route::post('ventaExcel', [VentaController::class, 'ventaExcel']);
-    
+
     Route::post('getKardex', [KardexController::class, 'getKardex']);
 
     Route::post('/reporteAcopioProveedorDep', [ReporteController::class, 'reporteAcopioProveedorDep']); //reporteAcopioProveedorDep
+    Route::post('/reporteAcopioProveedorMun', [ReporteController::class, 'reporteAcopioProveedorMun']); //reporteAcopioProveedorMun
     Route::post('/reportePorcentual', [ReporteController::class, 'reportePorcentual']); //reportePorcentual
     Route::post('/reportEdad', [ReporteController::class, 'reportEdad']); //reportEdad
     Route::post('/reportAcopioOrg', [ReporteController::class, 'reportAcopioOrg']); //reportAcopioOrg
@@ -223,6 +225,9 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::post('/runsas', [RunsaController::class, 'store']);
     Route::put('/runsas/{runsa}', [RunsaController::class, 'update']);
     Route::delete('/runsas/{runsa}', [RunsaController::class, 'destroy']);
+
+    Route::get('bp-usuarios', [BpUsuarioController::class, 'index']);
+    Route::put('bp-usuarios/{usuario}/traza', [BpUsuarioController::class, 'updateTraza']);
 });
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 Route::get('/ventas/{venta}/nota', [VentaController::class, 'notaPdf'])->name('ventas.nota');

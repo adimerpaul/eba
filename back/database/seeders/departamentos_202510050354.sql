@@ -1,4 +1,4 @@
-INSERT INTO public.departamentos (id,nombre_departamento,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.departamentos (id,nombre_departamento,deleted_at,created_at,updated_at) VALUES
 	 (1,'CHUQUISACA',NULL,NULL,NULL),
 	 (2,'LA PAZ',NULL,NULL,NULL),
 	 (3,'COCHABAMBA',NULL,NULL,NULL),

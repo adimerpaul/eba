@@ -1,60 +1,112 @@
 <template>
-    <q-page class="q-pa-md">
-        <div class="row">
-            <div class="col-4"><q-input v-model="gestion" type="number" label="Gestion" dense /></div>
-            <div class="col-4"><q-select v-model="producto" :options="productos" option-label="nombre_producto" label="Productos" dense /></div>
-            <div class="col-4"><q-btn color="primary" label="ACOPIO GESTION" @click="getReporte" :loading="loading"/> <q-btn color="primary" label="GRAFICA" @click="getReporteTabla" :loading="loading"/></div>
-        </div>
-      <q-table
-        :rows="listado1"
-        row-key="id"
-        flat bordered dense wrap-cells
-        :rows-per-page-options="[0]"
-        :title="`REPORTE ACOPIO GESTION PRODUCTO POR DEPARTAMENTO ${producto.nombre_producto} GESTION ${gestion}`"
-        :loading="loading"
-        v-if="listado1.length>0"
-      >
+    <q-page class="q-pa-xs">
+      <q-card flat bordered>
+        <q-card-section class="q-pa-none">
+          <div class="row">
+            <div class="col-4"><q-input v-model="gestion" type="number" label="Gestion" dense outlined /></div>
+            <div class="col-4"><q-select v-model="producto" :options="productos" option-label="nombre_producto" label="Productos" dense  outlined/></div>
+            <div class="col-4">
+              <q-btn color="primary" label="Acopios" @click="getReporte" :loading="loading" no-caps icon="table_chart"/>
+<!--              <q-btn color="primary" label="Grafica" @click="getReporteTabla" :loading="loading" no-caps icon="bar_chart"/>-->
+            </div>
+          </div>
+<!--          <q-table-->
+<!--            :rows="listado1"-->
+<!--            :columns="columns2"-->
+<!--            row-key="id"-->
+<!--            flat bordered dense wrap-cells-->
+<!--            :rows-per-page-options="[0]"-->
+<!--            :title="`REPORTE ACOPIO GESTION PRODUCTO POR DEPARTAMENTO ${producto.nombre_producto} GESTION ${gestion}`"-->
+<!--            :loading="loading"-->
+<!--            :filter="filter"-->
+<!--            v-if="listado1.length>0"-->
+<!--          >-->
+<!--            <template v-slot:top-right>-->
+<!--              <q-btn color="info" icon="print"  @click="impresion"  dense :loading="loading" />-->
+<!--              <q-input dense debounce="300" v-model="filter" placeholder="Buscar..." outlined-->
+<!--                       clearable-->
+<!--                       clear-icon="close"-->
+<!--                       append-icon="search"-->
+<!--              />-->
+<!--            </template>-->
+<!--            &lt;!&ndash;Sumatorias de las columnas &ndash;&gt;-->
+<!--            <template v-slot:bottom-row>-->
+<!--              <q-tr>-->
+<!--                <q-td class="text-right"><strong>TOTALES</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + row.productores, 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.enero) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.febrero) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.marzo) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat( row.abril) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.mayo) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.junio) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.julio) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.agosto) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.septiembre) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.octubre) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.noviembre) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.diciembre) || 0), 0) }}</strong></q-td>-->
+<!--                <q-td class="text-right "><strong>{{ listado1.reduce((sum, row) => sum + (parseFloat(row.total) || 0), 0) }}</strong></q-td>-->
+<!--              </q-tr>-->
+<!--            </template>-->
 
-      </q-table>
-      <div >
-          <div class="text-center text-bold text-h6"> Grafica ACOPIO GESTION PRODUCTO POR DEPARTAMENTO {{producto.nombre_producto}} GESTION {{gestion}} </div>
-         <canvas ref="grafico"></canvas>
-      </div>
+<!--          </q-table>-->
+          <q-markup-table dense flat bordered>
+            <thead>
+              <tr>
+                <th class="text-center">MUNICIPIO</th>
+                <th class="text-center">PORCENTAJE ACOPIO (%)</th>
+                <th class="text-center">TOTAL PRODUCTORES</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, index) in listado2.labels" :key="index">
+                <td class="text-left">{{ row }}</td>
+                <td class="text-right">{{ listado2.porcentaje[index] ?? 0 }}</td>
+                <td class="text-right">{{ listado2.productores[index] ?? 0 }}</td>
+              </tr>
+            </tbody>
+          </q-markup-table>
+<!--          <div >-->
+<!--            <div class="text-center text-bold text-h6"> Grafica ACOPIO GESTION PRODUCTO POR DEPARTAMENTO {{producto.nombre_producto}} GESTION {{gestion}} </div>-->
+<!--            <canvas ref="grafico"></canvas>-->
+<!--          </div>-->
+<!--          <div class="row">-->
+<!--            <div class="col-md-12 col-xs-12 text-center text-h6 text-bold">PRODUCTORES POR EDAD <q-btn color="info" icon="update"  @click="reportEdad"  dense :loading="loading"/></div>-->
+<!--            <div class="col-md-6 col-xs-12"><q-table-->
+<!--              :rows="list_edad"-->
+<!--              row-key="name"-->
+<!--              dense-->
+<!--              v-if="list_edad.length>0"-->
+<!--            /></div>-->
+<!--            <div class="col-md-6 col-xs-12"><canvas ref="grafico2" height="180"></canvas></div>-->
+<!--          </div>-->
+<!--          <div class="text-center text-bold text-h6">ORGANIZACION ACOPIO <q-btn color="info" icon="update"  @click="reportOrg"  dense :loading="loading"/></div>-->
+<!--          <q-table-->
+<!--            :rows="list_org"-->
+<!--            row-key="name"-->
+<!--            dense-->
+<!--            :loading="loading"-->
+<!--            v-if="list_org.length>0"-->
+<!--          />-->
+<!--          <div class="row">-->
+<!--            <div class="col-12 q-pa-xs"><q-table-->
+<!--              title="CANTIDAD      DE APICULTORES POR DEPARTAMENTO Y GENERO"-->
+<!--              :rows="reporte1"-->
+<!--              row-key="name"-->
+<!--            /></div>-->
 
-      <div class="row">
-        <div class="col-md-12 col-xs-12 text-center text-h6 text-bold">PRODUCTORES POR EDAD <q-btn color="info" icon="update"  @click="reportEdad"  dense :loading="loading"/></div>
-        <div class="col-md-6 col-xs-12"><q-table
-            :rows="list_edad"
-            row-key="name"
-            dense
-            v-if="list_edad.length>0"
-        /></div>
-        <div class="col-md-6 col-xs-12"><canvas ref="grafico2" height="180"></canvas></div>
-      </div>
-      <div class="text-center text-bold text-h6">ORGANIZACION ACOPIO <q-btn color="info" icon="update"  @click="reportOrg"  dense :loading="loading"/></div>
-      <q-table
-        :rows="list_org"
-        row-key="name"
-        dense
-        :loading="loading"
-        v-if="list_org.length>0"
-      />
-      <div class="row">
-        <div class="col-12 q-pa-xs"><q-table
-            title="CANTIDAD      DE APICULTORES POR DEPARTAMENTO Y GENERO"
-            :rows="reporte1"
-            row-key="name"
-        /></div>
 
-
-        <div class="col-12 q-pa-xs">
-            <q-table
-                title="CANITDAD DE COLMENAS POR DEPARTAMENTO PORCENTAJE"
-                :rows="reporte4"
-                row-key="name"
-            />
-        </div>
-      </div>
+<!--            <div class="col-12 q-pa-xs">-->
+<!--              <q-table-->
+<!--                title="CANITDAD DE COLMENAS POR DEPARTAMENTO PORCENTAJE"-->
+<!--                :rows="reporte4"-->
+<!--                row-key="name"-->
+<!--              />-->
+<!--            </div>-->
+<!--          </div>-->
+        </q-card-section>
+      </q-card>
     </q-page>
 </template>
 <script>
@@ -83,28 +135,142 @@ data    () {
             { name: 'nombre', label: 'Producto', align: 'left', field: 'nombre' },
             { name: 'acciones', label: 'Acciones', align: 'center', field: 'acciones' },
         ],
+        columns2: [
+            { name: 'municipio', label: 'MUNICIPIO', align: 'left', field: 'municipio' },
+            { name: 'productores', label: 'PRODUCTORES', align: 'right', field: 'productores' },
+            { name: 'enero', label: 'ENERO', align: 'right', field: 'enero' },
+            { name: 'febrero', label: 'FEBRERO', align: 'right', field: 'febrero' },
+            { name: 'marzo', label: 'MARZO', align: 'right', field: 'marzo' },
+            { name: 'abril', label: 'ABRIL', align: 'right', field: 'abril' },
+            { name: 'mayo', label: 'MAYO', align: 'right', field: 'mayo' },
+            { name: 'junio', label: 'JUNIO', align: 'right', field: 'junio' },
+            { name: 'julio', label: 'JULIO', align: 'right', field: 'julio' },
+            { name: 'agosto', label: 'AGOSTO', align: 'right', field: 'agosto' },
+            { name: 'septiembre', label: 'SEPTIEMBRE', align: 'right', field: 'septiembre' },
+            { name: 'octubre', label: 'OCTUBRE', align: 'right', field: 'octubre' },
+            { name: 'noviembre', label: 'NOVIEMBRE', align: 'right', field: 'noviembre' },
+            { name: 'diciembre', label: 'DICIEMBRE', align: 'right', field: 'diciembre' },
+            { name: 'total', label: 'TOTAL', align: 'right', field: 'total' },
+        ],
         reporte1: [],
         reporte2: [],
         reporte3: [],
         reporte4: [],
         reporte5: [],
         reporte6: [],
+        filter: '',
     }
 },
 mounted() {
     this.getProductos();
-    this.reportEdad();
-    this.reportOrg();
-    this.graficoEdad()
-    this.getReporte1();
-    this.getReporte2();
-    this.getReporte3();
-    this.getReporte4();
-    this.getReporte5();
-    this.getReporte6();
+    // this.reportEdad();
+    // this.reportOrg();
+    // this.graficoEdad()
+    // this.getReporte1();
+    // this.getReporte2();
+    // this.getReporte3();
+    // this.getReporte4();
+    // this.getReporte5();
+    // this.getReporte6();
 },
   methods: {
-    
+    impresion() {
+        let fecha = moment().format('DD/MM/YYYY');
+        let lugar = '__________';
+        let cadena=`
+        <style>
+  .table1 { width:100%; border-collapse: collapse; font-size:8px; }
+  .table1 td, .table1 th { border:1px solid #444; padding:2px; }
+
+  .header { width:100%; border-collapse: collapse; margin-bottom:8px; }
+  .header td { padding:4px; font-size:11px; }
+  .titulo { text-align:center; font-size:16px; font-weight:bold; margin:8px 0; }
+  .subtitulo { text-align:center; font-size:13px; margin-bottom:8px; }
+  .table { width:100%; border-collapse: collapse; font-size:12px; }
+  .table2 { width:100%; border-collapse: collapse; font-size:8px; }
+  .table td, .table th { border:1px solid #444; padding:5px; }
+  .label { background:#f0f0f0; font-weight:bold; }
+  .right { text-align:right; }
+  .center { text-align:center; }
+  .firma { text-align:center; font-size:11px; padding-top:25px; }
+  .firma .linea { border-top:1px dotted #444; width:80%; margin:0 auto 4px; }
+  .nota { font-size:10px; margin-top:5px; }
+  .dark { background:#5f6c78; color:#fff; font-weight:bold; text-align:center; }
+  .no-border td { border:none !important; }
+  </style>
+
+  <table class="header">
+    <tr>
+      <td rowspan="2" style="width:150px;"><img src="logoOld.png" width="150"></td>
+      <td colspan="3" style="text-align:center; font-weight:bold; font-size:22px;">EMPRESA BOLIVIANA DE ALIMENTOS Y DERIVADOS - EBA</td>
+      <td style="border:1px solid #000; font-size:10px;" rowspan="2">
+        <b>Fecha de emisión:</b>${fecha}<br><br>
+      </td>
+    </tr>
+  </table>
+        <table class="table1">
+        <tr>
+            <th>MUNICIPIO</th>
+            <th>PRODUCTOR</th>
+            <th>ENERO</th>
+            <th>FEBRERO</th>
+            <th>MARZO</th>
+            <th>ABRIL</th>
+            <th>MAYO</th>
+            <th>JUNIO</th>
+            <th>JULIO</th>
+            <th>AGOSTO</th>
+            <th>SEPTIEMBRE</th>
+            <th>OCTUBRE</th>
+            <th>NOVIEMBRE</th>
+            <th>DICIEMBRE</th>
+            <th>TOTAL</th>
+        </tr>`;
+        this.listado1.forEach(row => {
+            cadena+=`<tr>
+            <td>${row.municipio}</td>
+            <td style="text-align: right;">${row.productores}</td>
+            <td style="text-align: right;">${row.enero??''}</td>
+            <td style="text-align: right;">${row.febrero??''}</td>
+            <td style="text-align: right;">${row.marzo??''}</td>
+            <td style="text-align: right;">${row.abril??''}</td>
+            <td style="text-align: right;">${row.mayo??''}</td>
+            <td style="text-align: right;">${row.junio??''}</td>
+            <td style="text-align: right;">${row.julio??''}</td>
+            <td style="text-align: right;">${row.agosto??''}</td>
+            <td style="text-align: right;">${row.septiembre??''}</td>
+            <td style="text-align: right;">${row.octubre??''}</td>
+            <td style="text-align: right;">${row.noviembre??''}</td>
+            <td style="text-align: right;">${row.diciembre??''}</td>
+            <td style="text-align: right;">${row.total}</td>
+        </tr>`;
+        });
+        cadena+=`<tr>
+            <td><strong>TOTALES</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + row.productores, 0) }</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + (parseFloat(row.enero) || 0), 0) }</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + (parseFloat(row.febrero) || 0), 0) }</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + (parseFloat(row.marzo) || 0), 0) }</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + (parseFloat( row.abril) || 0), 0) }</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + (parseFloat(row.mayo) || 0), 0) }</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + (parseFloat(row.junio) || 0), 0) }</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + (parseFloat(row.julio) || 0), 0) }</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + (parseFloat(row.agosto) || 0), 0) }</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + (parseFloat(row.septiembre) || 0), 0) }</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + (parseFloat(row.octubre) || 0), 0) }</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + (parseFloat(row.noviembre) || 0), 0) }</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + (parseFloat(row.diciembre) || 0), 0) }</strong></td>
+            <td style="text-align: right;"><strong>${ this.listado1.reduce((sum, row) => sum + (parseFloat(row.total) || 0), 0) }</strong></td>
+        </tr>`;
+        cadena+=`</table>
+        `
+        // impresion
+        let ventana = window.open('', '_blank');
+        ventana.document.write(cadena);
+        ventana.document.close();
+        ventana.print();
+
+    },
     getReporteTabla() {
 
         if(!this.producto.id) {
@@ -179,7 +345,7 @@ mounted() {
             return;}
         if(!this.gestion){ this.$alert?.error?.('Seleccione una gestion'); return;}
         this.loading = true;
-        this.$axios.post('/reporteAcopioProveedorDep', {
+        this.$axios.post('/reporteAcopioProveedorMun', {
             producto_id: this.producto.id,
             inicio: this.gestion + '-01-01',
             fin: this.gestion + '-12-31',
@@ -254,7 +420,7 @@ mounted() {
         this.loading = true;
         this.$axios.post('/reportEdad').then(({ data }) => {
             this.list_edad = data.data || data || []
-            this.graficoEdad() 
+            this.graficoEdad()
         })  .finally(() => {
             this.loading = false;
         });
@@ -314,7 +480,7 @@ mounted() {
                     display: true,
                     text: 'Distribución porcentual por rango de edad'
                     }
-                
+
                 }
             }
             })

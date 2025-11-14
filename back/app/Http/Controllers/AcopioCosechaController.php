@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AcopioCosecha;
+use App\Models\Productor;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -28,6 +29,10 @@ class AcopioCosechaController extends Controller{
         $estado = $request->input('estado');
         $productor_id = $request->input('productor_id');
         $producto_id = $request->input('producto_id');
+        $departamento_id = $request->input('departamento_id');
+        $municipio_id = $request->input('municipio_id');
+        $productor = $request->input('search');
+        //return $request;
         $acopiosCosechas = AcopioCosecha::whereBetween('fecha_cosecha', [$fecha_inicio, $fecha_fin])->with('apiario.productor','producto');
         if($estado){
             $acopiosCosechas = $acopiosCosechas->where('estado', $estado);
@@ -37,16 +42,34 @@ class AcopioCosechaController extends Controller{
         }
         if($productor_id){
             // se tiene los apiarios relacionados con el productor
-            $productor = \App\Models\Productor::find($productor_id);
+            $productor = Productor::with('apiarios')->where('id', $productor_id)->first();
             $apiarios = $productor->apiarios->pluck('id')->toArray();
             $acopiosCosechas = $acopiosCosechas->whereIn('apiario_id', $apiarios);
             //$acopiosCosechas = $acopiosCosechas->where('productor_id', $productor_id);
         }
-        if($producto_id){
-            $acopiosCosechas = $acopiosCosechas->where('producto_id', $producto_id);
+        if($municipio_id){
+            $acopiosCosechas = $acopiosCosechas->whereHas('apiario', function ($query) use ($municipio_id) {
+                $query->where('municipio_id', $municipio_id);
+            });
+        }
+        if($productor){
+            $acopiosCosechas = $acopiosCosechas->whereHas('apiario.productor', function ($query) use ($productor) {
+                $query->where('nombre', 'ilike', "%{$productor}%")
+                      ->orWhere('apellidos', 'ilike', "%{$productor}%")
+                      ->orWhere('numcarnet', 'ilike', "%{$productor}%");
+            });
         }
 
         $acopiosCosechas = $acopiosCosechas->get();
+        return $acopiosCosechas;
+    }
+
+    public function productorAcopios(Request $request){
+        $productor_id = $request->input('productor_id');
+        // recuerar  los apiarios del productor
+        $productor = Productor::with('apiarios')->where('id', $productor_id)->first();
+        $apiarios = $productor->apiarios->pluck('id')->toArray();
+        $acopiosCosechas = AcopioCosecha::whereIn('apiario_id', $apiarios)->with('apiario.productor','producto')->get();
         return $acopiosCosechas;
     }
 

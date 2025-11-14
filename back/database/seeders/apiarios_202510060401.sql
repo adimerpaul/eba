@@ -1,4 +1,4 @@
-INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
 	 (226,219,1,31301,NULL,NULL,NULL,0,NULL,0,0,0,0.00,0,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL),
 	 (185,180,1,20502,NULL,NULL,NULL,0,NULL,20,20,0,0.00,0,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL),
 	 (186,181,1,31003,'SAMUZABETY',-16.83240600,-65.55357800,0,'SAN PEDRO',22,35,60,0.00,96,NULL,'VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL),
@@ -999,7 +999,7 @@ INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_
 	 (7472,6732,1,60201,'MONTEAGUDO',NULL,NULL,0,'PADCAYA',0,0,0,0.00,163,NULL,'VIGENTE','3ra. Fase',NULL,NULL,NULL,NULL),
 	 (1040,955,1,11003,'MONTEAGUDO',-21.01292200,-63.35301200,0,'TIQUIPA ESTACION',121,121,56,0.00,4,'2023-06-26','VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL),
 	 (7476,6736,1,21101,'IRUPANA',-16.39727200,-67.51038200,0,'VILLA MENDOZA',0,0,0,0.00,0,NULL,'VIGENTE','4ta. Fase ',NULL,NULL,NULL,NULL);
-INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
 	 (7477,6737,1,31205,'SAMUZABETY',-17.13216000,-64.88169400,0,'IVIRGARZAMA',0,0,0,0.00,0,NULL,'EXPIRADO','3ra. Fase',NULL,NULL,NULL,NULL),
 	 (7479,6739,1,60601,'MONTEAGUDO',NULL,NULL,0,'LOMA ALTA',0,0,0,0.00,176,NULL,'VIGENTE','3ra. Fase',NULL,NULL,NULL,NULL),
 	 (7485,6745,1,31003,'SAMUZABETY',-16.91475600,-65.40164900,0,'CHIPIRIRI',0,0,0,0.00,0,NULL,'VIGENTE','3ra. Fase',NULL,NULL,NULL,NULL),
@@ -2000,7 +2000,7 @@ INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_
 	 (2502,2289,1,31205,'SAMUZABETY',-17.24100000,-64.93100000,0,'PUERTO RICO',8,15,56,0.00,96,NULL,'VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL),
 	 (2503,2290,1,31204,'SAMUZABETY',-16.85070500,-65.12825400,0,'RAMIREZ',15,15,56,0.00,96,'2023-06-05','VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL),
 	 (2505,2292,1,21401,NULL,-16.25499200,-67.70394300,0,'SAN CRISTOBAL',6,6,56,0.00,0,NULL,'VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL);
-INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
 	 (2506,2293,1,10502,'MONTEAGUDO',-20.18658500,-63.96285400,0,'PIRAICITO',13,15,56,0.00,4,'2023-07-21','EXPIRADO','1ra. Fase',NULL,NULL,NULL,NULL),
 	 (2507,2294,1,31003,'SAMUZABETY',-16.60482300,-65.47193600,0,'PUERTO ZUDAÑEZ',13,22,56,0.00,96,NULL,'VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL),
 	 (2508,2295,1,11001,'MONTEAGUDO',-19.30675700,-63.89793000,0,'MONTE GRANDE',20,12,56,0.00,0,'2023-07-14','VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL),
@@ -3001,7 +3001,7 @@ INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_
 	 (5149,4672,1,21401,'IRUPANA',-16.19675800,-67.76152200,0,'SANTA ROSA DE PACALLO',5,5,56,0.00,0,'2023-03-27','POR VENCER','1ra. Fase',NULL,NULL,NULL,NULL),
 	 (5153,4676,1,30201,'SAMUZABETY',NULL,NULL,0,'TIPA TIPA',5,5,48,0.00,0,NULL,'VIGENTE','2da. Fase',NULL,NULL,NULL,NULL),
 	 (5154,4677,1,60303,'MONTEAGUDO',-21.24617200,-63.49534900,0,'USTARES',9,9,48,0.00,208,NULL,'POR VENCER','4ta. Fase ',NULL,NULL,NULL,NULL);
-INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
 	 (5159,4682,1,31205,NULL,-16.91835500,-64.99232600,0,'AYOPAYA',5,13,0,0.00,96,'2023-06-14','EXPIRADO',NULL,NULL,NULL,NULL,NULL),
 	 (5162,4685,1,50801,NULL,-21.34596800,-65.75553300,0,'CHARAHOTA',18,18,0,0.00,0,NULL,'VIGENTE',NULL,NULL,NULL,NULL,NULL),
 	 (5164,4687,1,21003,'IRUPANA',-16.64669300,-67.24559100,0,'CAJUATA',10,10,48,0.00,0,NULL,'EXPIRADO','3ra. Fase',NULL,NULL,NULL,NULL),
@@ -4002,7 +4002,7 @@ INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_
 	 (8062,7253,1,50801,NULL,-21.32136400,-65.83948500,0,'VILLA PROVIDENCIA',18,18,0,0.00,0,NULL,'VIGENTE',NULL,NULL,NULL,NULL,NULL),
 	 (8067,7258,1,22001,'IRUPANA',NULL,NULL,0,'AV MAX FERNDADEZ - VILLA VICTORIA',6,6,48,0.00,0,NULL,'EXPIRADO','3ra. Fase',NULL,NULL,NULL,NULL),
 	 (8068,7259,1,31205,NULL,NULL,NULL,0,'VILLA VERDE',10,10,0,0.00,96,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL);
-INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
 	 (8075,7266,1,31003,'SAMUZABETY',-16.95112200,-65.39455500,0,'VILLA GRAL. ROMAN',8,17,56,0.00,96,'2023-04-13','VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL),
 	 (8076,7267,1,20601,'IRUPANA',-15.79432700,-68.68771500,0,'CHEJJE',10,10,48,0.00,0,'2023-08-14','VIGENTE','3ra. Fase',NULL,NULL,NULL,NULL),
 	 (9024,8145,1,10502,'MONTEAGUDO',-20.69635000,-64.02456600,0,'ÑACAMIRI',14,18,62,10.29,4,'2023-08-17','VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL),
@@ -5003,7 +5003,7 @@ INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_
 	 (10842,9740,1,70704,'MONTEAGUDO',-20.29471500,-63.44533900,0,'SALINAS',22,22,48,0.00,0,NULL,'VIGENTE','4ta. Fase ',NULL,NULL,NULL,NULL),
 	 (10843,9741,1,60201,'MONTEAGUDO',NULL,NULL,0,'SANTA ROSA',5,5,48,0.00,176,'2024-01-29','VIGENTE','2da. Fase',NULL,NULL,NULL,NULL),
 	 (10857,9751,1,31003,NULL,-16.46555700,-65.69315100,0,'NUEVA AMERICA',5,5,0,0.00,96,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL);
-INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
 	 (10858,9752,1,21402,'IRUPANA',-16.31131100,-67.65802200,0,'NOGALANI',20,20,48,0.00,0,NULL,'VIGENTE','4ta. Fase ',NULL,NULL,NULL,NULL),
 	 (10863,9756,1,20601,'IRUPANA',-15.79840900,-68.68497300,0,'CHEJJE',5,5,48,0.00,0,NULL,'VIGENTE','3ra. Fase',NULL,NULL,NULL,NULL),
 	 (10864,9757,1,20501,'IRUPANA',-15.67755300,-68.87959700,0,'CHAJLAYA',6,6,48,0.00,0,NULL,'VIGENTE','4ta. Fase ',NULL,NULL,NULL,NULL),
@@ -6004,7 +6004,7 @@ INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_
 	 (12602,11336,1,10502,NULL,-20.57723900,-64.15750700,0,'AGUA CONCHO',12,12,0,0.00,4,'2023-07-10','VIGENTE',NULL,NULL,NULL,NULL,NULL),
 	 (12603,11336,1,10502,NULL,-20.57723300,-64.12278700,0,'AGUA CONCHO',16,16,0,0.00,4,'2023-07-10','VIGENTE',NULL,NULL,NULL,NULL,NULL),
 	 (12604,11336,1,10502,NULL,-20.57712900,-64.10099900,0,'AGUA CONCHO',13,13,0,0.00,4,'2023-07-10','VIGENTE',NULL,NULL,NULL,NULL,NULL);
-INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
 	 (12605,11336,1,10502,NULL,-20.57580300,-64.09496400,0,'AGUA CONCHO',12,12,0,0.00,4,'2023-07-10','VIGENTE',NULL,NULL,NULL,NULL,NULL),
 	 (12606,11336,1,10502,NULL,-20.57306400,-64.08943800,0,'AGUA CONCHO',12,12,0,0.00,4,'2023-07-10','VIGENTE',NULL,NULL,NULL,NULL,NULL),
 	 (12607,11336,1,10502,NULL,-20.57251800,-64.15147500,0,'AGUA CONCHO',16,16,0,0.00,4,'2023-07-10','VIGENTE',NULL,NULL,NULL,NULL,NULL),
@@ -7005,7 +7005,7 @@ INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_
 	 (9084,8200,1,21003,NULL,NULL,NULL,0,'ALANOCA',0,5,0,0.00,0,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL),
 	 (9089,8204,1,60301,'MONTEAGUDO',-21.92268600,-62.88283900,0,'D''ORBIGNI',0,58,56,0.00,202,'2023-06-27','VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL),
 	 (9090,8205,1,60101,'MONTEAGUDO',-21.60229400,-64.83428400,0,'SAN ANDRES',0,5,48,0.00,188,NULL,'POR VENCER','2da. Fase',NULL,NULL,NULL,NULL);
-INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
 	 (9092,8207,1,31003,NULL,-16.78528800,-65.20531000,0,'GARCIA',0,5,0,0.00,0,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL),
 	 (9094,8209,1,30301,'SAMUZABETY',NULL,NULL,0,'QUIRAYA',0,12,48,0.00,0,NULL,'POR VENCER','3ra. Fase',NULL,NULL,NULL,NULL),
 	 (9097,8212,1,60201,NULL,-22.20929000,-64.53881100,0,'SIDRAS',0,25,0,0.00,195,NULL,'VIGENTE',NULL,NULL,NULL,NULL,NULL),
@@ -8006,7 +8006,7 @@ INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_
 	 (2494,2282,1,30303,NULL,-16.76642300,-66.39421400,0,'INCACASANI',0,17,0,0.00,0,NULL,'VIGENTE',NULL,NULL,NULL,NULL,NULL),
 	 (2538,2324,1,10502,NULL,NULL,NULL,0,'DURAZNITOS',0,15,0,0.00,0,'2022-12-15','EXPIRADO',NULL,NULL,NULL,NULL,NULL),
 	 (2540,2326,1,31301,NULL,NULL,NULL,0,'CHIRIMOLLE PAMPA',0,5,0,0.00,0,NULL,'VIGENTE',NULL,NULL,NULL,NULL,NULL);
-INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
 	 (2545,2331,1,10501,NULL,-19.85313600,-64.01310200,0,'MAYCHA MAYU',0,15,0,0.00,0,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL),
 	 (2548,2334,1,70104,NULL,NULL,NULL,0,'RIO GRANDE',0,15,0,0.00,140,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL),
 	 (2552,2338,1,10501,'MONTEAGUDO',-19.75854400,-64.13731000,0,'CAMALOTE',0,30,56,0.00,4,'2020-10-28','VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL),
@@ -9007,7 +9007,7 @@ INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_
 	 (4639,4219,1,20902,'IRUPANA',NULL,NULL,0,'VILLA PARAISO',0,5,48,0.00,0,NULL,'VIGENTE','4ta. Fase ',NULL,NULL,NULL,NULL),
 	 (4640,4220,1,10501,'MONTEAGUDO',-19.58712000,-63.98624700,0,'AZERO NORTE',0,39,56,0.00,4,'2023-03-23','VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL),
 	 (4642,4222,1,31202,NULL,-17.78818600,-64.86936400,0,'ALIZAR MOLINO',0,5,0,0.00,0,NULL,'VIGENTE',NULL,NULL,NULL,NULL,NULL);
-INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
 	 (4643,4223,1,60303,'MONTEAGUDO',-21.87159300,-62.83659300,0,'CUTAIQUI',0,35,56,0.00,208,'2023-05-05','VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL),
 	 (4644,4224,1,20902,'IRUPANA',NULL,NULL,0,'LACA LACA',0,5,48,0.00,0,NULL,'VIGENTE','4ta. Fase ',NULL,NULL,NULL,NULL),
 	 (4647,4227,1,10501,'MONTEAGUDO',-19.79418900,-64.04879400,0,'HEREDIA',0,10,56,0.00,4,'2023-04-12','POR VENCER','1ra. Fase',NULL,NULL,NULL,NULL),
@@ -10008,7 +10008,7 @@ INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_
 	 (6697,6006,1,21102,NULL,-16.41089700,-67.46978800,0,'HUARISCALLO',0,2,0,0.00,0,'2023-06-16','EXPIRADO',NULL,NULL,NULL,NULL,NULL),
 	 (6699,6008,1,21401,'IRUPANA',-16.19019100,-67.70301000,0,'CAPELLIANA',0,25,56,0.00,0,'2023-07-01','EXPIRADO','1ra. Fase',NULL,NULL,NULL,NULL),
 	 (6701,6010,1,31101,'SAMUZABETY',-17.56903800,-66.63822100,0,'INCUYO',0,11,48,0.00,0,NULL,'VIGENTE','4ta. Fase ',NULL,NULL,NULL,NULL);
-INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
 	 (6703,6012,1,71104,NULL,NULL,NULL,0,'1 DE JULIO',0,8,0,0.00,140,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL),
 	 (6706,6015,1,60301,NULL,-21.83867300,-63.45855400,0,'SIMBOLAR',0,5,0,0.00,0,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL),
 	 (6709,6018,1,31002,'SAMUZABETY',NULL,NULL,0,'CHULUMANI',0,6,48,0.00,0,NULL,'POR VENCER','3ra. Fase',NULL,NULL,NULL,NULL),
@@ -11009,7 +11009,7 @@ INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_
 	 (9022,8143,1,60303,'MONTEAGUDO',-22.08049000,-62.78654900,0,'LA VICTORIA',0,29,48,0.00,208,'2023-06-11','VIGENTE','4ta. Fase ',NULL,NULL,NULL,NULL),
 	 (9023,8144,1,31003,'SAMUZABETY',-16.95158700,-65.35417400,0,'GENERAL ROMAN',0,5,0,0.00,96,NULL,'VIGENTE','3ra. Fase',NULL,NULL,NULL,NULL),
 	 (9025,8146,1,21401,'IRUPANA',-16.26830200,-67.70795400,0,'SAN JUAN DE LA MIEL',0,11,56,0.00,0,'2023-07-09','VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL);
-INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
 	 (9026,8147,1,21101,'IRUPANA',-16.41783200,-67.54513600,0,'UNIFICADA SUNIQUILLA',0,6,48,0.00,0,NULL,'VIGENTE','4ta. Fase ',NULL,NULL,NULL,NULL),
 	 (9027,8148,1,70103,NULL,-17.68342600,-63.54786700,0,'SANTA FE DE AMBORO',0,1,0,0.00,0,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL),
 	 (9028,8149,1,10702,NULL,-20.04138400,-65.10021800,0,'CAICHOCA',0,2,0,0.00,0,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL),
@@ -12010,7 +12010,7 @@ INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_
 	 (11051,9924,1,31202,'SAMUZABETY',-17.77526400,-64.94557800,0,'CHICHA HUAYCO',0,5,48,0.00,0,NULL,'VIGENTE','2da. Fase',NULL,NULL,NULL,NULL),
 	 (11052,9925,1,50602,NULL,-20.34893600,-65.41716100,0,'PEKAJSI',0,5,0,0.00,0,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL),
 	 (11053,9926,1,70105,NULL,-18.03355200,-63.38333800,0,'QUEBRADA ALVAREZ 018',0,8,0,0.00,0,NULL,'EXPIRADO',NULL,NULL,NULL,NULL,NULL);
-INSERT INTO public.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
+INSERT INTO traza.apiarios (id,productor_id,tipo_manejo_id,municipio_id,nombre_cip,latitud,longitud,altitud,lugar_apiario,numero_colmenas_runsa,numero_colmenas_prod,seleccion,rend_programa_nal,organizacion_id,fecha_instalacion,estado,fase,coordenada,deleted_at,created_at,updated_at) VALUES
 	 (11056,9928,1,31003,NULL,-16.83353500,-65.48147900,0,'BOMBORAZA',0,5,0,0.00,96,NULL,'VIGENTE',NULL,NULL,NULL,NULL,NULL),
 	 (11057,9928,1,31003,NULL,-16.83286600,-65.47172500,0,'BOMBORAZA',0,5,0,0.00,96,NULL,'VIGENTE',NULL,NULL,NULL,NULL,NULL),
 	 (11058,9929,1,11001,'MONTEAGUDO',-19.51948900,-63.89165100,0,'ENTIERRILLOS',0,113,56,0.00,4,'2023-06-13','VIGENTE','1ra. Fase',NULL,NULL,NULL,NULL),

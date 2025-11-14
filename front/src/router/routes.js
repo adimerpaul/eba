@@ -21,6 +21,8 @@ const routes = [
       { path: '/ventas/crear', component: () => import('pages/ventas/VentaCrear.vue'), meta: { requiresAuth: true, perm: 'Ventas' } },
       { path: '/ventas', component: () => import('pages/ventas/Ventas.vue'), meta: { requiresAuth: true, perm: 'Ventas' } },
       { path: '/reportes', component: () => import('pages/reportes/Reporte_tabla.vue'),  meta: { requiresAuth: true } },
+      // reportesActuales
+      { path: '/reportesActuales', component: () => import('pages/reportes/reportesActuales.vue'),  meta: { requiresAuth: true } },
       {
         path: '/geo/apiarios',
         name: 'geo.apiarios',

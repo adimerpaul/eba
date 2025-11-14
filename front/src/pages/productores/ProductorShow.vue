@@ -14,8 +14,7 @@
         <q-tab name="certs" icon="verified" label="3) Certificaciones" no-caps />
         <q-tab name="apiarios" icon="hive" label="4) Apiarios" no-caps />
         <q-tab name="mapa" icon="map" label="5) Mapa" no-caps />
-        <!-- NUEVO TAB: Acopios por Gestión (julio-junio) -->
-        <q-tab name="acopios" icon="inventory_2" label="6) Acopios por Gestión" no-caps />
+        <q-tab name="acopio" icon="send" label="6) Acopio" no-caps />
       </q-tabs>
       <q-separator />
 
@@ -46,13 +45,20 @@
         <q-tab-panel name="mapa" class="q-pa-none">
           <ProductorMapa :productor="productor" @updated="fetchProductor" />
         </q-tab-panel>
+<<<<<<< HEAD
 
         <!-- NUEVO PANEL: Tab de Acopios por Gestión -->
         <q-tab-panel name="acopios" class="q-pa-none">
           <ProductorAcopiosGestion v-if="!loading && productor" :productor="productor" @updated="fetchProductor" />
         </q-tab-panel>
       </q-tab-panels>
+=======
+>>>>>>> f04b519dcced93c84a639dada6a8506e143503cb
 
+        <q-tab-panel name="acopio" class="q-pa-none">
+          <ProductorAcopios :productor="productor" @updated="fetchProductor" />
+        </q-tab-panel>
+      </q-tab-panels>
     </q-card>
   </q-page>
 </template>
@@ -63,6 +69,7 @@ import ProductorCertificaciones from 'pages/productores/tabs/ProductorCertificac
 import ProductorApiarios from 'pages/productores/tabs/ProductorApiarios.vue'
 import ProductorMapa from 'pages/productores/tabs/ProductorMapa.vue'
 import ProductorRunsa from 'pages/productores/tabs/ProductorRunsa.vue'
+<<<<<<< HEAD
 // NUEVO: Importar componente de Acopios por Gestión
 import ProductorAcopiosGestion from 'pages/productores/tabs/ProductorAcopiosGestion.vue'
 
@@ -76,6 +83,13 @@ export default {
     ProductorRunsa,
     ProductorAcopiosGestion // Registrar nuevo componente
   },
+=======
+import ProductorAcopios from 'pages/productores/tabs/ProductorAcopios.vue'
+
+export default {
+  name: 'ProductorShow',
+  components: { ProductorMapa, ProductorApiarios, ProductorCertificaciones, ProductorForm, ProductorRunsa, ProductorAcopios },
+>>>>>>> f04b519dcced93c84a639dada6a8506e143503cb
   data () {
     return {
       tab: 'general',
