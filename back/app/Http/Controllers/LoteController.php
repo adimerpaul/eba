@@ -105,18 +105,18 @@ class LoteController extends Controller
             if ($nuevoProducto->id !== $productoAnterior->id) {
                 // Revertir el stock del producto anterior
                 if ($cantidadVieja > 0) {
-                    $productoAnterior->decrement('cantidad_kg', $cantidadVieja);
+                    $productoAnterior->decrement('cantidad', $cantidadVieja);
                 }
                 // Sumar al nuevo producto
                 if ($cantidadNueva > 0) {
-                    $nuevoProducto->increment('cantidad_kg', $cantidadNueva);
+                    $nuevoProducto->increment('cantidad', $cantidadNueva);
                 }
             } else {
                 // Mismo producto: ajustar por delta
                 if ($delta > 0) {
-                    $nuevoProducto->increment('cantidad_kg', $delta);
+                    $nuevoProducto->increment('cantidad', $delta);
                 } elseif ($delta < 0) {
-                    $nuevoProducto->decrement('cantidad_kg', abs($delta));
+                    $nuevoProducto->decrement('cantidad', abs($delta));
                 }
             }
 
