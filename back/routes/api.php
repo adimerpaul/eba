@@ -98,6 +98,12 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::get('/productores/{productor}', [ProductorController::class, 'show']);
     Route::put('/productores/{productor}', [ProductorController::class, 'update']);
     Route::delete('/productores/{productor}', [ProductorController::class, 'destroy']);
+    // NUEVO: Endpoint para obtener acopios mensuales por gestión de un productor
+    // Ejemplo: GET /api/productores/11613/acopios-gestion?gestion=2025&producto_id=1
+    Route::get('/productores/{productor}/acopios-gestion', [ProductorController::class, 'acopiosMensualesGestion']);
+    // NUEVO: Endpoint para exportar acopios mensuales por gestión a Excel
+    // Ejemplo: POST /api/productores/11613/acopios-gestion-excel con body: {gestion: 2025, producto_id: 1}
+    Route::post('/productores/{productor}/acopios-gestion-excel', [ProductorController::class, 'acopiosGestionExcel']);
 
 //    Route::get('/certificaciones', [CertificacionController::class, 'index']);
     Route::post('/certificaciones', [CertificacionController::class, 'store']);
