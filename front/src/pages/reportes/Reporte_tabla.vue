@@ -15,7 +15,8 @@
           >
             <q-tab name="departamentos" icon="south_america" label="departamentos" />
             <q-tab name="municipios" icon="location_city" label="municipios" />
-            <q-tab name="grafica" icon="bar_chart" label="grafica" />
+            <q-tab name="grafica1" icon="bar_chart" label="grafica_edad" />
+            <q-tab name="grafica2" icon="bar_chart" label="grafica_genero" />
           </q-tabs>
             <q-separator />
         <q-tab-panels v-model="tab" animated>
@@ -161,6 +162,31 @@
 
               </tbody>
             </q-markup-table>
+            </q-tab-panel>
+            <q-tab-panel name="grafica1">
+                <div class="text-center text-bold text-h6">GRAFICA PRODUCTORES POR EDAD <q-btn color="info" icon="update"  @click="reportEdad"  dense :loading="loading" /></div>
+                <div class="col-md-6 col-xs-12">
+                    <q-table
+              :rows="list_edad"
+              row-key="name"
+              dense
+              :rows-per-page-options="[0]"
+              v-if="list_edad.length>0"
+            /></div>
+            <div class="col-md-6 col-xs-12"><canvas ref="grafico2" height="180"></canvas></div>
+            </q-tab-panel>
+            <q-tab-panel name="grafica2">
+                <div class="text-center text-bold text-h6">GRAFICA PRODUCTORES POR GENERO <q-btn color="info" icon="update"  @click="getReporte2"  dense :loading="loading" /></div>
+                <div class="col-md-6 col-xs-12">
+                    <q-table
+              :rows="reporte2"
+              row-key="name"
+              dense
+              :rows-per-page-options="[0]"
+              v-if="reporte2.length>0"
+            /></div>
+
+            <div class="col-md-6 col-xs-12"><canvas ref="grafico3" height="180"></canvas></div>
             </q-tab-panel>
           </q-tab-panels>   
 <!--          <q-table-->
@@ -533,6 +559,46 @@ mounted() {
         this.loading = true;
         this.$axios.post('/reportApicultorDepGenero').then(({ data }) => {
             this.reporte2 = data.data || data || []
+            // si ay datos varon mujer agrupar y sumar para obtenr labels y total
+            let varon=0
+            let mujer=0
+            this.reporte2.forEach(element => {
+                varon+=element.varon;
+                mujer+=element.mujer;
+            })
+            let labels = ['MASCULINO', 'FEMENINO'];
+            let totales = [varon, mujer];
+            console.log(labels, totales);
+            if (!this.$refs.grafico3) {
+                console.error('Canvas aún no está montado')
+                return
+            }
+            if (this.chartInstance3) this.chartInstance3.destroy()
+
+            this.chartInstance3 = new Chart(this.$refs.grafico3, {
+                type: 'bar',
+                data: {
+                labels: labels,
+                datasets: [
+                    {
+                    label: 'Cantidad de apicultores',
+                    data: totales,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    yAxisID: 'y'
+                    }
+                ]
+                },
+                options: {
+                responsive: true,
+                scales: {
+                    y: {
+                    type: 'linear',
+                    position: 'left',
+                    title: { display: true, text: 'Cantidad de apicultores' }
+                    }
+                }
+                }
+            })
         })  .finally(() => {
             this.loading = false;
         });
@@ -648,8 +714,7 @@ mounted() {
 
                 }
             }
-            })
-    },
+            })    },
     async getProductos() {
        await this.$axios.get('/productos/tipo/1').then(({ data }) => {
         this.productos = data?.data || data || []
