@@ -31,9 +31,10 @@ class AcopioCosechaController extends Controller{
         $producto_id = $request->input('producto_id');
         $departamento_id = $request->input('departamento_id');
         $municipio_id = $request->input('municipio_id');
-        $productor = $request->input('search');
         //return $request;
-        $acopiosCosechas = AcopioCosecha::whereBetween('fecha_cosecha', [$fecha_inicio, $fecha_fin])->with('apiario.productor','producto');
+        if( $fecha_inicio && $fecha_fin){
+            $acopiosCosechas = AcopioCosecha::whereBetween('fecha_cosecha', [$fecha_inicio, $fecha_fin])->with('apiario.productor','producto');
+        }
         if($estado){
             $acopiosCosechas = $acopiosCosechas->where('estado', $estado);
         }
@@ -52,15 +53,8 @@ class AcopioCosechaController extends Controller{
                 $query->where('municipio_id', $municipio_id);
             });
         }
-        if($productor){
-            $acopiosCosechas = $acopiosCosechas->whereHas('apiario.productor', function ($query) use ($productor) {
-                $query->where('nombre', 'ilike', "%{$productor}%")
-                      ->orWhere('apellidos', 'ilike', "%{$productor}%")
-                      ->orWhere('numcarnet', 'ilike', "%{$productor}%");
-            });
-        }
-
-        $acopiosCosechas = $acopiosCosechas->get();
+        
+         $acopiosCosechas = $acopiosCosechas->get();
         return $acopiosCosechas;
     }
 

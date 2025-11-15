@@ -103,9 +103,6 @@
                 clearable
               />
             </div>
-              <div class="col-12 col-md-3">
-                <q-input v-model="search" label="CI/NOMBRE/APELLIDO PRODUCTOR" dense outlined  />
-                </div>
             <div class="col-12 col-md-2 flex flex-center">
               <q-btn
                 :loading="loading"
@@ -199,7 +196,6 @@ export default {
   name: 'AcopioPage',
   data: function () {
     return {
-      search: '',
       numActa: null,
       acopioCosechas:[],
       loadingProductores: false,
@@ -327,7 +323,6 @@ export default {
           producto_id: this.producto,
           departamento_id: this.departamentoSeleccionado,
           municipio_id: this.municipioSeleccionado,
-          search: this.search,
         }
       })
       .then((response) => {
