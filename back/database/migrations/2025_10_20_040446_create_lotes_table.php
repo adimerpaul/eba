@@ -50,6 +50,7 @@ return new class extends Migration
             $table->date('fecha_envasado')->nullable();
             $table->date('fecha_caducidad')->nullable();
             $table->string('tipo_envase', 50)->nullable();
+            $table->string('qr_code', 255)->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

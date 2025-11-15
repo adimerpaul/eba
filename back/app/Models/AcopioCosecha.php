@@ -68,7 +68,7 @@ class AcopioCosecha extends Model implements Auditable{
         'updated_at',
     ];
     function apiario(){
-        return $this->belongsTo(Apiario::class,'apiario_id');
+        return $this->belongsTo(Apiario::class,'apiario_id')->with('productor');
     }
     function producto(){
         return $this->belongsTo(Producto::class,'producto_id');

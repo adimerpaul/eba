@@ -49,33 +49,22 @@
                   </div>
 
                   <div class="text-body2">
-                    <div><b>Fecha cosecha:</b> {{ fmt(cosecha.fecha_cosecha) }}</div>
-                    <div><b>Estado:</b> {{ cosecha.estado }}</div>
-                    <div><b>Humedad (%):</b> {{ cosecha.humedad }}</div>
+                    <div><b>NOMBRE CIP:</b> {{ cosecha.apio_cosecha.apiario.nombre_cip}}</div>
+                    <div><b>LOTE</b> {{ cosecha.codigo_lote}}</div>
+                    <div><b>Fecha Prod:</b> {{ fmt(cosecha.fecha_envasado) }}</div>
+                    <div><b>Fecha Ven:</b> {{ cosecha.fecha_caducidad }}</div>
+                    <!--<div><b>Humedad (%):</b> {{ cosecha.humedad }}</div>
                     <div><b>Temp. almac. (°C):</b> {{ cosecha.temperatura_almacenaje }}</div>
-                    <div class="q-mt-sm"><b>N° acta:</b> {{ cosecha.num_acta }}</div>
-                  </div>
-
-                  <q-separator class="q-my-md" />
-
-                  <div class="text-body2">
-                    <div class="text-subtitle2 text-weight-bold q-mb-xs">Apiario</div>
-                    <div><b>Nombre CIP:</b> {{ cosecha.apiario?.nombre_cip }}</div>
-                    <div><b>Lugar:</b> {{ cosecha.apiario?.lugar_apiario }}</div>
-                    <div><b>Coordenadas:</b> {{ cosecha.apiario?.latitud }}, {{ cosecha.apiario?.longitud }}</div>
-                    <div class="q-mt-xs">
-                      <q-btn dense outline icon="map" label="Ver en mapa"
-                             @click="openMap(cosecha.apiario?.latitud, cosecha.apiario?.longitud)" />
-                    </div>
+                    <div class="q-mt-sm"><b>N° acta:</b> {{ cosecha.num_acta }}</div>-->
                   </div>
 
                   <q-separator class="q-my-md" />
 
                   <div class="text-body2">
                     <div class="text-subtitle2 text-weight-bold q-mb-xs">Productor(a)</div>
-                    <div><b>Nombre:</b> {{ cosecha.apiario?.productor?.nombre_completo }}</div>
-                    <div><b>RUNSA:</b> {{ cosecha.apiario?.productor?.runsa }}</div>
-                    <div><b>Municipio:</b> {{ cosecha.apiario?.municipio?.nombre_municipio }}</div>
+                    <div><b>Nombre:</b> {{ cosecha.apio_cosecha.apiario?.productor?.nombre_completo }}</div>
+                    <div><b>RUNSA:</b> {{ cosecha.apio_cosecha.apiario?.productor?.runsa }}</div>
+                    <!--<div><b>Municipio:</b> {{ cosecha.apio_cosecha.apiario?.municipio?.nombre_municipio }}</div>-->
                   </div>
                 </div>
               </div>
@@ -118,9 +107,11 @@ export default {
       try {
         this.loading = true
         this.error = null
-
+        console.log(this.code)
+        console.log(encodeURIComponent(this.code))
         const url = `/cosechas/qr/${encodeURIComponent(this.code)}`
         const { data } = await this.$axios.get(url)
+        console.log(data)
 
         // si tu API envuelve en {data: {...}}, ajusta:
         this.cosecha = data?.data ?? data
