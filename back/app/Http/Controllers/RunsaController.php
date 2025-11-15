@@ -4,10 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\Runsa;
 use Illuminate\Http\Request;
+// CORRECCION 2025-11-14 03:50: Se movio el import de Http fuera de la clase
+// Error detectado: Trait "App\Http\Controllers\Illuminate\Support\Facades\Http" not found
+// La declaracion "use" dentro de la clase se interpreta como trait, no como import de clase
+// Causa: Error 500 al acceder a GET /api/runsas impidiendo cargar certificaciones Runsa
+use Illuminate\Support\Facades\Http;
 
 class RunsaController extends Controller
 {
-    use Illuminate\Support\Facades\Http;
+    // CORRECCION 2025-11-14 03:50: Se elimino "use Illuminate\Support\Facades\Http;" de aqui
+    // Esta linea estaba incorrectamente dentro de la clase causando error de sintaxis PHP
+    // use Illuminate\Support\Facades\Http;
 
 public function consumirApi($url, $method = 'GET', $data = [], $token = null)
 {
@@ -103,7 +110,10 @@ public function consumirApi($url, $method = 'GET', $data = [], $token = null)
     public function show(Runsa $runsa)
     {
         //
-        return $runsas->load('productor:id,nombre,apellidos,numcarnet');
+        // CORRECCION 2025-11-14 03:50: Variable incorrecta - debe ser $runsa (singular) no $runsas (plural)
+        // Error detectado: Use of unassigned variable '$runsas'
+        // return $runsas->load('productor:id,nombre,apellidos,numcarnet');
+        return $runsa->load('productor:id,nombre,apellidos,numcarnet');
 
     }
 

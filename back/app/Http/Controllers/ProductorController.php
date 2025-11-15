@@ -274,6 +274,8 @@ class ProductorController extends Controller
             'municipio:id,nombre_municipio,provincia_id,departamento_id',
             'organizacion',
             'certificaciones',
+            // Agregar runsas
+            'runsas',
             'apiarios.colmenas.tipoMiel'
         ]);
     }
