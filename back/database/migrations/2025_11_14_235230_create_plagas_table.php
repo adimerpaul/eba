@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('observacion', 255)->nullable();
             $table->unsignedBigInteger('apiario_id');
             $table->foreign('apiario_id')->references('id')->on('apiarios');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

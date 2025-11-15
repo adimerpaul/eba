@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('encargado', 200)->nullable();
             $table->unsignedBigInteger('apiario_id');
             $table->foreign('apiario_id')->references('id')->on('apiarios');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
