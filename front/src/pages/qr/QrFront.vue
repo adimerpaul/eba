@@ -44,15 +44,15 @@
 
                 <div v-else-if="cosecha">
                   <div class="text-subtitle1 text-weight-bold q-mb-sm">
-                    {{ cosecha.producto?.nombre_producto || 'Producto' }}
-                    — {{ cosecha.cantidad_kg }} {{ cosecha.producto?.presentacion || 'Kg' }}
+                    {{ cosecha.nombre_producto || 'Producto' }}
                   </div>
 
                   <div class="text-body2">
-                    <div><b>NOMBRE CIP:</b> {{ cosecha.apio_cosecha.apiario.nombre_cip}}</div>
-                    <div><b>LOTE</b> {{ cosecha.codigo_lote}}</div>
-                    <div><b>Fecha Prod:</b> {{ fmt(cosecha.fecha_envasado) }}</div>
-                    <div><b>Fecha Ven:</b> {{ cosecha.fecha_caducidad }}</div>
+                    <div><b>NOMBRE CIP: </b> {{ cosecha.asociacion}}</div>
+                    <div><b>Lote: </b> {{ cosecha.codigo_lote}}</div>
+                    <div><b>Fecha Cosecha: </b> {{ fmt(cosecha.fecha_cosecha) }}</div>
+                    <div><b>Fecha Envasado: </b> {{ fmt(cosecha.fecha_envasado) }}</div>
+                    <div><b>Fecha Vencimiento: </b> {{ fmt(cosecha.fecha_caducidad) }}</div>
                     <!--<div><b>Humedad (%):</b> {{ cosecha.humedad }}</div>
                     <div><b>Temp. almac. (°C):</b> {{ cosecha.temperatura_almacenaje }}</div>
                     <div class="q-mt-sm"><b>N° acta:</b> {{ cosecha.num_acta }}</div>-->
@@ -62,9 +62,8 @@
 
                   <div class="text-body2">
                     <div class="text-subtitle2 text-weight-bold q-mb-xs">Productor(a)</div>
-                    <div><b>Nombre:</b> {{ cosecha.apio_cosecha.apiario?.productor?.nombre_completo }}</div>
-                    <div><b>RUNSA:</b> {{ cosecha.apio_cosecha.apiario?.productor?.runsa }}</div>
-                    <!--<div><b>Municipio:</b> {{ cosecha.apio_cosecha.apiario?.municipio?.nombre_municipio }}</div>-->
+                    <div><b>Nombre:</b> {{ cosecha.productor }}</div>
+                    <div><b>Origen:</b> {{ cosecha.nombre_departamento  }} - {{ cosecha.nombre_municipio }}</div>
                   </div>
                 </div>
               </div>
@@ -95,7 +94,8 @@ export default {
     }
   },
   computed: {
-    ready () { return !!this.cosecha && !this.loading && !this.error },
+    ready () { return !!this.cosecha && !this.loading && !this.error 
+    },
     qrUrl () {
       const base = window.location?.origin ?? ''
       const target = `${base}/qr/${this.code}`
@@ -114,7 +114,7 @@ export default {
         console.log(data)
 
         // si tu API envuelve en {data: {...}}, ajusta:
-        this.cosecha = data?.data ?? data
+        this.cosecha = data?.data?? data[0]
       } catch (e) {
         this.error = 'No se encontró la cosecha o el código es inválido.'
       } finally {
