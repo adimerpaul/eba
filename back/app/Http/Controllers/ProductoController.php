@@ -26,7 +26,7 @@ class ProductoController extends Controller{
             $q->where('tipo_id', (int) $request->get('tipo'));
         }
 
-        $q->whereNull('deleted_at')->orderBy('nombre_producto');
+        $q->whereNull('deleted_at')->orderBy('nombre_producto', 'asc');
 
         // Si quieres paginar, habilita esto:
         // $perPage = (int) ($request->get('per_page', 0));
