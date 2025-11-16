@@ -156,7 +156,7 @@
             <q-icon name="people" class="text-white"/>
           </q-item-section>
           <q-item-section>
-            <q-item-label class="text-white">Usuarios</q-item-label>
+            <q-item-label class="text-white">Modulo Usuarios</q-item-label>
           </q-item-section>
         </q-item>
         <q-expansion-item dense expand-separator icon="gavel" label="Modulo Producción Primaria" active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
@@ -219,7 +219,9 @@
         </q-expansion-item>
 
 <!--        productos cleintes transporte-->
-        <q-item dense to="/productos" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Productos')">
+        <q-expansion-item dense expand-separator icon="gavel" label="Módulo de control de proceso productivo " active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
+          <q-list>
+        <q-item :inset-level="0.3" dense to="/productos" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Productos')">
           <q-item-section avatar>
             <q-icon name="inventory" class="text-white"/>
           </q-item-section>
@@ -227,7 +229,7 @@
             <q-item-label class="text-white">Productos</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item dense to="/clientes" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Clientes')">
+        <q-item :inset-level="0.3" dense to="/clientes" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Clientes')">
           <q-item-section avatar>
             <q-icon name="storefront" class="text-white"/>
           </q-item-section>
@@ -235,7 +237,7 @@
             <q-item-label class="text-white">Clientes</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item dense to="/transportes" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Transporte')">
+        <q-item :inset-level="0.3" dense to="/transportes" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Transporte')">
           <q-item-section avatar>
             <q-icon name="local_shipping" class="text-white"/>
           </q-item-section>
@@ -244,7 +246,7 @@
           </q-item-section>
         </q-item>
 <!--        plantas-->
-        <q-item dense to="/plantas" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Plantas de procesamiento')">
+        <q-item :inset-level="0.3" dense to="/plantas" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Plantas de procesamiento')">
           <q-item-section avatar>
             <q-icon name="factory" class="text-white"/>
           </q-item-section>
@@ -252,6 +254,8 @@
             <q-item-label class="text-white">Plantas de Procesamiento</q-item-label>
           </q-item-section>
         </q-item>
+        </q-list>
+        </q-expansion-item> 
 <!--        COMERZILIZACION-->
         <q-expansion-item dense expand-separator icon="store" label="Módulo Comercialización" active-class="menu-active" v-if="hasPerm('Modulo comercializacion')">
           <q-list>
