@@ -12,8 +12,8 @@
         <q-tab name="general" icon="badge" label="1) Información general" no-caps/>
         <q-tab name="analisis" icon="science" label="2) Análisis de calidad" no-caps/>
         <q-tab name="formularios" icon="description" label="3) Formularios" no-caps/>
-        <q-tab name="qr" icon="qr_code" label="4) Código QR" no-caps/>
-        <q-tab name="lotes" icon="view_list" label="5) Lotes" no-caps/>
+        <!--<q-tab name="qr" icon="qr_code" label="4) Código QR" no-caps/>-->
+        <q-tab name="lotes>" icon="view_list" label="4) Lotes" no-caps/>
       </q-tabs>
       <q-separator/>
 
