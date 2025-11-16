@@ -151,6 +151,14 @@
             <q-item-label class="text-white">Dashboard</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item dense to="/usuarios" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Usuarios')">
+          <q-item-section avatar>
+            <q-icon name="people" class="text-white"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-white">Usuarios</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-expansion-item dense expand-separator icon="gavel" label="Modulo Producción Primaria" active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
           <q-list>
             <q-item :inset-level="0.3" dense to="/productores/crear" clickable class="menu-item" active-class="menu-active" v-close-popup >
@@ -184,7 +192,7 @@
                 <q-icon name="apartment" class="text-white"/>
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-white">Módulo de convenios</q-item-label>
+                <q-item-label class="text-white">Convenios</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -209,14 +217,7 @@
             </q-item>
           </q-list>
         </q-expansion-item>
-        <q-item dense to="/usuarios" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Usuarios')">
-          <q-item-section avatar>
-            <q-icon name="people" class="text-white"/>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label class="text-white">Usuarios</q-item-label>
-          </q-item-section>
-        </q-item>
+
 <!--        productos cleintes transporte-->
         <q-item dense to="/productos" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Productos')">
           <q-item-section avatar>
