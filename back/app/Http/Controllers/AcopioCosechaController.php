@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+
 class AcopioCosechaController extends Controller{
     public function showByQr(string $code)
     {
@@ -22,7 +24,7 @@ class AcopioCosechaController extends Controller{
         }
 
         return response()->json($acopio);*/
-        $lote = Lote::query()
+        /*$lote = Lote::query()
             ->with(['apio_cosecha.apiario.productor', 'apio_cosecha', 'producto'])
             ->where('codigo_lote', $code)
             ->first();
@@ -31,7 +33,18 @@ class AcopioCosechaController extends Controller{
             return response()->json(['message' => 'No encontrado'], 404);
         }
 
-        return response()->json($lote);
+        return response()->json($lote);*/
+
+        $res=DB::SELECT("SELECT * FROM traza.v_trazabilidad_lote WHERE codigo_lote='$code'");
+        return $res;
+        if ($res)
+        {
+            return response()->json($res[0]);
+        }
+        else
+        {
+            return response()->json(['message' => 'No encontrado'], 404);
+        }  
     }
     function index(Request $request){
         //return $request;
