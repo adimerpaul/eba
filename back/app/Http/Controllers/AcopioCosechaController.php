@@ -36,10 +36,10 @@ class AcopioCosechaController extends Controller{
         return response()->json($lote);*/
 
         $res=DB::SELECT("SELECT * FROM traza.v_trazabilidad_lote WHERE codigo_lote='$code'");
-        return $res;
+        //return $res;
         if ($res)
         {
-            return response()->json($res[0]);
+            return $res[0];
         }
         else
         {

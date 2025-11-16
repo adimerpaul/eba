@@ -114,7 +114,7 @@ export default {
         console.log(data)
 
         // si tu API envuelve en {data: {...}}, ajusta:
-        this.cosecha = data?.data?? data[0]
+        this.cosecha = data?.data?? data
       } catch (e) {
         this.error = 'No se encontró la cosecha o el código es inválido.'
       } finally {
