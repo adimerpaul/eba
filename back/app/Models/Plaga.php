@@ -6,27 +6,49 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Auditable as AuditableTrait;
 use OwenIt\Auditing\Contracts\Auditable;
+
+/**
+ * Modelo para registro de control de plagas en colmenas
+ * Relacionado con acopio_cosechas para generar formularios con datos de cabecera
+ */
 class Plaga extends Model implements Auditable
 {
     use AuditableTrait, SoftDeletes;
 
-
+    // Campos actualizados según formulario físico
     protected $fillable = [
-        'apiario_id',
-        'fecha_registro',
+        'fecha',
+        'numero_colmenas_apiario',
         'nombre_plaga',
-        'descripcion',
-        'medidas_control',
-        'observacion',
+        'plaga_presente',
+        'daño_visible_apiario',
+        'medidas_control_celdilla',
+        'observaciones',
+        'acopio_cosecha_id',
     ];
+    
+    // Campos anteriores comentados para referencia
+    // 'apiario_id',
+    // 'fecha_registro',
+    // 'descripcion',
+    // 'medidas_control',
+    // 'observacion',
+    
     protected $hidden = [
         'created_at',
         'updated_at',
         'deleted_at',
     ];
-    //
-    public function apiario()
+    
+    // Relación actualizada: de apiario a acopio_cosecha
+    public function acopioCosecha()
     {
-        return $this->belongsTo(Apiario::class, 'apiario_id');
+        return $this->belongsTo(AcopioCosecha::class, 'acopio_cosecha_id');
     }
+    
+    // Relación anterior comentada
+    // public function apiario()
+    // {
+    //     return $this->belongsTo(Apiario::class, 'apiario_id');
+    // }
 }

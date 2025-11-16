@@ -13,13 +13,17 @@ return new class extends Migration
     {
         Schema::create('plagas', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('fecha_registro');
+            // Campos según formulario físico "Registro de control de plagas en colmenas"
+            $table->date('fecha');
+            $table->string('numero_colmenas_apiario', 100)->nullable();
             $table->string('nombre_plaga', 100);
-            $table->string('descripcion', 255)->nullable();
-            $table->string('medidas_control', 255)->nullable();
-            $table->string('observacion', 255)->nullable();
-            $table->unsignedBigInteger('apiario_id');
-            $table->foreign('apiario_id')->references('id')->on('apiarios');
+            $table->string('plaga_presente', 100)->nullable();
+            $table->string('daño_visible_apiario', 255)->nullable();
+            $table->string('medidas_control_celdilla', 255)->nullable();
+            $table->string('observaciones', 255)->nullable();
+            // Relación con acopio_cosechas en lugar de apiarios
+            $table->unsignedBigInteger('acopio_cosecha_id');
+            $table->foreign('acopio_cosecha_id')->references('id')->on('acopio_cosechas');
             $table->softDeletes();
             $table->timestamps();
         });

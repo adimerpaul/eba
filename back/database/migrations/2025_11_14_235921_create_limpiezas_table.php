@@ -13,14 +13,16 @@ return new class extends Migration
     {
         Schema::create('limpiezas', function (Blueprint $table) {
             $table->id();
-            $table->dateTime('fecha_registro');
-            $table->string('equipo', 200);
-            $table->string('material', 200);
-            $table->string('metodo_limpieza', 255)->nullable(); 
-            $table->string('producto_limpieza', 255)->nullable(); 
-            $table->unsignedBigInteger('apiario_id');
-            $table->foreign('apiario_id')->references('id')->on('apiarios');
-            $table->softDeletes(); // delete
+            // Campos según formulario físico "Registro de limpieza y desinfección de equipos y herramienta apícolas"
+            $table->string('equipo_herramienta_material', 200);
+            $table->string('material_recubrimiento', 200)->nullable();
+            $table->string('metodo_limpieza_utilizado', 255)->nullable();
+            $table->string('producto_quimico_desinfeccion', 255)->nullable();
+            $table->date('fecha_aplicacion');
+            // Relación con acopio_cosechas en lugar de apiarios
+            $table->unsignedBigInteger('acopio_cosecha_id');
+            $table->foreign('acopio_cosecha_id')->references('id')->on('acopio_cosechas');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
