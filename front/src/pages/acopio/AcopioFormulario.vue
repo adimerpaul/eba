@@ -25,7 +25,7 @@
           </div>
 
           <!-- PRODUCTOR (búsqueda) -->
-          <div class="col-12 col-md-9">
+          <div class="col-12 col-md-6">
             <q-select
               v-model="form.productor_id"
               :options="productorOptions"
@@ -53,7 +53,15 @@
               {{ productorDetalle?.label }}
             </div>
           </div>
-
+          <div class="col-12 col-md-3">
+            <q-input
+              v-model="form.num_acta"
+              type="text"
+              label="Numero de Acta"
+              dense outlined
+              :rules="[val => !!val || 'Requerido']"
+            />
+          </div>
           <!-- APIARIO (dependiente del productor) -->
           <div class="col-12 col-md-6">
             <q-select
@@ -184,8 +192,6 @@
             <q-select
               v-model="form.estado"
               :options="estados"
-              emit-value
-              map-options
               label="Estado"
               dense outlined
               :rules="[v => !!v || 'Requerido']"
@@ -243,14 +249,12 @@ export default {
         procedencia: '',
         tipo_envase: '',
         observaciones: '',
-        estado: { label: 'BUENO', value: 'BUENO' }
+        estado:  'BUENO'
       },
 
       estados: [
-        { label: 'BUENO', value: 'BUENO' },
-        { label: 'EN PROCESO', value: 'EN_PROCESO' },
-        { label: 'CANCELADO', value: 'CANCELADO' },
-      ],
+       'BUENO','EN PROCESO',
+       'CANCELADO' ],
     }
   },
   mounted() {

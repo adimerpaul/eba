@@ -207,9 +207,9 @@ export default {
       fechaInicio: moment().startOf('month').format('YYYY-MM-DD'),
       fechaFin: moment().endOf('month').format('YYYY-MM-DD'),
       estados: [
-        { label: 'BUENO', value: 'BUENO' },
-        { label: 'EN PROCESO', value: 'EN_PROCESO' },
-        { label: 'CANCELADO', value: 'CANCELADO' },
+         'BUENO',
+         'EN PROCESO',
+         'CANCELADO'
       ],
       estadoSeleccionado: null,
       departamentos: [],
