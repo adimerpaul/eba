@@ -1,1 +1,0 @@
-import{Q as a}from"./QPage-FOAn5yHT.js";import{_ as s,c as t,o,w as r,a8 as c}from"./index-DnzJ7KDi.js";const p={name:"ReportesActualesPage"};function n(f,e,_,d,l,m){return o(),t(a,{class:"q-pa-md"},{default:r(()=>e[0]||(e[0]=[c(" asasa ")])),_:1})}const x=s(p,[["render",n]]);export{x as default};
