@@ -32,9 +32,9 @@
           <Documentos v-if="!loading && cosecha" :cosecha="cosecha"/>
         </q-tab-panel>
 
-        <q-tab-panel name="qr" class="q-pa-none">
+        <!--<q-tab-panel name="qr" class="q-pa-none">
           <QrCode v-if="!loading && cosecha" :cosecha="cosecha"/>
-        </q-tab-panel>
+        </q-tab-panel>-->
         <q-tab-panel name="lotes" class="q-pa-none">
           <CosechaLotes v-if="!loading && cosecha" :cosecha="cosecha"/>
         </q-tab-panel>
