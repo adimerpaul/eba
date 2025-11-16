@@ -42,8 +42,8 @@ class LoteController extends Controller
             // 2) Validar capacidad disponible
             // Bloqueo optimista simple: recalcular dentro de la transacción
             $asignado  = (float) $cosecha->lotes()->sum('cantidad_kg');
-            $capacidad = (float) ($cosecha->cantidad ?? 0);
-            $cantidad  = (float) $request->cantidad;
+            $capacidad = (float) ($cosecha->cantidad_kg ?? 0);
+            $cantidad  = (float) $request->cantidad_kg;
 
             if ($asignado + $cantidad > $capacidad) {
                 return response()->json([
@@ -57,7 +57,7 @@ class LoteController extends Controller
 
             // 4) Crear lote
             $lote = new Lote($request->only([
-                'tanque_id','producto_id','cantidad','fecha_envasado','fecha_caducidad','tipo_envase'
+                'tanque_id','producto_id','cantidad_kg','fecha_envasado','fecha_caducidad','tipo_envase'
             ]));
             $lote->cosecha_id = $cosecha->id;
             $lote->codigo_lote = $codigo;
