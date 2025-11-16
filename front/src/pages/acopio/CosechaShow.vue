@@ -13,7 +13,7 @@
         <q-tab name="analisis" icon="science" label="2) Análisis de calidad" no-caps/>
         <q-tab name="formularios" icon="description" label="3) Formularios" no-caps/>
         <!--<q-tab name="qr" icon="qr_code" label="4) Código QR" no-caps/>-->
-        <q-tab name="lotes>" icon="view_list" label="4) Lotes" no-caps/>
+        <q-tab name="lotes" icon="view_list" label="4) Lotes" no-caps/>
       </q-tabs>
       <q-separator/>
 
@@ -32,9 +32,9 @@
           <Documentos v-if="!loading && cosecha" :cosecha="cosecha"/>
         </q-tab-panel>
 
-        <!--<q-tab-panel name="qr" class="q-pa-none">
+        <q-tab-panel name="qr" class="q-pa-none">
           <QrCode v-if="!loading && cosecha" :cosecha="cosecha"/>
-        </q-tab-panel>-->
+        </q-tab-panel>
         <q-tab-panel name="lotes" class="q-pa-none">
           <CosechaLotes v-if="!loading && cosecha" :cosecha="cosecha"/>
         </q-tab-panel>
