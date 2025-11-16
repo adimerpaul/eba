@@ -157,6 +157,27 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::put('/documentos/{id}', [DocumentoController::class, 'update']);
     Route::delete('/documentos/{id}', [DocumentoController::class, 'destroy']);
 
+    // Rutas para registros de control de plagas en colmenas
+    Route::get('/plagas', [\App\Http\Controllers\PlagaController::class, 'index']);
+    Route::post('/plagas', [\App\Http\Controllers\PlagaController::class, 'store']);
+    Route::get('/plagas/{id}', [\App\Http\Controllers\PlagaController::class, 'show']);
+    Route::put('/plagas/{id}', [\App\Http\Controllers\PlagaController::class, 'update']);
+    Route::delete('/plagas/{id}', [\App\Http\Controllers\PlagaController::class, 'destroy']);
+
+    // Rutas para registros de limpieza y desinfección
+    Route::get('/limpiezas', [\App\Http\Controllers\LimpiezaController::class, 'index']);
+    Route::post('/limpiezas', [\App\Http\Controllers\LimpiezaController::class, 'store']);
+    Route::get('/limpiezas/{id}', [\App\Http\Controllers\LimpiezaController::class, 'show']);
+    Route::put('/limpiezas/{id}', [\App\Http\Controllers\LimpiezaController::class, 'update']);
+    Route::delete('/limpiezas/{id}', [\App\Http\Controllers\LimpiezaController::class, 'destroy']);
+
+    // Rutas para registros de aplicación de medicamentos
+    Route::get('/medicamentos', [\App\Http\Controllers\MedicamentoController::class, 'index']);
+    Route::post('/medicamentos', [\App\Http\Controllers\MedicamentoController::class, 'store']);
+    Route::get('/medicamentos/{id}', [\App\Http\Controllers\MedicamentoController::class, 'show']);
+    Route::put('/medicamentos/{id}', [\App\Http\Controllers\MedicamentoController::class, 'update']);
+    Route::delete('/medicamentos/{id}', [\App\Http\Controllers\MedicamentoController::class, 'destroy']);
+
     Route::get('acopio-cosechas/{cosecha}/lotes', [LoteController::class, 'index']);
     Route::post('acopio-cosechas/{cosecha}/lotes', [LoteController::class, 'store']);
     Route::put('lotes/{lote}', [LoteController::class, 'update']);
@@ -233,11 +254,19 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::get('bp-usuarios', [BpUsuarioController::class, 'index']);
     Route::put('bp-usuarios/{id}/traza', [BpUsuarioController::class, 'updateTraza']);
 
-// 🔐 Permisos de BpUsuarios
+// Permisos de BpUsuarios
     Route::get('bp-usuarios/{id}/permissions', [BpUsuarioController::class, 'getPermissions']);
     Route::put('bp-usuarios/{id}/permissions', [BpUsuarioController::class, 'syncPermissions']);
 });
+
+// Rutas públicas o fuera de autenticación para impresión de documentos y PDFs
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
+
+// Rutas públicas para impresión de formularios de control
+Route::get('/plagas/{cosechaId}/imprimir', [\App\Http\Controllers\PlagaController::class, 'printFormulario']);
+Route::get('/limpiezas/{cosechaId}/imprimir', [\App\Http\Controllers\LimpiezaController::class, 'printFormulario']);
+Route::get('/medicamentos/{cosechaId}/imprimir', [\App\Http\Controllers\MedicamentoController::class, 'printFormulario']);
+
 Route::get('/ventas/{venta}/nota', [VentaController::class, 'notaPdf'])->name('ventas.nota');
 
 Route::get('/export', [MobileController::class, 'export']);

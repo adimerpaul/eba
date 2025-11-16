@@ -80,4 +80,20 @@ class AcopioCosecha extends Model implements Auditable{
     function lotes(){
         return $this->hasMany(\App\Models\Lote::class, 'cosecha_id');
     }
+
+    // Relaciones con los nuevos formularios de control
+    public function plagas()
+    {
+        return $this->hasMany(\App\Models\Plaga::class, 'acopio_cosecha_id');
+    }
+
+    public function limpiezas()
+    {
+        return $this->hasMany(\App\Models\Limpieza::class, 'acopio_cosecha_id');
+    }
+
+    public function medicamentos()
+    {
+        return $this->hasMany(\App\Models\Medicamento::class, 'acopio_cosecha_id');
+    }
 }
