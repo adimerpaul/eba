@@ -253,8 +253,9 @@ export default {
       },
 
       estados: [
-       'BUENO','EN PROCESO',
-       'CANCELADO' ],
+       'BUENO',
+       'EN OBSERVACION',
+      ],
     }
   },
   mounted() {
