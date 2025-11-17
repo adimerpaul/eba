@@ -11,9 +11,13 @@
       <q-tabs v-model="tab" class="text-primary" align="left" dense>
         <q-tab name="general" icon="badge" label="1) Información general" no-caps/>
         <q-tab name="analisis" icon="science" label="2) Análisis de calidad" no-caps/>
-        <q-tab name="formularios" icon="description" label="3) Formularios" no-caps/>
+        <!-- MODIFICACION 2025-11-17: Cambio de label "Formularios" a "Documentos" -->
+        <!-- Los formularios de control (plagas, limpiezas, medicamentos) se movieron a una tab separada -->
+        <q-tab name="formularios" icon="description" label="3) Documentos" no-caps/>
         <!--<q-tab name="qr" icon="qr_code" label="4) Código QR" no-caps/>-->
         <q-tab name="lotes" icon="view_list" label="4) Lotes" no-caps/>
+        <!-- MODIFICACION 2025-11-17: Nueva tab para formularios de control del Senasag -->
+        <q-tab name="formularios_control" icon="assignment" label="5) Formularios de Control" no-caps/>
       </q-tabs>
       <q-separator/>
 
@@ -38,6 +42,15 @@
         <q-tab-panel name="lotes" class="q-pa-none">
           <CosechaLotes v-if="!loading && cosecha" :cosecha="cosecha"/>
         </q-tab-panel>
+
+        <!-- MODIFICACION 2025-11-17: Nuevo panel para formularios de control -->
+        <!-- Contiene los 3 formularios del Senasag: Plagas, Limpieza y Medicamentos -->
+        <!-- MODIFICACION 2025-11-17: Activado modo solo lectura (readOnly=true) -->
+        <!-- En esta vista (Acopios), los formularios son solo de consulta e impresion -->
+        <!-- El registro de formularios solo se realiza desde Produccion Primaria (ProductorAcopios.vue) -->
+        <q-tab-panel name="formularios_control" class="q-pa-none">
+          <FormulariosControl v-if="!loading && cosecha" :cosecha="cosecha" :read-only="true" />
+        </q-tab-panel>
       </q-tab-panels>
     </q-card>
     <!--    <AcopioFormulario :estado="'crear'" v-if="cosecha" :cosecha="cosecha"/>-->
@@ -53,6 +66,9 @@ import AnalisisCalidad from "pages/acopio/tabs/AnalisisCalidad.vue";
 import Documentos from "pages/acopio/tabs/Documentos.vue";
 import QrCode from "pages/acopio/tabs/QrCode.vue";
 import CosechaLotes from "pages/acopio/tabs/CosechaLotes.vue";
+// MODIFICACION 2025-11-17: Importacion del nuevo componente FormulariosControl
+// Este componente contiene los 3 formularios de control del Senasag
+import FormulariosControl from "pages/acopio/tabs/FormulariosControl.vue";
 
 export default {
   name: 'AcopioCrear',
@@ -61,7 +77,13 @@ export default {
     QrCode,
     Documentos,
     AnalisisCalidad,
-    ProductorCertificaciones, ProductorApiarios, ProductorForm, ProductorMapa, AcopioFormulario
+    ProductorCertificaciones, 
+    ProductorApiarios, 
+    ProductorForm, 
+    ProductorMapa, 
+    AcopioFormulario,
+    // MODIFICACION 2025-11-17: Registro del componente FormulariosControl
+    FormulariosControl
   },
   data() {
     return {

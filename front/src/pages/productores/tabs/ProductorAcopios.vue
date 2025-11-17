@@ -49,6 +49,8 @@
             <th>Número Acta</th>
             <th>Condiciones Almacenaje</th>
             <th>Estado</th>
+            <!-- MODIFICACION 2025-11-17: Nueva columna para acceso rapido a formularios de control -->
+            <th style="width: 120px;">Formularios</th>
           </tr>
           </thead>
           <tbody>
@@ -71,6 +73,19 @@
               >
                 {{ cosecha.estado.replace('_', ' ') }}
               </q-chip>
+            </td>
+            <!-- MODIFICACION 2025-11-17: Boton para abrir dialog de formularios de control -->
+            <td class="text-center">
+              <q-btn
+                flat
+                dense
+                color="primary"
+                icon="description"
+                size="sm"
+                @click="openFormulariosDialog(cosecha)"
+              >
+                <q-tooltip>Ver formularios de control</q-tooltip>
+              </q-btn>
             </td>
           </tr>
           </tbody>
@@ -173,13 +188,120 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+
+    <!-- MODIFICACION 2025-11-17: Dialog para gestionar formularios de control (Plagas, Limpieza, Medicamentos) -->
+    <!-- Este dialog se abre al hacer clic en el boton de Formularios de cada acopio -->
+    <!-- Reutiliza los componentes PlagasFormulario, LimpiezasFormulario y MedicamentosFormulario -->
+    <!-- MODIFICACION 2025-11-17: Se cambio de maximized a modal normal con ancho controlado -->
+    <!-- para mejor usabilidad y no cubrir toda la pantalla -->
+    <q-dialog v-model="formulariosDialog.open" persistent>
+      <q-card style="width: 90vw; max-width: 1400px; max-height: 90vh">
+        <q-card-section class="row items-center q-pa-md bg-primary text-white">
+          <q-icon name="description" size="sm" class="q-mr-sm" />
+          <div class="text-h6">Formularios de Control</div>
+          <q-space />
+          <q-btn flat round dense icon="close" v-close-popup color="white" />
+        </q-card-section>
+
+        <q-separator />
+
+        <!-- Informacion del acopio seleccionado -->
+        <q-card-section class="q-pa-md bg-grey-2">
+          <div class="row q-col-gutter-sm">
+            <div class="col-12 col-md-3">
+              <div class="text-caption text-grey-7">Fecha Cosecha</div>
+              <div class="text-body1">{{ formulariosDialog.cosecha?.fecha_cosecha || '—' }}</div>
+            </div>
+            <div class="col-12 col-md-3">
+              <div class="text-caption text-grey-7">Productor</div>
+              <div class="text-body1">
+                {{ formulariosDialog.cosecha?.apiario?.productor.nombre }}
+                {{ formulariosDialog.cosecha?.apiario?.productor.apellidos }}
+              </div>
+            </div>
+            <div class="col-12 col-md-2">
+              <div class="text-caption text-grey-7">Cantidad</div>
+              <div class="text-body1">{{ formulariosDialog.cosecha?.cantidad_kg }} kg</div>
+            </div>
+            <div class="col-12 col-md-2">
+              <div class="text-caption text-grey-7">Numero Acta</div>
+              <div class="text-body1">{{ formulariosDialog.cosecha?.num_acta || '0' }}</div>
+            </div>
+            <div class="col-12 col-md-2">
+              <div class="text-caption text-grey-7">Estado</div>
+              <q-chip
+                :color="formulariosDialog.cosecha?.estado === 'BUENO' ? 'green' : 'red'"
+                text-color="white"
+                dense
+              >
+                {{ formulariosDialog.cosecha?.estado }}
+              </q-chip>
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-separator />
+
+        <!-- Tabs de formularios -->
+        <q-card-section class="q-pa-md">
+          <q-tabs
+            v-model="formulariosDialog.tab"
+            dense
+            class="text-grey"
+            active-color="primary"
+            indicator-color="primary"
+            align="left"
+          >
+            <q-tab name="plagas" icon="bug_report" label="Plagas" no-caps />
+            <q-tab name="limpiezas" icon="cleaning_services" label="Limpiezas" no-caps />
+            <q-tab name="medicamentos" icon="medication" label="Medicamentos" no-caps />
+          </q-tabs>
+
+          <q-separator />
+
+          <q-tab-panels v-model="formulariosDialog.tab" animated style="max-height: 60vh; overflow-y: auto">
+            <q-tab-panel name="plagas">
+              <PlagasFormulario
+                v-if="formulariosDialog.cosecha"
+                :cosecha="formulariosDialog.cosecha"
+              />
+            </q-tab-panel>
+
+            <q-tab-panel name="limpiezas">
+              <LimpiezasFormulario
+                v-if="formulariosDialog.cosecha"
+                :cosecha="formulariosDialog.cosecha"
+              />
+            </q-tab-panel>
+
+            <q-tab-panel name="medicamentos">
+              <MedicamentosFormulario
+                v-if="formulariosDialog.cosecha"
+                :cosecha="formulariosDialog.cosecha"
+              />
+            </q-tab-panel>
+          </q-tab-panels>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-card-section>
 </template>
 <script>
 import moment from 'moment'
+// MODIFICACION 2025-11-17: Importacion de componentes de formularios de control
+// Estos componentes se reutilizan desde el modulo de acopios para mantener coherencia
+import PlagasFormulario from 'pages/acopio/tabs/PlagasFormulario.vue'
+import LimpiezasFormulario from 'pages/acopio/tabs/LimpiezasFormulario.vue'
+import MedicamentosFormulario from 'pages/acopio/tabs/MedicamentosFormulario.vue'
 
 export default {
   name: 'ProductorAcopios',
+  // MODIFICACION 2025-11-17: Registro de componentes de formularios
+  components: {
+    PlagasFormulario,
+    LimpiezasFormulario,
+    MedicamentosFormulario
+  },
   props: {
     productor: { type: Object, required: true }
   },
@@ -192,7 +314,13 @@ export default {
       dlg: { open: false },
       form: this.emptyForm(),
       acopioCosechas: [],
-      tab: 'detalle'
+      tab: 'detalle',
+      // MODIFICACION 2025-11-17: Estado del dialog de formularios de control
+      formulariosDialog: {
+        open: false,
+        cosecha: null,
+        tab: 'plagas'
+      }
     }
   },
   mounted () { this.hydrateFromProductor() },
@@ -403,6 +531,14 @@ export default {
           this.$alert?.error?.(e.response?.data?.message || 'No se pudo eliminar')
         }
       })
+    },
+
+    // MODIFICACION 2025-11-17: Metodo para abrir el dialog de formularios de control
+    // Recibe el objeto cosecha y lo asigna al estado del dialog
+    openFormulariosDialog (cosecha) {
+      this.formulariosDialog.cosecha = cosecha
+      this.formulariosDialog.tab = 'plagas'
+      this.formulariosDialog.open = true
     }
   }
 }

@@ -2,7 +2,12 @@
   <q-card flat bordered>
     <q-card-section class="row items-center justify-between">
       <div class="text-subtitle1">Control de Plagas</div>
-      <q-btn color="primary" icon="add" label="Nuevo" no-caps @click="onNuevo" />
+      <!-- MODIFICACION 2025-11-17: Boton Nuevo solo visible en modo edicion -->
+      <div class="q-gutter-sm">
+        <q-btn v-if="!readOnly" color="primary" icon="add" label="Nuevo" no-caps @click="onNuevo" />
+        <!-- MODIFICACION 2025-11-17: Boton Imprimir solo visible en modo solo lectura -->
+        <q-btn v-if="readOnly" color="green" icon="print" label="Imprimir" no-caps @click="onImprimir" />
+      </div>
     </q-card-section>
 
     <q-separator />
@@ -22,7 +27,8 @@
         <tbody>
           <tr v-for="row in rows" :key="row.id">
             <td class="text-right">
-              <q-btn-dropdown dense no-caps label="Acciones" color="primary" size="10px">
+              <!-- MODIFICACION 2025-11-17: Dropdown de acciones solo visible en modo edicion -->
+              <q-btn-dropdown v-if="!readOnly" dense no-caps label="Acciones" color="primary" size="10px">
                 <q-list>
                   <q-item clickable v-ripple @click="onEditar(row)" v-close-popup>
                     <q-item-section avatar><q-icon name="edit" /></q-item-section>
@@ -34,6 +40,8 @@
                   </q-item>
                 </q-list>
               </q-btn-dropdown>
+              <!-- MODIFICACION 2025-11-17: En modo solo lectura, mostrar guion -->
+              <span v-else>—</span>
             </td>
             <td>{{ row.fecha }}</td>
             <td>{{ row.numero_colmenas_apiario }}</td>
@@ -92,7 +100,11 @@
 export default {
   name: 'PlagasFormulario',
   props: {
-    cosecha: { type: Object, required: true }
+    cosecha: { type: Object, required: true },
+    // MODIFICACION 2025-11-17: Prop para activar modo solo lectura
+    // Cuando readOnly=true: oculta botones Nuevo/Editar/Eliminar y muestra boton Imprimir
+    // Usado en CosechaShow.vue para consulta, ProductorAcopios.vue para edicion
+    readOnly: { type: Boolean, default: false }
   },
   data () {
     return {
@@ -187,6 +199,13 @@ export default {
           this.$q.notify({ type: 'negative', message: 'No se pudo eliminar' })
         }
       })
+    },
+    // MODIFICACION 2025-11-17: Metodo para imprimir formulario de plagas
+    // Abre en nueva ventana el PDF generado por el backend
+    onImprimir () {
+      if (!this.cosecha?.id) return
+      const url = this.$axios.defaults.baseURL + `/plagas/${this.cosecha.id}/imprimir`
+      window.open(url, '_blank')
     }
   }
 }
