@@ -569,7 +569,7 @@ mounted() {
             mujer += element.mujer;
         });
 
-        const labels = ['MASCULINO', 'FEMENINO'];
+        const labels = ['MASCULINO = ' + varon, 'FEMENINO = ' + mujer];
         const totales = [varon, mujer];
 
         const totalGeneral = varon + mujer;
