@@ -204,7 +204,7 @@
                 <q-icon name="yard" class="text-white"/>
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-white">Acopio</q-item-label>
+                <q-item-label class="text-white">Registro de Acopio</q-item-label>
               </q-item-section>
             </q-item>
             <q-item :inset-level="0.3" dense to="/acopios" clickable class="menu-item" active-class="menu-active" v-close-popup >
@@ -212,7 +212,7 @@
                 <q-icon name="inbox" class="text-white"/>
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-white">Acopios</q-item-label>
+                <q-item-label class="text-white">Resumen de Acopios</q-item-label>
               </q-item-section>
             </q-item>
           </q-list>

@@ -83,7 +83,7 @@
             <br>
             <div >
           <div class="text-center text-bold text-h6"> Grafica ACOPIO GESTION PRODUCTO POR DEPARTAMENTO {{producto.nombre_producto}} GESTION {{gestion}} </div>
-            <canvas ref="grafico"></canvas>
+            <div class="canvas-container"><canvas ref="grafico" class="canvas-small"></canvas></div>
           </div>
                     <q-markup-table dense flat bordered>
             <thead>
@@ -725,3 +725,27 @@ mounted() {
 }
 }
 </script>
+<style>
+.canvas-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
+}
+
+.canvas-small {
+    width: 250px;
+    height: 250px;
+}
+
+.canvas-medium {
+    width: 400px;
+    height: 400px;
+}
+
+.canvas-large {
+    width: 600px;
+    height: 600px;
+}
+
+</style>

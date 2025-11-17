@@ -209,6 +209,8 @@
 </template>
 
 <script>
+import moment from 'moment';
+
 export default {
   name: 'CosechaLotes',
   props: {
@@ -239,6 +241,8 @@ export default {
       // diálogo
       dlg: { open: false, mode: 'create', row: null },
       form: {
+        fecha_envasado: moment().format('YYYY-MM-DD'),
+        
         producto_id: null,
         tanque_id: null,
         cantidad_kg: null,
@@ -433,6 +437,7 @@ export default {
     openCreate () {
       this.dlg = { open: true, mode: 'create', row: null }
       this.form = {
+        fecha_envasado:moment().format('YYYY-MM-DD'),
         producto_id: null,
         tanque_id: null,
         cantidad_kg: null,
