@@ -83,7 +83,7 @@
             <br>
             <div >
           <div class="text-center text-bold text-h6"> Grafica ACOPIO GESTION PRODUCTO POR DEPARTAMENTO {{producto.nombre_producto}} GESTION {{gestion}} </div>
-            <div class="canvas-container"><canvas ref="grafico" class="canvas-small"></canvas></div>
+            <div class="chart-container"><canvas ref="grafico" ></canvas></div>
           </div>
                     <q-markup-table dense flat bordered>
             <thead>
@@ -173,7 +173,7 @@
               :rows-per-page-options="[0]"
               v-if="list_edad.length>0"
             /></div>
-            <div class="col-md-6 col-xs-12"><canvas ref="grafico2" height="180"></canvas></div>
+            <div class="col-md-6 col-xs-12"><div class="chart-container"><canvas ref="grafico2"></canvas></div></div>
             </q-tab-panel>
             <q-tab-panel name="grafica2">
                 <div class="text-center text-bold text-h6">GRAFICA PRODUCTORES POR GENERO <q-btn color="info" icon="update"  @click="getReporte2"  dense :loading="loading" /></div>
@@ -186,7 +186,7 @@
               v-if="reporte2.length>0"
             /></div>
 
-            <div class="col-md-6 col-xs-12"><canvas ref="grafico3" height="180"></canvas></div>
+            <div class="col-md-6 col-xs-12"><div class="chart-container"><canvas ref="grafico3" ></canvas></div></div>
             </q-tab-panel>
           </q-tab-panels>   
 <!--          <q-table-->
@@ -555,54 +555,76 @@ mounted() {
             this.loading = false;
         });
     },
-    getReporte2() {
-        this.loading = true;
-        this.$axios.post('/reportApicultorDepGenero').then(({ data }) => {
-            this.reporte2 = data.data || data || []
-            // si ay datos varon mujer agrupar y sumar para obtenr labels y total
-            let varon=0
-            let mujer=0
-            this.reporte2.forEach(element => {
-                varon+=element.varon;
-                mujer+=element.mujer;
-            })
-            let labels = ['MASCULINO', 'FEMENINO'];
-            let totales = [varon, mujer];
-            console.log(labels, totales);
-            if (!this.$refs.grafico3) {
-                console.error('Canvas aún no está montado')
-                return
-            }
-            if (this.chartInstance3) this.chartInstance3.destroy()
+ getReporte2() {
+    this.loading = true;
+    this.$axios.post('/reportApicultorDepGenero').then(({ data }) => {
+        this.reporte2 = data.data || data || [];
 
-            this.chartInstance3 = new Chart(this.$refs.grafico3, {
-                type: 'bar',
-                data: {
+        // Sumatoria de varones y mujeres
+        let varon = 0;
+        let mujer = 0;
+
+        this.reporte2.forEach(element => {
+            varon += element.varon;
+            mujer += element.mujer;
+        });
+
+        const labels = ['MASCULINO', 'FEMENINO'];
+        const totales = [varon, mujer];
+
+        const totalGeneral = varon + mujer;
+
+        if (!this.$refs.grafico3) {
+            console.error('Canvas aún no está montado');
+            return;
+        }
+
+        if (this.chartInstance3) this.chartInstance3.destroy();
+
+        this.chartInstance3 = new Chart(this.$refs.grafico3, {
+            type: 'doughnut',     // 🔥 cambia a gráfico de torta
+            data: {
                 labels: labels,
                 datasets: [
                     {
-                    label: 'Cantidad de apicultores',
-                    data: totales,
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    yAxisID: 'y'
+                        label: 'Apicultores',
+                        data: totales,
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)',   // Masculino
+                            'rgba(255, 99, 132, 0.7)'    // Femenino
+                        ],
+                        borderWidth: 1
                     }
                 ]
-                },
-                options: {
+            },
+            options: {
                 responsive: true,
-                scales: {
-                    y: {
-                    type: 'linear',
-                    position: 'left',
-                    title: { display: true, text: 'Cantidad de apicultores' }
+                maintainAspectRatio: false,   // 🔥 importante para adaptarse al contenedor
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (ctx) => {
+                                const valor = ctx.parsed;
+                                const porcentaje = ((valor / totalGeneral) * 100).toFixed(1);
+                                return `${ctx.label}: ${valor} (${porcentaje}%)`;
+                            }
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Distribución por Género'
                     }
                 }
-                }
-            })
-        })  .finally(() => {
-            this.loading = false;
+            }
         });
-    },
+    }).finally(() => {
+        this.loading = false;
+    });
+},
+
     getReporte3() {
         this.loading = true;
         this.$axios.post('/reportePorcentualApicultorDep').then(({ data }) => {
@@ -656,24 +678,29 @@ mounted() {
             this.loading = false;
         });
     },
-        graficoEdad() {
-        if (!this.$refs.grafico2) {
-                console.error('Canvas aún no está montado')
-                return
-            }
-            if (this.chartInstance2) this.chartInstance2.destroy()
-                const etiquetas = this.list_edad.map(d => d.rango_edad)
-                const totales = this.list_edad.map(d => d.total)
-                const porcentajes = this.list_edad.map(d => d.porcentaje)
-            this.chartInstance2 = new Chart(this.$refs.grafico2, {
-                type: 'doughnut',
-                data: {
-                labels: etiquetas,
-                datasets: [
-                    {
-                    label: 'Distribucion por rango de edad',
+graficoEdad() { 
+    if (!this.$refs.grafico2) {
+        console.error('Canvas aún no está montado')
+        return
+    }
+
+    // Destruir gráfico previo
+    if (this.chartInstance2) this.chartInstance2.destroy()
+
+    const etiquetas = this.list_edad.map(d => d.rango_edad)
+    const totales = this.list_edad.map(d => d.total)
+    const porcentajes = this.list_edad.map(d => d.porcentaje)
+
+    // Crear gráfico de barras
+    this.chartInstance2 = new Chart(this.$refs.grafico2, {
+        type: 'bar',
+        data: {
+            labels: etiquetas,
+            datasets: [
+                {
+                    label: 'Distribución por rango de edad (%)',
                     data: porcentajes,
-                    backgroundColor: [// 16 colores diferentes
+                    backgroundColor: [
                         'rgb(255, 99, 132)',
                         'rgb(54, 162, 235)',
                         'rgb(255, 206, 86)',
@@ -692,29 +719,41 @@ mounted() {
                         'rgb(75, 192, 192)',
                         'rgb(153, 102, 255)',
                     ],
-                      borderWidth: 1
-                    }
-                ]
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,   // 🔥 necesario para que responda al contenedor 50%
+            
+            plugins: {
+                legend: {
+                    display: false  // En barras, normalmente va mejor sin leyenda
                 },
-                options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                    position: 'right'
-                    },
-                    tooltip: {
+                tooltip: {
                     callbacks: {
                         label: ctx => `${ctx.label}: ${ctx.parsed}%`
                     }
-                    },
-                    title: {
+                },
+                title: {
                     display: true,
                     text: 'Distribución porcentual por rango de edad'
-                    }
+                }
+            },
 
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: v => v + '%'   // Mostrar % en el eje Y
+                    }
                 }
             }
-            })    },
+        }
+    })
+}
+,
     async getProductos() {
        await this.$axios.get('/productos/tipo/1').then(({ data }) => {
         this.productos = data?.data || data || []
@@ -726,26 +765,14 @@ mounted() {
 }
 </script>
 <style>
-.canvas-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px auto;
+.chart-container {
+    width: 50%;         /* el div ocupa el 50% del ancho */
+    margin: 0 auto;     /* centra horizontalmente */
 }
 
-.canvas-small {
-    width: 250px;
-    height: 250px;
-}
-
-.canvas-medium {
-    width: 400px;
-    height: 400px;
-}
-
-.canvas-large {
-    width: 600px;
-    height: 600px;
+.chart-container canvas {
+    width: 100% !important;   /* el canvas se ajusta al contenedor */
+    height: auto !important;  /* mantiene proporciones */
 }
 
 </style>
