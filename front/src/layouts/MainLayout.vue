@@ -204,7 +204,7 @@
                 <q-icon name="yard" class="text-white"/>
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-white">Recolección</q-item-label>
+                <q-item-label class="text-white">Acopio</q-item-label>
               </q-item-section>
             </q-item>
             <q-item :inset-level="0.3" dense to="/acopios" clickable class="menu-item" active-class="menu-active" v-close-popup >
@@ -279,7 +279,7 @@
             </q-item>
           </q-list>
         </q-expansion-item>
-        <q-expansion-item dense expand-separator icon="store" label="Módulo Reportes" active-class="menu-active" v-if="hasPerm('Modulo reportes')">
+        <q-expansion-item dense expand-separator icon="data_thresholding" label="Módulo Reportes" active-class="menu-active" v-if="hasPerm('Modulo reportes')">
           <q-list>
 <!--            crear ventas-->
 <!--            <q-item :inset-level="0.3" dense to="/reportesActuales" clickable class="menu-item" active-class="menu-active" v-close-popup >-->
@@ -292,7 +292,7 @@
 <!--            </q-item>-->
             <q-item :inset-level="0.3" dense to="/reportes" clickable class="menu-item" active-class="menu-active" v-close-popup >
               <q-item-section avatar>
-                <q-icon name="point_of_sale" class="text-white"/>
+                <q-icon name="bar_chart" class="text-white"/>
               </q-item-section>
               <q-item-section>
                 <q-item-label class="text-white">Reporte</q-item-label>

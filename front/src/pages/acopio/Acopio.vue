@@ -179,6 +179,10 @@
                 </q-chip>
               </td>
             </tr>
+            <tr>
+              <th colspan="3">TOTAL</th>
+              <td>{{ calculoCosecha }}</td>
+            </tr>
           </tbody>
         </q-markup-table>
         <div v-else class="text-center q-pa-md">
@@ -223,6 +227,15 @@ export default {
     this.buscarCosechas();
     this.productoGet();
 
+  },
+  computed: {
+    calculoCosecha() {
+      let total =0
+      this.acopioCosechas.forEach(element => {
+          total+=parseFloat(element.cantidad_kg)
+      });
+      return total.toFixed(2);
+    }
   },
   methods: {
       getDepartamentos() {
