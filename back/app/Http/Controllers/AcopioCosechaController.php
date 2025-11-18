@@ -128,7 +128,14 @@ class AcopioCosechaController extends Controller{
     }
     public function show($id)
     {
-        return AcopioCosecha::with(['apiario.productor','apiario.municipio','producto'])->findOrFail($id);
+        // MODIFICACION 2025-11-18: Agregar relaciones de provincia y departamento para encabezados de formularios
+        return AcopioCosecha::with([
+            'apiario.productor.municipio.provincia',
+            'apiario.productor.municipio.departamento',
+            'apiario.productor',
+            'apiario.municipio',
+            'producto'
+        ])->findOrFail($id);
     }
 
     public function store(Request $request)

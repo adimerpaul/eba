@@ -3,10 +3,93 @@
     <q-card-section class="row items-center justify-between">
       <div class="text-subtitle1">Limpieza y Desinfección</div>
       <!-- MODIFICACION 2025-11-17: Boton Nuevo solo visible en modo edicion -->
+      <!-- MODIFICACION 2025-11-17: Boton Imprimir siempre visible (tanto en edicion como en solo lectura) -->
       <div class="q-gutter-sm">
         <q-btn v-if="!readOnly" color="primary" icon="add" label="Nuevo" no-caps @click="onNuevo" />
-        <!-- MODIFICACION 2025-11-17: Boton Imprimir solo visible en modo solo lectura -->
-        <q-btn v-if="readOnly" color="green" icon="print" label="Imprimir" no-caps @click="onImprimir" />
+        <q-btn color="green" icon="print" label="Imprimir" no-caps @click="onImprimir" />
+      </div>
+    </q-card-section>
+
+    <q-separator />
+
+    <!-- MODIFICACION 2025-11-18: Encabezado del formulario con datos del productor y ubicacion -->
+    <!-- Replica el encabezado del formulario fisico de Senasag -->
+    <q-card-section v-if="datosEncabezado" class="bg-grey-2">
+      <div class="text-h6 text-center q-mb-md text-primary">
+        Registro de limpieza y desinfección de equipos y herramienta apícolas
+      </div>
+      <div class="row q-col-gutter-sm">
+        <div class="col-12 col-md-6">
+          <div class="row q-col-gutter-xs">
+            <div class="col-6">
+              <q-field dense borderless label="REGISTRO SANITARIO:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.registro_sanitario || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+            <div class="col-6">
+              <q-field dense borderless label="DPTO.:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.departamento || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+            <div class="col-12">
+              <q-field dense borderless label="NOMBRE DEL RESPONSABLE:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.nombre_responsable || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+            <div class="col-12">
+              <q-field dense borderless label="UBICACIÓN DE LA UPA:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.ubicacion_upa || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+            <div class="col-12">
+              <q-field dense borderless label="TELÉFONO:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.telefono || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="row q-col-gutter-xs">
+            <div class="col-12">
+              <q-field dense borderless label="PROVINCIA:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.provincia || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+            <div class="col-12">
+              <q-field dense borderless label="MUNICIPIO:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.municipio || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+            <div class="col-12">
+              <q-field dense borderless label="LOCALIDAD:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.localidad || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+            <div class="col-12">
+              <q-field dense borderless label="COMUNIDAD:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.comunidad || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+          </div>
+        </div>
       </div>
     </q-card-section>
 
@@ -116,18 +199,46 @@ export default {
       }
     }
   },
+  // MODIFICACION 2025-11-18: Computed property para extraer datos del encabezado del formulario
+  // Obtiene datos de la cadena de relaciones: cosecha -> apiario -> productor -> municipio -> provincia/departamento
+  computed: {
+    datosEncabezado () {
+      if (!this.cosecha?.apiario?.productor) return null
+      
+      const productor = this.cosecha.apiario.productor
+      const municipio = productor.municipio || {}
+      const provincia = municipio.provincia || {}
+      const departamento = municipio.departamento || {}
+      const apiario = this.cosecha.apiario || {}
+      
+      return {
+        registro_sanitario: productor.runsa || productor.codigo_runsa || 'N/A',
+        departamento: departamento.nombre_departamento || 'N/A',
+        nombre_responsable: `${productor.nombre || ''} ${productor.apellidos || ''}`.trim() || productor.nombre_apellido || 'N/A',
+        provincia: provincia.nombre_provincia || 'N/A',
+        ubicacion_upa: apiario.lugar_apiario || 'N/A',
+        municipio: municipio.nombre_municipio || 'N/A',
+        telefono: productor.num_celular || productor.celular || 'N/A',
+        localidad: productor.direccion || 'N/A',
+        comunidad: productor.comunidad || 'N/A'
+      }
+    }
+  },
   mounted () {
     this.fetchRows()
   },
   methods: {
     resetForm () {
+      // MODIFICACION 2025-11-18: fecha_aplicacion se pre-llena con fecha actual en formato YYYY-MM-DD
+      // pero permite modificacion manual para registros retroactivos
+      const hoy = new Date().toISOString().split('T')[0]
       this.form = {
         acopio_cosecha_id: this.cosecha?.id || null,
         equipo_herramienta_material: '',
         material_recubrimiento: '',
         metodo_limpieza_utilizado: '',
         producto_quimico_desinfeccion: '',
-        fecha_aplicacion: null
+        fecha_aplicacion: hoy
       }
     },
     async fetchRows () {

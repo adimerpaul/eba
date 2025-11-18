@@ -3,10 +3,72 @@
     <q-card-section class="row items-center justify-between">
       <div class="text-subtitle1">Aplicación de Medicamentos</div>
       <!-- MODIFICACION 2025-11-17: Boton Nuevo solo visible en modo edicion -->
+      <!-- MODIFICACION 2025-11-17: Boton Imprimir siempre visible (tanto en edicion como en solo lectura) -->
       <div class="q-gutter-sm">
         <q-btn v-if="!readOnly" color="primary" icon="add" label="Nuevo" no-caps @click="onNuevo" />
-        <!-- MODIFICACION 2025-11-17: Boton Imprimir solo visible en modo solo lectura -->
-        <q-btn v-if="readOnly" color="green" icon="print" label="Imprimir" no-caps @click="onImprimir" />
+        <q-btn color="green" icon="print" label="Imprimir" no-caps @click="onImprimir" />
+      </div>
+    </q-card-section>
+
+    <q-separator />
+
+    <!-- MODIFICACION 2025-11-18: Encabezado del formulario con datos del apiario y responsable -->
+    <!-- Replica el encabezado del formulario fisico de Senasag -->
+    <q-card-section v-if="datosEncabezado" class="bg-grey-2">
+      <div class="text-h6 text-center q-mb-md text-primary">
+        Registro de Aplicación de Medicamentos
+      </div>
+      <div class="row q-col-gutter-sm">
+        <div class="col-12 col-md-6">
+          <div class="row q-col-gutter-xs">
+            <div class="col-12">
+              <q-field dense borderless label="NOMBRE DEL APIARIO:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.nombre_apiario || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+            <div class="col-12">
+              <q-field dense borderless label="NOMBRE DEL RESPONSABLE:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.nombre_responsable || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+            <div class="col-12">
+              <q-field dense borderless label="UBICACIÓN GEOREFERENCIAL:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.georeferenciacion || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="row q-col-gutter-xs">
+            <div class="col-12">
+              <q-field dense borderless label="REGISTRO SANITARIO:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.registro_sanitario || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+            <div class="col-12">
+              <q-field dense borderless label="UBICACIÓN:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.ubicacion || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+            <div class="col-12">
+              <q-field dense borderless label="TIPO DE MANEJO:" stack-label>
+                <template v-slot:control>
+                  <div class="self-center full-width no-outline text-weight-medium">{{ datosEncabezado.tipo_manejo || 'N/A' }}</div>
+                </template>
+              </q-field>
+            </div>
+          </div>
+        </div>
       </div>
     </q-card-section>
 
@@ -134,14 +196,36 @@ export default {
       }
     }
   },
+  // MODIFICACION 2025-11-18: Computed property para extraer datos del encabezado del formulario
+  // Obtiene datos de la cadena de relaciones: cosecha -> apiario -> productor
+  computed: {
+    datosEncabezado () {
+      if (!this.cosecha?.apiario?.productor) return null
+      
+      const productor = this.cosecha.apiario.productor
+      const apiario = this.cosecha.apiario || {}
+      
+      return {
+        nombre_apiario: apiario.nombre_apiario || apiario.codigo_apiario || 'N/A',
+        registro_sanitario: productor.runsa || productor.codigo_runsa || 'N/A',
+        nombre_responsable: `${productor.nombre || ''} ${productor.apellidos || ''}`.trim() || productor.nombre_apellido || 'N/A',
+        ubicacion: productor.direccion || 'N/A',
+        georeferenciacion: `${apiario.latitud || ''}, ${apiario.longitud || ''}`.trim().replace(/^,\s*|,\s*$/g, '') || 'N/A',
+        tipo_manejo: apiario.tipo_manejo || 'N/A'
+      }
+    }
+  },
   mounted () {
     this.fetchRows()
   },
   methods: {
     resetForm () {
+      // MODIFICACION 2025-11-18: fecha se pre-llena con fecha actual en formato YYYY-MM-DD
+      // pero permite modificacion manual para registros retroactivos
+      const hoy = new Date().toISOString().split('T')[0]
       this.form = {
         acopio_cosecha_id: this.cosecha?.id || null,
-        fecha: null,
+        fecha: hoy,
         nombre_producto: '',
         principio_activo: '',
         dosis_recomendada: '',

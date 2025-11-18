@@ -30,7 +30,8 @@
       class="text-primary q-mb-sm"
     >
       <q-tab name="detalle" label="Detalle" icon="table_view" />
-      <q-tab name="resumen" label="Resumen mensual" icon="analytics" />
+      <q-tab name="resumen" label="Proyección mensual" icon="analytics" />
+      <q-tab name="gestion" label="Gestión anual" icon="event_note" />
     </q-tabs>
     <q-separator class="q-mb-md" />
 
@@ -50,7 +51,7 @@
             <th>Condiciones Almacenaje</th>
             <th>Estado</th>
             <!-- MODIFICACION 2025-11-17: Nueva columna para acceso rapido a formularios de control -->
-            <th style="width: 120px;">Formularios</th>
+            <th style="width: 120px;">Formularios de CONTROL</th>
           </tr>
           </thead>
           <tbody>
@@ -84,7 +85,7 @@
                 size="sm"
                 @click="openFormulariosDialog(cosecha)"
               >
-                <q-tooltip>Ver formularios de control</q-tooltip>
+                <q-tooltip>Ver Formularios de Control del SENASAG</q-tooltip>
               </q-btn>
             </td>
           </tr>
@@ -133,6 +134,14 @@
             Aún no hay datos suficientes para el resumen mensual.
           </div>
         </div>
+      </q-tab-panel>
+
+      <!-- ================= GESTIÓN ANUAL ================= -->
+      <q-tab-panel name="gestion">
+        <ProductorAcopiosGestion 
+          v-if="productor"
+          :productor="productor"
+        />
       </q-tab-panel>
     </q-tab-panels>
 
@@ -293,6 +302,8 @@ import moment from 'moment'
 import PlagasFormulario from 'pages/acopio/tabs/PlagasFormulario.vue'
 import LimpiezasFormulario from 'pages/acopio/tabs/LimpiezasFormulario.vue'
 import MedicamentosFormulario from 'pages/acopio/tabs/MedicamentosFormulario.vue'
+// MODIFICACION 2025-11-18: Importacion de componente de gestion anual
+import ProductorAcopiosGestion from './ProductorAcopiosGestion.vue'
 
 export default {
   name: 'ProductorAcopios',
@@ -300,7 +311,8 @@ export default {
   components: {
     PlagasFormulario,
     LimpiezasFormulario,
-    MedicamentosFormulario
+    MedicamentosFormulario,
+    ProductorAcopiosGestion // MODIFICACION 2025-11-18: Registro de componente de gestion anual
   },
   props: {
     productor: { type: Object, required: true }
@@ -535,10 +547,21 @@ export default {
 
     // MODIFICACION 2025-11-17: Metodo para abrir el dialog de formularios de control
     // Recibe el objeto cosecha y lo asigna al estado del dialog
-    openFormulariosDialog (cosecha) {
-      this.formulariosDialog.cosecha = cosecha
-      this.formulariosDialog.tab = 'plagas'
-      this.formulariosDialog.open = true
+    // MODIFICACION 2025-11-18: Cargar relaciones completas de la cosecha para mostrar datos de encabezado
+    async openFormulariosDialog (cosecha) {
+      try {
+        // MODIFICACION 2025-11-18: Obtener cosecha con todas las relaciones necesarias para encabezado
+        // El backend ya carga: apiario.productor.municipio.provincia/departamento
+        const { data } = await this.$axios.get(`/acopio-cosechas/${cosecha.id}`)
+        this.formulariosDialog.cosecha = data
+        this.formulariosDialog.tab = 'plagas'
+        this.formulariosDialog.open = true
+      } catch (e) {
+        // Si falla la carga con relaciones, usar la cosecha original
+        this.formulariosDialog.cosecha = cosecha
+        this.formulariosDialog.tab = 'plagas'
+        this.formulariosDialog.open = true
+      }
     }
   }
 }

@@ -131,7 +131,7 @@
         <div class="col-auto">
           <q-toggle
             v-model="trazabilidadActiva"
-            label="Ver Trazabilidad por Temporada"
+            label="Mostrar Proyección por Temporada"
             color="primary"
             @update:model-value="toggleTrazabilidad"
             icon="analytics"
