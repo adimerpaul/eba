@@ -257,8 +257,15 @@ Route::middleware('auth:sanctum')->group(callback: function () {
 // Permisos de BpUsuarios
     Route::get('bp-usuarios/{id}/permissions', [BpUsuarioController::class, 'getPermissions']);
     Route::put('bp-usuarios/{id}/permissions', [BpUsuarioController::class, 'syncPermissions']);
-});
 
+//    Route::prefix('reportes/acopio')->group(function () {
+//    https://beba.tuprogam.com/api/acopio-cosechas2/resumen-mensual?year=2025
+
+
+//    });
+});
+Route::get('acopiore2', [AcopioCosechaController::class, 'resumenMensual']);
+Route::get('acopiore1', [AcopioCosechaController::class, 'resumenPorProducto']);
 // Rutas públicas o fuera de autenticación para impresión de documentos y PDFs
 Route::get('/documentos/{id}/imprimir', [DocumentoController::class, 'printDocument']);
 

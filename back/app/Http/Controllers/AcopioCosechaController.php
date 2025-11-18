@@ -12,6 +12,59 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
 class AcopioCosechaController extends Controller{
+    public function resumenMensual(Request $request)
+    {
+        $year = $request->get('year', now()->year);
+
+        $rows = AcopioCosecha::selectRaw("EXTRACT(MONTH FROM fecha_cosecha)::int as mes, SUM(cantidad_kg) as total_kg")
+            ->whereYear('fecha_cosecha', $year)
+            ->groupBy('mes')
+            ->orderBy('mes')
+            ->get();
+
+        $labels = [
+            'Enero', 'Febrero', 'Marzo', 'Abril',
+            'Mayo', 'Junio', 'Julio', 'Agosto',
+            'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+
+        $data = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $row = $rows->firstWhere('mes', $i);
+            $data[] = $row ? (float) $row->total_kg : 0;
+        }
+
+        return response()->json([
+            'labels' => $labels,
+            'data'   => $data,
+            'year'   => (int) $year,
+        ]);
+    }
+
+    public function resumenPorProducto(Request $request)
+    {
+        $year = $request->get('year'); // opcional
+
+        $query = AcopioCosecha::query()
+            ->join('productos', 'acopio_cosechas.producto_id', '=', 'productos.id')
+            ->selectRaw('productos.nombre_producto as producto, SUM(acopio_cosechas.cantidad_kg) as total_kg');
+
+        if ($year) {
+            $query->whereYear('acopio_cosechas.fecha_cosecha', $year);
+        }
+
+        $rows = $query
+            ->groupBy('productos.nombre_producto')
+            ->orderBy('productos.nombre_producto')
+            ->get();
+
+        return response()->json([
+            'labels' => $rows->pluck('producto'),
+            'data'   => $rows->pluck('total_kg')->map(fn ($v) => (float) $v),
+        ]);
+    }
+
+
     public function showByQr(string $code)
     {
         /*$acopio = AcopioCosecha::query()
@@ -44,7 +97,7 @@ class AcopioCosechaController extends Controller{
         else
         {
             return response()->json(['message' => 'No encontrado'], 404);
-        }  
+        }
     }
     function index(Request $request){
         //return $request;
@@ -77,7 +130,7 @@ class AcopioCosechaController extends Controller{
                 $query->where('municipio_id', $municipio_id);
             });
         }
-        
+
          $acopiosCosechas = $acopiosCosechas->get();
         return $acopiosCosechas;
     }

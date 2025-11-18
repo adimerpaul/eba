@@ -159,6 +159,15 @@
             <q-item-label class="text-white">Modulo Usuarios</q-item-label>
           </q-item-section>
         </q-item>
+<!--        trazabildiada hacia atras-->
+        <q-item dense exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+          <q-item-section avatar>
+            <q-icon name="history" class="text-white"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-white text-uppercase text-bold text-red">Trazabilidad Hacia Atrás</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-expansion-item dense expand-separator icon="gavel" label="Modulo Producción Primaria" active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
           <q-list>
             <q-item :inset-level="0.3" dense to="/productores/crear" clickable class="menu-item" active-class="menu-active" v-close-popup >
@@ -217,6 +226,14 @@
             </q-item>
           </q-list>
         </q-expansion-item>
+        <q-item dense exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+          <q-item-section avatar>
+            <q-icon name="history" class="text-white"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-white text-uppercase text-bold text-red">Trazabilidad En proceso</q-item-label>
+          </q-item-section>
+        </q-item>
 
 <!--        productos cleintes transporte-->
         <q-expansion-item dense expand-separator icon="gavel" label="Módulo de control de proceso productivo " active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
@@ -255,8 +272,16 @@
           </q-item-section>
         </q-item>
         </q-list>
-        </q-expansion-item> 
+        </q-expansion-item>
 <!--        COMERZILIZACION-->
+        <q-item dense exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+          <q-item-section avatar>
+            <q-icon name="history" class="text-white"/>
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-white text-uppercase text-bold text-red">Trazabilidad Haci adelante</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-expansion-item dense expand-separator icon="store" label="Módulo Comercialización" active-class="menu-active" v-if="hasPerm('Modulo comercializacion')">
           <q-list>
 <!--            crear ventas-->

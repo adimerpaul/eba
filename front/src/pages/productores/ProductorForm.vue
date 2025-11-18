@@ -48,7 +48,11 @@
         <q-select v-model="form.proveedor" label="Proveedor" :options="tipos" dense outlined />
       </div>-->
       <div class="col-12 col-sm-4">
-        <q-input v-model="form.cip_acopio" label="CIP Acopio" dense outlined />
+<!--        <q-input v-model="form.cip_acopio" label="CIP Acopio" dense outlined />-->
+<!--        CIP MONTEAGUDO-->
+<!--        CIP IRUPANA-->
+<!--        CIP ZABUZABETI-->
+        <q-select v-model="form.cip_acopio" label="CIP Acopio" :options="['CIP MONTEAGUDO','CIP IRUPANA','CIP ZABUZABETI']" dense outlined />
       </div>
 
       <!-- Celular / Ocupación / Selección -->
@@ -71,7 +75,7 @@
           use-input fill-input input-debounce="300"
           :options="orgOptions"
           option-label="nombre_organiza"
-          
+
           emit-value map-options
           clearable
           @filter="filterOrganizaciones"
@@ -86,7 +90,7 @@
       <div class="col-12 col-sm-4"><b>DEPT:</b> {{ form.organizacion?.departamento.nombre_departamento }}</div>
       <div class="col-12 col-sm-4"><b>Mun:</b> {{ form.organizacion?.municipio.nombre_municipio }}</div>
       <div class="col-12 col-sm-4"><b>Prov:</b> {{ form.organizacion?.provincia.nombre_provincia }}</div>
-      <!-- Ubicación administrativa 
+      <!-- Ubicación administrativa
       <div class="col-12 col-sm-4">
         <q-select
           v-model="form.departamento_id"
