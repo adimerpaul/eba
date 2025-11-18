@@ -269,6 +269,8 @@ Route::get('/medicamentos/{cosechaId}/imprimir', [\App\Http\Controllers\Medicame
 
 Route::get('/ventas/{venta}/nota', [VentaController::class, 'notaPdf'])->name('ventas.nota');
 
-Route::get('/export', [MobileController::class, 'export']);
+//Route::get('/export', [MobileController::class, 'export']);
+Route::get('mobile/export', [MobileController::class, 'export']);
+Route::post('mobile/productores-sync', [MobileController::class, 'syncProductor']);
 // PDF por productor
 //Route::get('/productores/{productor}/certificaciones/print', [CertificacionController::class, 'printByProductor']);
