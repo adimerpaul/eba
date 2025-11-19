@@ -23,6 +23,7 @@
             style="min-width: 180px"
             @update:model-value="fetch"
           />
+          <pre>{{ tipo }}</pre>
           <q-input v-model="filter" dense outlined placeholder="Buscar código / nombre / barra" @update:model-value="fetchDebounced">
             <template #append><q-icon name="search" /></template>
           </q-input>
@@ -333,6 +334,7 @@ export default {
         this.tipoOptions = data
         // asignar a tipo el que indique 'Producto Terminado' de tipoOptions
         this.tipo = this.tipoOptions.find(x => x.nombre_tipo === 'Producto Terminado')??null
+            this.tipo=this.tipo.id
         this.fetch()
       } catch (e) { /* noop */ }
     },

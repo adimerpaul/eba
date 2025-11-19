@@ -294,7 +294,7 @@
               </q-item-section>
             </q-item>
 <!--            gestionar ventas-->
-            <q-item :inset-level="0.3" dense to="/ventas" clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Gestionar Ventas')">
+            <q-item :inset-level="0.3" dense to="/ventas" clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Modulo comercializacion')">
               <q-item-section avatar>
                 <q-icon name="sell" class="text-white"/>
               </q-item-section>

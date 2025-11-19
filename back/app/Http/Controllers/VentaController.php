@@ -166,7 +166,7 @@ class VentaController extends Controller
 
             // Mapear lotes y sus disponibles actuales
             $lotes = Lote::query()
-                ->with('producto:id,nombre_producto,cantidad_kg')
+                ->with('producto:id,nombre_producto,cantidad')
                 ->whereIn('id', $loteIds)
                 ->get()
                 ->keyBy('id');
@@ -222,8 +222,8 @@ class VentaController extends Controller
                 $producto = Producto::find($prodId);
                 if ($producto) {
                     // Evitar negativos accidentales
-                    $nuevoStock = max(0, (float) ($producto->cantidad_kg ?? 0) - $cantSalida);
-                    $producto->update(['cantidad_kg' => $nuevoStock]);
+                    $nuevoStock = max(0, (float) ($producto->cantidad ?? 0) - $cantSalida);
+                    $producto->update(['cantidad' => $nuevoStock]);
                 }
 
                 $total += $cantSalida * $precio;
