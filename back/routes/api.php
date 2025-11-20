@@ -21,6 +21,7 @@ use App\Http\Controllers\PlantaController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProductorController;
 use App\Http\Controllers\ProvinciaController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TipoProductoController;
 use App\Http\Controllers\TransporteController;
 use App\Http\Controllers\VentaController;
@@ -50,6 +51,22 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::get('/permissions', [App\Http\Controllers\PermissionController::class, 'index']);
     Route::get('/users/{user}/permissions', [App\Http\Controllers\UserController::class, 'getPermissions']);
     Route::put('/users/{user}/permissions', [App\Http\Controllers\UserController::class, 'syncPermissions']);
+
+    // ---------- ROLES ----------
+    Route::get('roles', [RoleController::class, 'index']);
+    Route::post('roles', [RoleController::class, 'store']);
+    Route::put('roles/{role}', [RoleController::class, 'update']);
+    Route::delete('roles/{role}', [RoleController::class, 'destroy']);
+    Route::get('roles/{role}/permissions', [RoleController::class, 'getPermissions']);
+    Route::put('roles/{role}/permissions', [RoleController::class, 'syncPermissions']);
+
+    // ---------- ROLES POR USUARIO EXTERNO ----------
+    Route::get('users/{user}/roles', [App\Http\Controllers\UserController::class, 'getRoles']);
+    Route::put('users/{user}/roles', [App\Http\Controllers\UserController::class, 'syncRoles']);
+
+    // ---------- ROLES POR USUARIO INTERNO (BpUsuarios) ----------
+    Route::get('bp-usuarios/{id}/roles', [BpUsuarioController::class, 'getRoles']);
+    Route::put('bp-usuarios/{id}/roles', [BpUsuarioController::class, 'syncRoles']);
 
     Route::get('/apicultores', [ApicultorController::class, 'index']);
     Route::post('/apicultores', [ApicultorController::class, 'store']);

@@ -14,7 +14,8 @@ class BpUsuarios extends Authenticatable
     use SoftDeletes, HasApiTokens, Notifiable, HasRoles;
 
     // Si tu guard por defecto de Spatie es "web", lo dejamos explícito
-    protected string $guard_name = 'web';
+//    protected string $guard_name = 'web';
+    protected $guard_name = 'sanctum';
 
     protected $table = 'public._bp_usuarios';
     protected $primaryKey = 'usr_id';

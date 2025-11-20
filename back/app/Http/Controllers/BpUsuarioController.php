@@ -86,15 +86,38 @@ class BpUsuarioController extends Controller
     /**
      * Obtener IDs de permisos Spatie del usuario interno.
      */
+//    public function getPermissions($id)
+//    {
+//        $user = BpUsuarios::findOrFail($id);
+//        return $user->permissions()->pluck('id');
+//    }
+
+    /**
+     * Sincronizar permisos Spatie del usuario interno.
+     */
+//    public function syncPermissions(Request $request, $id)
+//    {
+//        $request->validate([
+//            'permissions'   => 'array',
+//            'permissions.*' => 'integer|exists:permissions,id',
+//        ]);
+//
+//        $user = BpUsuarios::findOrFail($id);
+//        $perms = Permission::whereIn('id', $request->permissions ?? [])->get();
+//
+//        $user->syncPermissions($perms);
+//
+//        return response()->json([
+//            'message'     => 'Permisos internos actualizados',
+//            'permissions' => $user->permissions()->pluck('name'),
+//        ]);
+//    }
     public function getPermissions($id)
     {
         $user = BpUsuarios::findOrFail($id);
         return $user->permissions()->pluck('id');
     }
 
-    /**
-     * Sincronizar permisos Spatie del usuario interno.
-     */
     public function syncPermissions(Request $request, $id)
     {
         $request->validate([
@@ -102,14 +125,38 @@ class BpUsuarioController extends Controller
             'permissions.*' => 'integer|exists:permissions,id',
         ]);
 
-        $user = BpUsuarios::findOrFail($id);
+        $user  = BpUsuarios::findOrFail($id);
         $perms = Permission::whereIn('id', $request->permissions ?? [])->get();
-
         $user->syncPermissions($perms);
 
         return response()->json([
-            'message'     => 'Permisos internos actualizados',
+            'message'     => 'Permisos actualizados',
             'permissions' => $user->permissions()->pluck('name'),
+        ]);
+    }
+
+    // ---------- NUEVO: ROLES PARA USUARIOS INTERNOS ----------
+    public function getRoles($id)
+    {
+        $user = BpUsuarios::findOrFail($id);
+        return $user->roles()->pluck('id');
+    }
+
+    public function syncRoles(Request $request, $id)
+    {
+        $request->validate([
+            'roles'   => 'array',
+            'roles.*' => 'integer|exists:roles,id',
+        ]);
+
+        $user = BpUsuarios::findOrFail($id);
+
+        $user->syncRoles($request->roles ?? []);
+
+        return response()->json([
+            'message'     => 'Roles del usuario interno actualizados',
+            'roles'       => $user->roles()->pluck('name'),
+            'permissions' => $user->getAllPermissions()->pluck('name'),
         ]);
     }
 }

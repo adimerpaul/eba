@@ -10,8 +10,10 @@ use Illuminate\Support\Facades\Mail;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role; // 👈 IMPORTANTE
 
-class UserController extends Controller{
+class UserController extends Controller
+{
     public function updateAvatar(Request $request, $userId)
     {
         $user = User::find($userId);
@@ -20,17 +22,15 @@ class UserController extends Controller{
         }
 
         if ($request->hasFile('avatar')) {
-            $file = $request->file('avatar');
+            $file     = $request->file('avatar');
             $filename = time() . '.' . $file->getClientOriginalExtension();
-            $path = public_path('images/' . $filename);
+            $path     = public_path('images/' . $filename);
 
-            // Crear instancia del gestor de imágenes
-            $manager = new ImageManager(new Driver()); // O new Imagick\Driver()
+            $manager = new ImageManager(new Driver());
 
-            // Redimensionar y comprimir
             $manager->read($file->getPathname())
-                ->resize(300, 300) // o no pongas resize si no quieres cambiar tamaño
-                ->toJpeg(70)       // calidad 70%
+                ->resize(300, 300)
+                ->toJpeg(70)
                 ->save($path);
 
             $user->avatar = $filename;
@@ -41,17 +41,17 @@ class UserController extends Controller{
 
         return response()->json(['message' => 'No se ha enviado un archivo'], 400);
     }
+
     public function login(Request $request)
     {
         $credentials = $request->only('username', 'password');
 
-        // ========= 1) INTENTO CON USUARIO EXTERNO (tabla users) =========
+        // ========= 1) USUARIO EXTERNO =========
         $user = User::where('username', $credentials['username'])
-            ->with('permissions:id,name')
+            ->with(['permissions:id,name', 'roles:id,name']) // 👈 también roles
             ->first();
 
         if ($user) {
-            // Si el usuario externo existe, solo aceptamos su propio password
             if (!password_verify($credentials['password'], $user->password)) {
                 return response()->json([
                     'message' => 'Usuario o contraseña incorrectos',
@@ -61,67 +61,60 @@ class UserController extends Controller{
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
-                'token' => $token,
-                'user'  => $user,
-                'source'=> 'externo',
+                'token'  => $token,
+                'user'   => $user,
+                'source' => 'externo',
             ]);
         }
 
-        // ========= 2) SI NO EXISTE EXTERNO, PROBAMOS USUARIO INTERNO =========
+        // ========= 2) USUARIO INTERNO =========
         $bpUser = BpUsuarios::where('usr_usuario', $credentials['username'])
-            ->where('usr_estado', 'A') // solo activos
-            ->with('permissions:id,name')
+            ->where('usr_estado', 'A')
+            ->with(['permissions:id,name', 'roles:id,name'])
             ->first();
 
         if (!$bpUser) {
-            // No existe en internos tampoco
             return response()->json([
                 'message' => 'Usuario o contraseña incorrectos',
             ], 401);
         }
 
-        // Verificar password interno
         if (!$this->checkInternalPassword($credentials['password'], $bpUser->password)) {
             return response()->json([
                 'message' => 'Usuario o contraseña incorrectos',
             ], 401);
         }
 
-        // Verificar que tenga acceso al sistema TRAZA
         if (!$this->hasTrazaAccess($bpUser)) {
             return response()->json([
                 'message' => 'El usuario no tiene acceso al sistema TRAZA',
             ], 403);
         }
 
-        // Crear token Sanctum para el usuario interno
         $token = $bpUser->createToken('auth_token')->plainTextToken;
 
-        // Armamos un "user" sencillo para el frontend
         $internalUserPayload = [
-            'id'         => $bpUser->usr_id,
-            'username'   => $bpUser->usr_usuario,
-            'name'       => $bpUser->usr_usuario,
-            'estado'     => $bpUser->usr_estado,
-            'is_internal'=> true,
-            'permissions'=> $bpUser->permissions,
+            'id'          => $bpUser->usr_id,
+            'username'    => $bpUser->usr_usuario,
+            'name'        => $bpUser->usr_usuario,
+            'estado'      => $bpUser->usr_estado,
+            'is_internal' => true,
+            'permissions' => $bpUser->permissions,
+            'roles'       => $bpUser->roles,
         ];
 
         return response()->json([
-            'token' => $token,
-            'user'  => $internalUserPayload,
-            'source'=> 'interno',
+            'token'  => $token,
+            'user'   => $internalUserPayload,
+            'source' => 'interno',
         ]);
     }
+
     private function checkInternalPassword(string $plain, string $hash): bool
     {
-        // crypt usa el hash como "salt"
         return hash_equals($hash, crypt($plain, $hash));
     }
 
-    /**
-     * Verifica si el usuario interno tiene activado el sistema TRAZA.
-     */
     private function hasTrazaAccess(BpUsuarios $user): bool
     {
         $systems = $user->usr_access_sistem ?? [];
@@ -135,94 +128,180 @@ class UserController extends Controller{
         return false;
     }
 
-    function logout(Request $request){
+    public function logout(Request $request)
+    {
         $request->user()->currentAccessToken()->delete();
         return response()->json([
             'message' => 'Token eliminado',
         ]);
     }
-    function me(Request $request){
+
+    public function me(Request $request)
+    {
         $user = $request->user();
-        $user->load('permissions:id,name');
+        $user->load('permissions:id,name', 'roles:id,name'); // 👈 también roles
         return response()->json($user);
     }
-    function index(){
+
+    public function index()
+    {
         return User::where('id', '!=', 0)
-            ->with('permissions:id,name')
+            ->with(['permissions:id,name', 'roles:id,name']) // 👈 también roles
             ->orderBy('id', 'desc')
             ->get();
     }
-    function update(Request $request, $id){
-        $user = User::find($id);
-        $user->update($request->except('password'));
+
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $data = $request->only(['name', 'email', 'username', 'avatar']);
+
+        // 👇 Si viene role_id, sincronizamos el rol del usuario
+        if ($request->filled('role_id')) {
+            $role = Role::find($request->role_id);
+            if ($role) {
+                $user->syncRoles([$role->id]);
+                $data['role'] = $role->name; // columna texto para mostrar
+            }
+        }
+
+        $user->update($data);
+
+        $user->load('permissions:id,name', 'roles:id,name');
+
         error_log('User' . json_encode($user));
         return $user;
     }
-    function updatePassword(Request $request, $id){
-        $user = User::find($id);
+
+    public function updatePassword(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
         $user->update([
-            'password' => bcrypt($request->password),
+            'password' => $request->password, // casteado como hashed en el modelo
         ]);
         return $user;
     }
-    function store(Request $request){
+
+    public function store(Request $request)
+    {
         $validatedData = $request->validate([
             'username' => 'required',
             'password' => 'required',
-            'name' => 'required',
-//            'email' => 'required|email|unique:users',
+            'name'     => 'required',
+            'email'    => 'nullable|email',
+            'role_id'  => 'nullable|integer|exists:roles,id',
         ]);
-        if (User::where('username', $request->username)->exists()) {
+
+        if (User::where('username', $validatedData['username'])->exists()) {
             return response()->json(['message' => 'El nombre de usuario ya existe'], 422);
         }
-        $user = User::create($request->all());
+
+        $userData = [
+            'username' => $validatedData['username'],
+            'password' => $validatedData['password'], // hashed por cast
+            'name'     => $validatedData['name'],
+            'email'    => $validatedData['email'] ?? null,
+        ];
+
+        // Si viene rol, lo guardamos como texto también
+        $role = null;
+        if (!empty($validatedData['role_id'])) {
+            $role = Role::find($validatedData['role_id']);
+            if ($role) {
+                $userData['role'] = $role->name;
+            }
+        }
+
+        $user = User::create($userData);
+
+        // Sincronizar roles Spatie
+        if ($role) {
+            $user->syncRoles([$role->id]);
+        }
+
         if ($user->email) {
             try {
                 Mail::to($user->email)->send(new UserCreatedMail(
                     $user->name,
                     $user->username,
-                    $request->password,
+                    $validatedData['password'],
                 ));
             } catch (\Exception $e) {
-//                \Log::error("Error enviando correo de usuario creado: " . $e->getMessage());
                 error_log("Error enviando correo de usuario creado: " . $e->getMessage());
             }
         }
+
+        $user->load('permissions:id,name', 'roles:id,name');
+
         return $user;
     }
-    function destroy($id){
+
+    public function destroy($id)
+    {
         $user = User::find($id);
-//        $userAll = User::all();
-//        error_log('Users total ' . json_encode($userAll));
-//        error_log('Delete User ' . json_encode($user));
         if (!$user) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
         $user->delete();
         return response()->json(['message' => 'Usuario eliminado']);
-//        return User::destroy($id);
     }
+
+    // ---------- PERMISOS DIRECTOS (puedes dejarlo para compatibilidad) ----------
     public function getPermissions($userId)
     {
         $user = User::findOrFail($userId);
-        // devuelve IDs de permisos del usuario
         return $user->permissions()->pluck('id');
     }
 
     public function syncPermissions(Request $request, $userId)
     {
         $request->validate([
-            'permissions' => 'array',
+            'permissions'   => 'array',
             'permissions.*' => 'integer|exists:permissions,id',
         ]);
 
-        $user = User::findOrFail($userId);
+        $user  = User::findOrFail($userId);
         $perms = Permission::whereIn('id', $request->permissions ?? [])->get();
         $user->syncPermissions($perms);
 
         return response()->json([
-            'message' => 'Permisos actualizados',
+            'message'     => 'Permisos actualizados',
             'permissions' => $user->permissions()->pluck('name'),
         ]);
+    }
+
+    // ---------- ROLES DEL USUARIO (NUEVO) ----------
+    public function getRoles($userId)
+    {
+        $user = User::findOrFail($userId);
+        return $user->roles()->pluck('id');
+    }
+
+    public function syncRoles(Request $request, $userId)
+    {
+        $request->validate([
+            'roles'   => 'array',
+            'roles.*' => 'integer|exists:roles,id',
+        ]);
+
+        $user = User::findOrFail($userId);
+        error_log('Synchronizing roles for user ID: ' . json_encode($user));
+
+        $roleIds = $request->roles ?? [];
+        $user->syncRoles($roleIds);
+
+//        // actualizar columna texto "role" con el primer rol (opcional)
+//        $firstRole = $user->roles()->first();
+//        if ($firstRole) {
+//            $user->role = $firstRole->name;
+//            $user->save();
+//        }
+//
+//        return response()->json([
+//            'message'     => 'Roles del usuario actualizados',
+//            'roles'       => $user->roles()->pluck('name'),
+//            'permissions' => $user->getAllPermissions()->pluck('name'),
+//        ]);
     }
 }
