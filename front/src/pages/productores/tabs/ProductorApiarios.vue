@@ -13,11 +13,15 @@
         <th class="text-left">#</th>
         <th class="text-left">Opciones</th>
         <th class="text-left">Nombre/CIP</th>
-        <th class="text-left">Lugar</th>
+        <th class="text-left">Departamento</th>
+        <th class="text-left">Municipio</th>
+        <th class="text-left">Comunidad</th>
+        <th class="text-left">Asociación</th>
         <th class="text-left">Ubicación</th>
-        <th class="text-left">Colmenas</th>
-        <th class="text-left">Estado</th>
-        <th class="text-left">Instalación</th>
+        <th class="text-center">Nro.<br>Colmenas</th>
+        <th class="text-center">Rendimiento<br>Colmenas</th>
+        <th class="text-center">Cosechas<br>Total</th>
+        <th class="text-center">Capacidad<br>Productiva</th>
       </tr>
       </thead>
       <tbody>
@@ -42,7 +46,10 @@
           </q-btn-dropdown>
         </td>
         <td>{{ a.nombre_cip || '-' }}</td>
-        <td>{{ a.lugar_apiario || '-' }}</td>
+        <td>{{ a.municipio?.departamento?.nombre_departamento || '-' }}</td>
+        <td>{{ a.municipio?.nombre_municipio || '-' }}</td>
+        <td>{{ a.productor?.comunidad || '-' }}</td>
+        <td>{{ a.productor?.organizacion?.asociacion || '-' }}</td>
         <td>
           <span v-if="a.latitud && a.longitud">
             {{ a.latitud.toFixed ? a.latitud.toFixed(6) : a.latitud }},
@@ -50,19 +57,65 @@
           </span>
           <span v-else>-</span>
         </td>
-        <td>{{ (a.colmenas ? a.colmenas.length : a.colmenas_count) ?? 0 }}</td>
-        <td>
-          <q-chip :color="a.estado==='ACTIVO'?'green':'grey'" text-color="white" size="xs" class="text-bold">
-            {{ a.estado }}
+        <td class="text-center">
+          <q-chip color="primary" text-color="white" size="sm">
+            {{ a.numero_colmenas_prod || 0 }}
           </q-chip>
         </td>
-        <td>{{ a.fecha_instalacion || '-' }}</td>
+        <td class="text-center">
+          <span v-if="a.rendimiento_colmenas > 0" class="text-bold text-blue-8">
+            {{ a.rendimiento_colmenas }} kg/col
+          </span>
+          <span v-else class="text-grey-6">-</span>
+        </td>
+        <td class="text-center">
+          <q-chip 
+            :color="a.cosechas_total > 0 ? 'green' : 'grey'" 
+            text-color="white" 
+            size="sm"
+          >
+            {{ a.cosechas_total || 0 }}
+          </q-chip>
+        </td>
+        <td class="text-center">
+          <span class="text-bold text-orange-8">
+            {{ a.capacidad_productiva || 0 }} kg
+          </span>
+        </td>
       </tr>
       <tr v-if="!loading && list.length===0">
-        <td colspan="8" class="text-center text-grey">Sin registros</td>
+        <td colspan="12" class="text-center text-grey">Sin registros</td>
       </tr>
       </tbody>
     </q-markup-table>
+
+    <!-- Sección de Totales -->
+    <div class="row q-mt-md q-gutter-md" v-if="list.length > 0">
+      <q-card flat bordered class="col">
+        <q-card-section class="text-center">
+          <div class="text-caption text-grey-6">Total Colmenas</div>
+          <div class="text-h6 text-primary">{{ totalColmenas }}</div>
+        </q-card-section>
+      </q-card>
+      <q-card flat bordered class="col">
+        <q-card-section class="text-center">
+          <div class="text-caption text-grey-6">Total Cosechas</div>
+          <div class="text-h6 text-green">{{ totalCosechas }}</div>
+        </q-card-section>
+      </q-card>
+      <q-card flat bordered class="col">
+        <q-card-section class="text-center">
+          <div class="text-caption text-grey-6">Capacidad Total</div>
+          <div class="text-h6 text-orange-8">{{ totalCapacidad }} kg</div>
+        </q-card-section>
+      </q-card>
+      <q-card flat bordered class="col">
+        <q-card-section class="text-center">
+          <div class="text-caption text-grey-6">Rendimiento Promedio</div>
+          <div class="text-h6 text-blue-8">{{ rendimientoPromedio }} kg/col</div>
+        </q-card-section>
+      </q-card>
+    </div>
 
     <!-- DIALOG: Crear/Editar Apiario -->
     <q-dialog v-model="dlgApiario.open" persistent transition-show="none" transition-hide="none"
@@ -225,13 +278,35 @@ export default {
     }
   },
 
+  computed: {
+    totalColmenas() {
+      return this.list.reduce((sum, a) => sum + (a.numero_colmenas_prod || 0), 0)
+    },
+    totalCosechas() {
+      return this.list.reduce((sum, a) => sum + (a.cosechas_total || 0), 0)
+    },
+    totalCapacidad() {
+      return this.list.reduce((sum, a) => sum + (a.capacidad_productiva || 0), 0)
+    },
+    rendimientoPromedio() {
+      const totalKg = this.list.reduce((sum, a) => sum + (a.total_kg_historico || 0), 0)
+      const totalCol = this.totalColmenas
+      return totalCol > 0 ? (totalKg / totalCol).toFixed(2) : '0.00'
+    }
+  },
+
   mounted () { this.hydrateFromProductor() },
   watch: { productor () { this.hydrateFromProductor() } },
 
   methods: {
     hydrateFromProductor () {
-      if (this.productor?.apiarios) this.list = this.productor.apiarios
-      else this.fetchApiarios()
+      // 2025-11-21: Se comenta la carga desde productor.apiarios porque no incluye las métricas calculadas
+      // if (this.productor?.apiarios) this.list = this.productor.apiarios
+      // else this.fetchApiarios()
+      
+      // 2025-11-21: Siempre llamar a fetchApiarios para obtener apiarios con métricas completas
+      // (departamento, municipio, comunidad, asociación, rendimiento, cosechas, capacidad)
+      this.fetchApiarios()
     },
     async fetchApiarios () {
       this.loading = true

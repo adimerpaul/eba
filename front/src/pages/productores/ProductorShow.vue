@@ -2,17 +2,22 @@
   <q-page class="q-pa-md">
     <div class="row items-center q-gutter-sm q-mb-md">
       <q-btn flat round icon="arrow_back" @click="$router.push('/productores')" />
-      <div class="text-h6">Editar Productor</div>
+      <!-- 2025-11-21: Se agrega el nombre del productor junto al título -->
+      <div class="text-h6">
+        Detalles Productor
+        <span v-if="productor" class="text-primary"> — {{ productor.nombre_completo }}</span>
+      </div>
       <q-space />
       <q-btn flat round icon="refresh" :loading="loading" @click="fetchProductor" />
     </div>
 
     <q-card flat bordered>
       <q-tabs v-model="tab" class="text-primary" align="left" dense>
-        <q-tab name="general" icon="badge" label="1) Información general" no-caps />
+        <q-tab name="general" icon="badge" label="1) Datos del Productor" no-caps />
         <q-tab name="runsa" icon="assured_workload" label="2) Runsa" no-caps />
         <q-tab name="certs" icon="verified" label="3) Certificaciones" no-caps />
-        <q-tab name="apiarios" icon="hive" label="4) Apiarios" no-caps />
+        <!--<q-tab name="apiarios" icon="hive" label="4) Apiarios" no-caps />-->
+        <q-tab name="apiarios" icon="hive" label="4) Lugares de Acopio" no-caps />
         <q-tab name="mapa" icon="map" label="5) Mapa" no-caps />
         <q-tab name="acopio" icon="send" label="6) Manejo de Apiario" no-caps />
       </q-tabs>

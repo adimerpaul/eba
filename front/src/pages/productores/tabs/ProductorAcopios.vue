@@ -3,10 +3,10 @@
     <!-- HEADER CON RESUMEN -->
     <div class="row items-center q-gutter-sm q-mb-sm">
       <div class="text-subtitle1">
-        Acopios proveedor
-        <span v-if="productor">
+        Registro de Acopios del Proveedoor
+        <!--<span v-if="productor">
           — {{ productor.nombre_completo || (productor.nombre + ' ' + productor.apellidos) }}
-        </span>
+        </span>-->
       </div>
       <q-space />
       <q-chip color="primary" text-color="white" dense>

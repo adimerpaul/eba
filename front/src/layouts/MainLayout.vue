@@ -160,14 +160,20 @@
           </q-item-section>
         </q-item>
 <!--        trazabildiada hacia atras-->
-        <q-item dense exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+        <!--<q-item dense exact clickable class="menu-item" active-class="menu-active" v-close-popup>
           <q-item-section avatar>
             <q-icon name="history" class="text-white"/>
           </q-item-section>
           <q-item-section>
             <q-item-label class="text-white text-uppercase text-bold text-red">Trazabilidad Hacia Atrás</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item>-->
+
+<!-- Modifcación de la vista para mejor percepción visual -->
+        <q-item-label header class="q-px-md text-grey-3 q-mt-sm text-uppercase text-bold">
+          Trazabilidad Atrás
+        </q-item-label>
+
         <q-expansion-item dense expand-separator icon="gavel" label="Modulo Producción Primaria" active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
           <q-list>
             <q-item :inset-level="0.3" dense to="/productores/crear" clickable class="menu-item" active-class="menu-active" v-close-popup >
@@ -226,14 +232,20 @@
             </q-item>
           </q-list>
         </q-expansion-item>
-        <q-item dense exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+
+        <!--<q-item dense exact clickable class="menu-item" active-class="menu-active" v-close-popup>
           <q-item-section avatar>
             <q-icon name="history" class="text-white"/>
           </q-item-section>
           <q-item-section>
             <q-item-label class="text-white text-uppercase text-bold text-red">Trazabilidad En proceso</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item>-->
+
+        <!-- Modifcación de la vista para mejor percepción visual -->
+        <q-item-label header class="q-px-md text-grey-3 q-mt-sm text-uppercase text-bold">
+          Trazabilidad en Proceso
+        </q-item-label>
 
 <!--        productos cleintes transporte-->
         <q-expansion-item dense expand-separator icon="gavel" label="Módulo de control de proceso productivo " active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
@@ -274,14 +286,21 @@
         </q-list>
         </q-expansion-item>
 <!--        COMERZILIZACION-->
-        <q-item dense exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+
+        <!--<q-item dense exact clickable class="menu-item" active-class="menu-active" v-close-popup>
           <q-item-section avatar>
             <q-icon name="history" class="text-white"/>
           </q-item-section>
           <q-item-section>
             <q-item-label class="text-white text-uppercase text-bold text-red">Trazabilidad Haci adelante</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item>-->
+        
+        <!-- Modifcación de la vista para mejor percepción visual -->
+        <q-item-label header class="q-px-md text-grey-3 q-mt-sm text-uppercase text-bold">
+          Trazabilidad Adelante
+        </q-item-label>
+
         <q-expansion-item dense expand-separator icon="store" label="Módulo Comercialización" active-class="menu-active" v-if="hasPerm('Modulo comercializacion')">
           <q-list>
 <!--            crear ventas-->
