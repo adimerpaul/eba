@@ -1,7 +1,7 @@
 <template>
   <q-card-section>
-    <!-- HEADER CON RESUMEN -->
-    <div class="row items-center q-gutter-sm q-mb-sm">
+    <!-- HEADER CON TÍTULO Y BOTÓN -->
+    <div class="row items-center q-gutter-sm q-mb-md">
       <div class="text-subtitle1">
         Registro de Acopios del Proveedoor
         <!--<span v-if="productor">
@@ -9,6 +9,36 @@
         </span>-->
       </div>
       <q-space />
+      
+      <!-- 2025-11-21: Botón para registro rápido de acopio -->
+      <q-btn
+        color="positive"
+        icon="add"
+        label="Nuevo Acopio"
+        dense
+        no-caps
+        @click="abrirModalNuevoAcopio"
+      >
+        <q-tooltip>Registrar nuevo acopio para este productor</q-tooltip>
+      </q-btn>
+    </div>
+
+    <!-- TABS -->
+    <q-tabs
+      v-model="tab"
+      dense
+      align="left"
+      active-color="primary"
+      indicator-color="primary"
+      class="text-primary"
+    >
+      <q-tab name="detalle" label="Lista de Acopios" icon="table_view" />
+      <q-tab name="resumen" label="Proyección mensual" icon="analytics" />
+      <q-tab name="gestion" label="Gestión anual" icon="event_note" />
+    </q-tabs>
+    
+    <!-- 2025-11-21: Chips de totales movidos debajo de tabs para dar visibilidad al botón Nuevo Acopio -->
+    <div class="row items-center q-gutter-sm q-mt-sm q-mb-sm">
       <q-chip color="primary" text-color="white" dense>
         Total Kg: {{ totals.totalKg.toFixed(2) }}
       </q-chip>
@@ -19,20 +49,7 @@
         Nº cosechas: {{ acopioCosechas.length }}
       </q-chip>
     </div>
-
-    <!-- TABS -->
-    <q-tabs
-      v-model="tab"
-      dense
-      align="left"
-      active-color="primary"
-      indicator-color="primary"
-      class="text-primary q-mb-sm"
-    >
-      <q-tab name="detalle" label="Lista de Acopios" icon="table_view" />
-      <q-tab name="resumen" label="Proyección mensual" icon="analytics" />
-      <q-tab name="gestion" label="Gestión anual" icon="event_note" />
-    </q-tabs>
+    
     <q-separator class="q-mb-md" />
 
     <q-tab-panels v-model="tab" animated>
@@ -60,6 +77,8 @@
             <th>Estado</th>
             <!-- MODIFICACION 2025-11-17: Nueva columna para acceso rapido a formularios de control - Movida al final 2025-11-21 -->
             <th style="width: 120px;">Formularios de CONTROL</th>
+            <!-- 2025-11-21: Nueva columna para editar y eliminar -->
+            <th style="width: 100px;">Acciones</th>
             <!-- 2025-11-21: Columnas ocultadas (comentadas) para no mostrar en tabla principal -->
             <!-- <th>Humedad (%)</th> -->
             <!-- <th>Temperatura Almacenaje (°C)</th> -->
@@ -149,6 +168,29 @@
                 <q-tooltip>Ver Formularios de Control del SENASAG</q-tooltip>
               </q-btn>
             </td>
+            <!-- 2025-11-21: Celda de acciones (editar y eliminar) -->
+            <td class="text-center">
+              <div class="q-gutter-xs">
+                <q-btn
+                  flat dense round
+                  color="primary"
+                  icon="edit"
+                  size="sm"
+                  @click="editarAcopio(cosecha)"
+                >
+                  <q-tooltip>Editar acopio</q-tooltip>
+                </q-btn>
+                <q-btn
+                  flat dense round
+                  color="negative"
+                  icon="delete"
+                  size="sm"
+                  @click="eliminarAcopio(cosecha)"
+                >
+                  <q-tooltip>Eliminar acopio</q-tooltip>
+                </q-btn>
+              </div>
+            </td>
             <!-- 2025-11-21: Celdas ocultadas (comentadas) - datos siguen disponibles en dialog de formularios -->
             <!-- <td>{{ cosecha.humedad }}</td> -->
             <!-- <td>{{ cosecha.temperatura_almacenaje }}</td> -->
@@ -209,6 +251,182 @@
         />
       </q-tab-panel>
     </q-tab-panels>
+
+    <!-- 2025-11-21: Dialog para registro rápido de acopio -->
+    <q-dialog v-model="dialogNuevoAcopio" persistent>
+      <q-card style="min-width: 700px; max-width: 90vw;">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6">
+            {{ formAcopio.id ? 'Editar' : 'Nuevo' }} Acopio - {{ productor?.nombre }} {{ productor?.apellidos }}
+          </div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section>
+          <q-form ref="formAcopioRef" @submit.prevent="guardarAcopio">
+            <div class="row q-col-gutter-md">
+              
+              <!-- Fecha (precargada con fecha actual) -->
+              <div class="col-12 col-md-4">
+                <q-input
+                  v-model="formAcopio.fecha_cosecha"
+                  type="date"
+                  label="Fecha de Cosecha"
+                  dense outlined
+                  :rules="[val => !!val || 'Requerido']"
+                />
+              </div>
+
+              <!-- Número de Acta -->
+              <div class="col-12 col-md-4">
+                <q-input
+                  v-model="formAcopio.num_acta"
+                  label="Número de Acta"
+                  dense outlined
+                  :rules="[val => !!val || 'Requerido']"
+                />
+              </div>
+
+              <!-- Apiario (dependiente del productor actual) -->
+              <div class="col-12 col-md-4">
+                <q-select
+                  v-model="formAcopio.apiario_id"
+                  :options="apiarioOptionsModal"
+                  option-value="value"
+                  option-label="label"
+                  emit-value
+                  map-options
+                  label="Apiario"
+                  dense outlined
+                  :loading="loadingApiariosModal"
+                  :rules="[v => !!v || 'Seleccione un apiario']"
+                />
+              </div>
+
+              <!-- Producto (precargado con Miel de Abeja) -->
+              <div class="col-12 col-md-6">
+                <q-select
+                  v-model="formAcopio.producto_id"
+                  :options="productosOptions"
+                  option-value="value"
+                  option-label="label"
+                  emit-value
+                  map-options
+                  label="Tipo de Materia Prima"
+                  dense outlined
+                  :loading="loadingProductos"
+                  :rules="[v => !!v || 'Requerido']"
+                />
+              </div>
+
+              <!-- Cantidad KG -->
+              <div class="col-12 col-md-3">
+                <q-input
+                  v-model.number="formAcopio.cantidad_kg"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  label="Cantidad (kg)"
+                  dense outlined
+                  suffix="kg"
+                  :rules="[v => v > 0 || 'Mayor a 0']"
+                />
+              </div>
+
+              <!-- Precio de Compra -->
+              <div class="col-12 col-md-3">
+                <q-input
+                  v-model.number="formAcopio.precio_compra"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  label="Precio de compra"
+                  dense outlined
+                  prefix="Bs "
+                  :rules="[v => v >= 0 || 'No negativo']"
+                />
+              </div>
+
+              <!-- Humedad (opcional) -->
+              <div class="col-6 col-md-3">
+                <q-input
+                  v-model.number="formAcopio.humedad"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  label="Humedad (%)"
+                  dense outlined
+                  suffix="%"
+                />
+              </div>
+
+              <!-- Temperatura (opcional) -->
+              <div class="col-6 col-md-3">
+                <q-input
+                  v-model.number="formAcopio.temperatura_almacenaje"
+                  type="number"
+                  step="0.01"
+                  label="Temperatura (°C)"
+                  dense outlined
+                  suffix="°C"
+                />
+              </div>
+
+              <!-- Procedencia (opcional) -->
+              <div class="col-6 col-md-3">
+                <q-input
+                  v-model="formAcopio.procedencia"
+                  label="Procedencia"
+                  dense outlined
+                  maxlength="50"
+                />
+              </div>
+
+              <!-- Tipo de Envase -->
+              <div class="col-6 col-md-3">
+                <q-select
+                  v-model="formAcopio.tipo_envase"
+                  label="Tipo de envase"
+                  dense outlined
+                  :options="['BALDE','OTRO']"
+                />
+              </div>
+
+              <!-- Observaciones -->
+              <div class="col-12">
+                <q-input
+                  v-model="formAcopio.observaciones"
+                  label="Observaciones"
+                  dense outlined
+                  autogrow
+                  maxlength="255"
+                />
+              </div>
+
+            </div>
+
+            <div class="row q-gutter-sm q-mt-md justify-end">
+              <q-btn 
+                label="Cancelar" 
+                color="grey-7" 
+                flat 
+                v-close-popup 
+                no-caps
+              />
+              <q-btn 
+                type="submit" 
+                :label="formAcopio.id ? 'Actualizar Acopio' : 'Guardar Acopio'" 
+                color="positive" 
+                icon="save"
+                :loading="loadingGuardar" 
+                no-caps
+              />
+            </div>
+          </q-form>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
 
     <!-- Dialog Crear/Editar RUNSA (lo dejo tal cual lo tenías) -->
     <q-dialog v-model="dlg.open" persistent>
@@ -397,6 +615,27 @@ export default {
         open: false,
         cosecha: null,
         tab: 'plagas'
+      },
+      // 2025-11-21: Data para modal de nuevo acopio
+      dialogNuevoAcopio: false,
+      loadingGuardar: false,
+      loadingApiariosModal: false,
+      loadingProductos: false,
+      apiarioOptionsModal: [],
+      productosOptions: [],
+      formAcopio: {
+        fecha_cosecha: null,
+        num_acta: '',
+        apiario_id: null,
+        producto_id: null,
+        cantidad_kg: null,
+        precio_compra: 32,
+        humedad: null,
+        temperatura_almacenaje: null,
+        procedencia: '',
+        tipo_envase: 'BALDE',
+        observaciones: '',
+        estado: 'BUENO'
       }
     }
   },
@@ -757,6 +996,292 @@ export default {
         type: 'info',
         message: 'Funcionalidad en desarrollo - Recibo de Compra',
         caption: 'Se implementara en la siguiente fase'
+      })
+    },
+
+    /**
+     * Abrir modal de nuevo acopio
+     * Creado: 2025-11-21
+     * Precarga: fecha actual, productor actual, apiarios del productor, Miel de Abeja
+     */
+    async abrirModalNuevoAcopio () {
+      if (!this.productor?.id) {
+        this.$q.notify({
+          type: 'warning',
+          message: 'No se pudo identificar el productor'
+        })
+        return
+      }
+
+      // Resetear formulario con valores por defecto
+      // 2025-11-21: Generar número de acta único automáticamente
+      const now = new Date()
+      const year = now.getFullYear()
+      const timestamp = now.getTime().toString().slice(-6) // Últimos 6 dígitos del timestamp
+      const numActaGenerado = `${timestamp}/${year}`
+      
+      this.formAcopio = {
+        fecha_cosecha: now.toISOString().split('T')[0], // Fecha actual
+        num_acta: numActaGenerado, // Número de acta generado automáticamente
+        apiario_id: null,
+        producto_id: null,
+        cantidad_kg: null,
+        precio_compra: 32,
+        humedad: null,
+        temperatura_almacenaje: null,
+        procedencia: '',
+        tipo_envase: 'BALDE',
+        observaciones: '',
+        estado: 'BUENO'
+      }
+
+      // Cargar apiarios del productor
+      await this.cargarApiariosModal()
+
+      // Cargar productos y preseleccionar "Miel de Abeja"
+      await this.cargarProductos()
+
+      // Abrir modal
+      this.dialogNuevoAcopio = true
+    },
+
+    /**
+     * Cargar apiarios del productor actual
+     * Creado: 2025-11-21
+     * Si solo hay un apiario, lo selecciona automaticamente
+     */
+    async cargarApiariosModal () {
+      if (!this.productor?.id) return
+
+      this.loadingApiariosModal = true
+      try {
+        const { data } = await this.$axios.get('/apiarios', {
+          params: {
+            productor_id: this.productor.id,
+            paginate: false
+          }
+        })
+
+        this.apiarioOptionsModal = (data || []).map(a => ({
+          value: a.id,
+          label: a.nombre_cip
+            ? `${a.nombre_cip} — ${a?.municipio?.nombre_municipio ?? ''}`
+            : `Apiario #${a.id} — ${a?.municipio?.nombre_municipio ?? ''}`
+        }))
+
+        // Si solo hay un apiario, seleccionarlo automaticamente
+        if (this.apiarioOptionsModal.length === 1) {
+          this.formAcopio.apiario_id = this.apiarioOptionsModal[0].value
+        }
+      } catch (error) {
+        console.error('Error cargando apiarios:', error)
+        this.$q.notify({
+          type: 'negative',
+          message: 'No se pudieron cargar los apiarios del productor'
+        })
+      } finally {
+        this.loadingApiariosModal = false
+      }
+    },
+
+    /**
+     * Cargar productos tipo Materia Prima (tipo_id = 1)
+     * Creado: 2025-11-21
+     * Preselecciona "Miel de Abeja" automaticamente
+     */
+    async cargarProductos () {
+      this.loadingProductos = true
+      try {
+        const { data } = await this.$axios.get('/productos/tipo/1')
+
+        this.productosOptions = (data?.data || data || []).map(p => ({
+          value: p.id,
+          label: p.nombre_producto
+        }))
+
+        // Preseleccionar "Miel de Abeja" (buscar en label que incluya 'miel')
+        const mielAbeja = this.productosOptions.find(p =>
+          p.label.toLowerCase().includes('miel')
+        )
+        if (mielAbeja) {
+          this.formAcopio.producto_id = mielAbeja.value
+        }
+      } catch (error) {
+        console.error('Error cargando productos:', error)
+        this.$q.notify({
+          type: 'negative',
+          message: 'No se pudieron cargar los productos'
+        })
+      } finally {
+        this.loadingProductos = false
+      }
+    },
+
+    /**
+     * Guardar nuevo acopio o actualizar existente
+     * Creado: 2025-11-21
+     * Crea o actualiza el acopio via POST/PUT /acopio-cosechas y recarga la lista
+     * Actualizado: 2025-11-21 - Agregado soporte para edición
+     */
+    async guardarAcopio () {
+      // Validar formulario
+      const isValid = await this.$refs.formAcopioRef.validate()
+      if (!isValid) return
+
+      this.loadingGuardar = true
+      const isEdit = !!this.formAcopio.id
+      
+      try {
+        let data
+        if (isEdit) {
+          // Modo edición: PUT
+          const response = await this.$axios.put(`/acopio-cosechas/${this.formAcopio.id}`, this.formAcopio)
+          data = response.data
+        } else {
+          // Modo creación: POST
+          const response = await this.$axios.post('/acopio-cosechas', this.formAcopio)
+          data = response.data
+        }
+
+        // Cerrar modal primero
+        this.dialogNuevoAcopio = false
+
+        // Mostrar notificación de éxito
+        this.$q.notify({
+          type: 'positive',
+          message: isEdit ? 'Acopio actualizado exitosamente' : 'Acopio registrado exitosamente',
+          caption: `Acta: ${data.num_acta || this.formAcopio.num_acta}`,
+          timeout: 3000
+        })
+
+        // Recargar lista de acopios con un pequeño delay para asegurar que la transacción se completó
+        setTimeout(async () => {
+          try {
+            await this.fetchAcopio()
+          } catch (reloadError) {
+            console.warn('Error recargando lista de acopios:', reloadError)
+            // Intentar recargar una vez más si falla
+            setTimeout(() => {
+              this.fetchAcopio()
+            }, 1000)
+          }
+        }, 500)
+
+      } catch (error) {
+        console.error('Error guardando acopio:', error)
+        
+        // Verificar si el error es por duplicado de num_acta
+        const errorMsg = error.response?.data?.message || ''
+        if (errorMsg.includes('num_acta')) {
+          this.$q.notify({
+            type: 'warning',
+            message: 'El número de acta ya existe',
+            caption: 'Por favor, modifique el número de acta e intente nuevamente',
+            timeout: 4000
+          })
+        } else {
+          this.$q.notify({
+            type: 'negative',
+            message: isEdit ? 'Error al actualizar el acopio' : 'Error al guardar el acopio',
+            caption: errorMsg || 'Intente nuevamente',
+            timeout: 3000
+          })
+        }
+      } finally {
+        this.loadingGuardar = false
+      }
+    },
+
+    /**
+     * Editar acopio existente
+     * Creado: 2025-11-21
+     * Abre el modal con los datos del acopio para edición
+     */
+    async editarAcopio (cosecha) {
+      if (!cosecha?.id) {
+        this.$q.notify({
+          type: 'warning',
+          message: 'No se pudo identificar el acopio'
+        })
+        return
+      }
+
+      // Cargar apiarios y productos
+      await this.cargarApiariosModal()
+      await this.cargarProductos()
+
+      // Cargar datos del acopio en el formulario
+      this.formAcopio = {
+        id: cosecha.id, // Importante: agregar ID para modo edición
+        fecha_cosecha: cosecha.fecha_cosecha,
+        num_acta: cosecha.num_acta,
+        apiario_id: cosecha.apiario_id,
+        producto_id: cosecha.producto_id,
+        cantidad_kg: cosecha.cantidad_kg,
+        precio_compra: cosecha.precio_compra,
+        humedad: cosecha.humedad,
+        temperatura_almacenaje: cosecha.temperatura_almacenaje,
+        procedencia: cosecha.procedencia,
+        tipo_envase: cosecha.tipo_envase,
+        observaciones: cosecha.observaciones,
+        estado: cosecha.estado
+      }
+
+      // Abrir modal en modo edición
+      this.dialogNuevoAcopio = true
+    },
+
+    /**
+     * Eliminar acopio
+     * Creado: 2025-11-21
+     * Solicita confirmación y elimina el acopio
+     */
+    eliminarAcopio (cosecha) {
+      if (!cosecha?.id) {
+        this.$q.notify({
+          type: 'warning',
+          message: 'No se pudo identificar el acopio'
+        })
+        return
+      }
+
+      this.$q.dialog({
+        title: 'Confirmar eliminación',
+        message: `¿Está seguro de eliminar el acopio con Acta ${cosecha.num_acta}?`,
+        html: true,
+        ok: {
+          push: true,
+          color: 'negative',
+          label: 'Eliminar'
+        },
+        cancel: {
+          push: true,
+          color: 'grey-7',
+          label: 'Cancelar'
+        },
+        persistent: true
+      }).onOk(async () => {
+        try {
+          await this.$axios.delete(`/acopio-cosechas/${cosecha.id}`)
+
+          this.$q.notify({
+            type: 'positive',
+            message: 'Acopio eliminado exitosamente',
+            caption: `Acta: ${cosecha.num_acta}`,
+            timeout: 3000
+          })
+
+          // Recargar lista
+          await this.fetchAcopio()
+        } catch (error) {
+          console.error('Error eliminando acopio:', error)
+          this.$q.notify({
+            type: 'negative',
+            message: 'Error al eliminar el acopio',
+            caption: error.response?.data?.message || 'Intente nuevamente',
+            timeout: 3000
+          })
+        }
       })
     }
   }
