@@ -29,6 +29,7 @@ class Venta extends Model implements Auditable
         'destino_final',
         'guia_remision',
         'num_factura',
+        'estado',
     ];
 
     protected $hidden = [

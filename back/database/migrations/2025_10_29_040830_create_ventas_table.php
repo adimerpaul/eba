@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('destino_final', 200)->nullable();
             $table->string('guia_remision', 100)->nullable();
             $table->string('num_factura', 20)->nullable();
+            $table->string('estado', 20)->default('VALIDO');
             $table->foreign('cliente_id')->references('id')->on('clientes');
             $table->foreign('transporte_id')->references('id')->on('transportes');
             $table->softDeletes();

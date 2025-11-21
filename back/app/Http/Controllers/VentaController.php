@@ -90,7 +90,8 @@ class VentaController extends Controller
                     $sheet->setCellValue("D{$fila}", $u->cliente['nombre_cliente']);
                     $sheet->setCellValue("E{$fila}", $u->num_factura);
                     $sheet->setCellValue("F{$fila}", $u->guia_remision);
-                    $sheet->setCellValue("G{$fila}", $u->precio_total);
+                    $sheet->setCellValue("G{$fila}", $u->estado);
+                    $sheet->setCellValue("H{$fila}", $u->precio_total);
                     $fila++;
                     $i++;
                 }
@@ -247,6 +248,76 @@ class VentaController extends Controller
         $venta->delete();
         return response()->json(['deleted' => true]);
     }
+
+public function anularVenta(Request $request)
+{   
+    $ventaId = $request->id;
+    $user = $request->user();
+
+    if (!$user) {
+        throw ValidationException::withMessages(['user' => 'Usuario no autenticado']);
+    }
+
+    return DB::transaction(function () use ($ventaId, $user) {
+
+        // 1. Obtener venta con sus detalles + kardex
+        $venta = Venta::with(['kardex', 'detalles'])->find($ventaId);
+
+        if (!$venta) {
+            throw ValidationException::withMessages(['venta' => 'Venta no encontrada']);
+        }
+
+        if ($venta->estado === 'ANULADA') {
+            throw ValidationException::withMessages(['venta' => 'La venta ya está anulada']);
+        }
+
+        // Si no tiene movimientos de kardex
+        if ($venta->kardex->isEmpty()) {
+            throw ValidationException::withMessages(['kardex' => 'La venta no tiene movimientos de kardex']);
+        }
+
+        // 2. Revertir los movimientos: poner cantidades en 0
+        foreach ($venta->kardex as $mov) {
+
+            $prodId = $mov->producto_id;
+            $cantidadSalida = (float) $mov->cantidad_salida;
+
+            // Si no hubo salida, omitir
+            if ($cantidadSalida > 0) {
+
+                // 2.a Regresar stock al producto
+                $producto = Producto::find($prodId);
+                if ($producto) {
+                    $producto->update([
+                        'cantidad' => (float) $producto->cantidad + $cantidadSalida
+                    ]);
+                }
+            }
+
+            // 2.b Poner cantidades del kardex en 0
+            $mov->update([
+                'cantidad_salida'    => 0,
+                'cantidad_entrada'   => 0,
+                'cantidad_procesada' => 0,
+            ]);
+        }
+
+        // 3. Cambiar estado de la venta
+        $venta->update([
+            'precio_total' => 0,
+            'estado' => 'ANULADA'
+        ]);
+
+        // 4. Respuesta con datos frescos
+        return $venta->fresh()->load([
+            'cliente:id,nombre_cliente,nit',
+            'transporte:id,empresa,responsable,placa',
+            'kardex',
+            'detalles.lote:id,codigo_lote'
+        ]);
+    });
+}
+
 
     /**
      * Endpoint para el selector de lotes con su disponible (kg)

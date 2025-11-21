@@ -275,6 +275,7 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::get('bp-usuarios/{id}/permissions', [BpUsuarioController::class, 'getPermissions']);
     Route::put('bp-usuarios/{id}/permissions', [BpUsuarioController::class, 'syncPermissions']);
 
+    Route::post('anularVenta', [VentaController::class, 'anularVenta']);
 //    Route::prefix('reportes/acopio')->group(function () {
 //    https://beba.tuprogam.com/api/acopio-cosechas2/resumen-mensual?year=2025
 

@@ -27,15 +27,19 @@
           <q-td :props="props" class="text-right">
 <!--            <q-btn dense flat icon="visibility" @click="openDetalle(props.row)"/>-->
 <!--            <q-btn dense flat icon="print" color="primary" @click="printVenta(props.row)"/>-->
-            <q-btn-dropdown dense label="Opciones" color="primary" no-caps size="10px">
+            <q-btn-dropdown dense label="Opciones" color="primary" no-caps size="10px" v-if="props.row.estado=='VALIDO'">
               <q-list>
-                <q-item clickable v-ripple @click="openDetalle(props.row)" v-close-popup>
+                <q-item clickable v-ripple @click="openDetalle(props.row)" v-close-popup v-if="props.row.estado=='VALIDO'">
                   <q-item-section avatar><q-icon name="visibility"/></q-item-section>
                   <q-item-section>Ver detalle</q-item-section>
                 </q-item>
-                <q-item clickable v-ripple @click="printVenta(props.row)" v-close-popup>
+                <q-item clickable v-ripple @click="printVenta(props.row)" v-close-popup v-if="props.row.estado=='VALIDO'">
                   <q-item-section avatar><q-icon name="print" color="primary"/></q-item-section>
                   <q-item-section>Imprimir nota</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple @click="anularVenta(props.row)" v-close-popup v-if="props.row.estado=='VALIDO'">
+                  <q-item-section avatar><q-icon name="delete" color="red"/></q-item-section>
+                  <q-item-section>Anular Venta</q-item-section>
                 </q-item>
               </q-list>
             </q-btn-dropdown>
@@ -44,6 +48,10 @@
 
         <template #body-cell-cliente="p">
           <q-td :props="p">{{ p.row.cliente?.nombre_cliente || '-' }}</q-td>
+        </template>
+
+        <template #body-cell-estado="p">
+          <q-td :props="p"><q-badge :color="p.row.estado=='VALIDO' ? 'positive' : 'negative'"  :label="p.row.estado" /></q-td>
         </template>
 
         <template #body-cell-fecha_venta="p">
@@ -114,6 +122,7 @@ export default {
         { name: 'fecha_venta', label: 'Fecha', align: 'left', field: 'fecha_venta' },
         { name: 'cliente', label: 'Cliente', align: 'left', field: 'cliente' },
         { name: 'num_factura', label: 'Factura', align: 'left', field: 'num_factura' },
+        { name: 'estado', label: 'Estado', align: 'left', field: 'estado' },
         { name: 'guia_remision', label: 'Guía', align: 'left', field: 'guia_remision' },
         { name: 'precio_total', label: 'Total (Bs)', align: 'right', field: 'precio_total' },
       ],
@@ -168,7 +177,32 @@ export default {
         t = setTimeout(() => this.fetch(), 350)
       }
     })(),
-
+async anularVenta(row) {
+  this.$q.dialog({
+    title: 'Confirmar',
+    message: `¿Está seguro de anular la venta N° ${row.num_factura || row.id}?`,
+    cancel: true,
+    ok: {
+      label: 'Sí, anular',
+      color: 'negative'
+    },
+    cancel: {
+      label: 'Cancelar',
+      flat: true
+    }
+  }).onOk(async () => {
+    try {
+      await this.$axios.post('/anularVenta', row)
+      this.$q.notify({ type: 'positive', message: 'Venta anulada' })
+      this.fetch()
+    } catch (e) {
+      this.$q.notify({
+        type: 'negative',
+        message: e.response?.data?.message || 'Error al anular venta'
+      })
+    }
+  })
+},
     async openDetalle (row) {
       try {
         const { data } = await this.$axios.get(`/ventas/${row.id}`)
