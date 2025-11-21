@@ -316,7 +316,68 @@ export default {
       })
     },
 
+    /**
+     * Verificar si existe un productor duplicado por CI o RUNSA
+     * Creado: 2025-11-21
+     * @returns {Promise<boolean>} true si existe duplicado (cancela creacion), false si no existe
+     */
+    async verificarDuplicados () {
+      try {
+        const params = {}
+        if (this.form.numcarnet) params.numcarnet = this.form.numcarnet
+        if (this.form.runsa && this.form.runsa !== '0') params.runsa = this.form.runsa
+
+        if (!params.numcarnet && !params.runsa) {
+          return false
+        }
+
+        const { data } = await this.$axios.get('productores-verificar-duplicado', { params })
+
+        if (data.existe) {
+          return new Promise((resolve) => {
+            this.$q.dialog({
+              title: 'Posible duplicado',
+              message: `Ya existe un productor registrado:
+                Nombre: ${data.datos.nombre_completo}
+                CI: ${data.datos.numcarnet}
+                RUNSA: ${data.datos.runsa}
+                Estado: ${data.datos.estado}
+                
+                Desea ver el registro existente?`,
+              cancel: {
+                label: 'Cancelar',
+                flat: true,
+                color: 'negative'
+              },
+              ok: {
+                label: 'Ver registro',
+                color: 'primary'
+              },
+              persistent: true
+            }).onOk(() => {
+              this.$router.push(`/productores/editar/${data.productor_id}`)
+              resolve(true)
+            }).onCancel(() => {
+              resolve(true)
+            })
+          })
+        }
+
+        return false
+      } catch (e) {
+        return false
+      }
+    },
+
     async submit () {
+      // 2025-11-21: Validar duplicados antes de crear nuevo productor
+      if (!this.form.id) {
+        const duplicado = await this.verificarDuplicados()
+        if (duplicado) {
+          return
+        }
+      }
+
       this.saving = true
       try {
         const payload = {

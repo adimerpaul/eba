@@ -709,4 +709,97 @@ class ProductorController extends Controller
 
         return response()->json($response);
     }
+
+    /**
+     * Verificar vencimientos proximos (30 dias) para alertas
+     * Creado: 2025-11-21
+     * @param int $id ID del productor
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verificarVencimientos($id)
+    {
+        $productor = Productor::findOrFail($id);
+        
+        // Fecha limite: hoy + 30 dias
+        $fechaHoy = now();
+        $fechaLimite = now()->addDays(30);
+        
+        // Contar certificaciones por vencer (estado VIGENTE y fecha_vencimiento entre hoy y +30 dias)
+        $certificacionesPorVencer = DB::table('productor_certificaciones')
+            ->where('productor_id', $id)
+            ->where('estado', 'VIGENTE')
+            ->whereBetween('fecha_vencimiento', [$fechaHoy, $fechaLimite])
+            ->count();
+        
+        // Contar RUNSAs por vencer (estado VIGENTE y fecha_vencimiento entre hoy y +30 dias)
+        $runsasPorVencer = DB::table('productor_runsas')
+            ->where('productor_id', $id)
+            ->where('estado', 'VIGENTE')
+            ->whereBetween('fecha_vencimiento', [$fechaHoy, $fechaLimite])
+            ->count();
+        
+        return response()->json([
+            'certificaciones_por_vencer' => $certificacionesPorVencer,
+            'runsas_por_vencer' => $runsasPorVencer
+        ]);
+    }
+
+    /**
+     * Verificar si existe un productor duplicado por CI o RUNSA
+     * Creado: 2025-11-21
+     * @param Request $request Parametros: numcarnet (opcional), runsa (opcional)
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function verificarDuplicado(Request $request)
+    {
+        $numcarnet = $request->query('numcarnet');
+        $runsa = $request->query('runsa');
+        
+        // Si no se proporciona ningun parametro, retornar que no existe duplicado
+        if (empty($numcarnet) && empty($runsa)) {
+            return response()->json([
+                'existe' => false,
+                'productor_id' => null,
+                'datos' => null
+            ]);
+        }
+        
+        // Buscar productor por CI o RUNSA
+        $query = Productor::query();
+        
+        if (!empty($numcarnet) && !empty($runsa)) {
+            // Buscar por CI O RUNSA
+            $query->where(function($q) use ($numcarnet, $runsa) {
+                $q->where('numcarnet', $numcarnet)
+                  ->orWhere('runsa', $runsa);
+            });
+        } elseif (!empty($numcarnet)) {
+            // Solo buscar por CI
+            $query->where('numcarnet', $numcarnet);
+        } else {
+            // Solo buscar por RUNSA
+            $query->where('runsa', $runsa);
+        }
+        
+        $productor = $query->first();
+        
+        if ($productor) {
+            return response()->json([
+                'existe' => true,
+                'productor_id' => $productor->id,
+                'datos' => [
+                    'nombre_completo' => $productor->nombre_completo,
+                    'numcarnet' => $productor->numcarnet,
+                    'runsa' => $productor->runsa,
+                    'estado' => $productor->estado
+                ]
+            ]);
+        }
+        
+        return response()->json([
+            'existe' => false,
+            'productor_id' => null,
+            'datos' => null
+        ]);
+    }
 }

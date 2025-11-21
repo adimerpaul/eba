@@ -115,6 +115,10 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::get('/productores/{productor}', [ProductorController::class, 'show']);
     Route::put('/productores/{productor}', [ProductorController::class, 'update']);
     Route::delete('/productores/{productor}', [ProductorController::class, 'destroy']);
+    // 2025-11-21: Endpoint para verificar vencimientos proximos (30 dias)
+    Route::get('/productores/{productor}/verificar-vencimientos', [ProductorController::class, 'verificarVencimientos']);
+    // 2025-11-21: Endpoint para verificar duplicados antes de crear productor
+    Route::get('/productores-verificar-duplicado', [ProductorController::class, 'verificarDuplicado']);
     // NUEVO: Endpoint para obtener acopios mensuales por gestión de un productor
     // Ejemplo: GET /api/productores/11613/acopios-gestion?gestion=2025&producto_id=1
     Route::get('/productores/{productor}/acopios-gestion', [ProductorController::class, 'acopiosMensualesGestion']);
