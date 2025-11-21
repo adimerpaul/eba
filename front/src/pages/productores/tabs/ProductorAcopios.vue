@@ -29,7 +29,7 @@
       indicator-color="primary"
       class="text-primary q-mb-sm"
     >
-      <q-tab name="detalle" label="Detalle" icon="table_view" />
+      <q-tab name="detalle" label="Lista de Acopios" icon="table_view" />
       <q-tab name="resumen" label="Proyección mensual" icon="analytics" />
       <q-tab name="gestion" label="Gestión anual" icon="event_note" />
     </q-tabs>
@@ -42,40 +42,101 @@
         <q-markup-table v-if="acopioCosechas.length > 0" dense wrap-cells flat bordered>
           <thead>
           <tr class="bg-primary text-white">
+            <!-- 2025-11-21: Nueva columna para numeracion secuencial -->
+            <th style="width: 50px;">#</th>
+            <!-- 2025-11-21: Nueva columna para botones de accion -->
+            <th style="width: 180px;">Opciones</th>
             <th>Fecha Cosecha</th>
-            <th>Productor</th>
-            <th>Cantidad (kg)</th>
-            <th>Humedad (%)</th>
-            <th>Temperatura Almacenaje (°C)</th>
             <th>Número Acta</th>
-            <th>Condiciones Almacenaje</th>
+            <th>Productor</th>
+            <!-- 2025-11-21: Nueva columna para tipo de materia prima -->
+            <th>Tipo Materia Prima</th>
+            <!-- 2025-11-21: Cambio de etiqueta de 'Cantidad (kg)' a 'Peso Total (Kg)' -->
+            <th class="text-right">Peso Total (Kg)</th>
+            <!-- 2025-11-21: Nueva columna para precio de compra -->
+            <th class="text-right">Precio Bs.</th>
+            <!-- 2025-11-21: Nueva columna para costo total calculado -->
+            <th class="text-right">Costo Total</th>
             <th>Estado</th>
-            <!-- MODIFICACION 2025-11-17: Nueva columna para acceso rapido a formularios de control -->
+            <!-- MODIFICACION 2025-11-17: Nueva columna para acceso rapido a formularios de control - Movida al final 2025-11-21 -->
             <th style="width: 120px;">Formularios de CONTROL</th>
+            <!-- 2025-11-21: Columnas ocultadas (comentadas) para no mostrar en tabla principal -->
+            <!-- <th>Humedad (%)</th> -->
+            <!-- <th>Temperatura Almacenaje (°C)</th> -->
+            <!-- <th>Condiciones Almacenaje</th> -->
           </tr>
           </thead>
           <tbody>
-          <tr v-for="cosecha in acopioCosechas" :key="cosecha.id">
+          <tr v-for="(cosecha, index) in acopioCosechas" :key="cosecha.id">
+            <!-- 2025-11-21: Celda de numeracion secuencial -->
+            <td class="text-center">{{ index + 1 }}</td>
+            <!-- 2025-11-21: Celda de botones de accion -->
+            <td class="text-center">
+              <div class="q-gutter-xs">
+                <q-btn
+                  flat dense round
+                  color="blue"
+                  icon="description"
+                  size="sm"
+                  @click="imprimirActaConformidad(cosecha)"
+                >
+                  <q-tooltip>Acta de Conformidad</q-tooltip>
+                </q-btn>
+                <q-btn
+                  flat dense round
+                  color="green"
+                  icon="local_shipping"
+                  size="sm"
+                  @click="imprimirActaEntrega(cosecha)"
+                >
+                  <q-tooltip>Acta de Entrega</q-tooltip>
+                </q-btn>
+                <q-btn
+                  flat dense round
+                  color="orange"
+                  icon="receipt"
+                  size="sm"
+                  @click="imprimirRecibo(cosecha)"
+                >
+                  <q-tooltip>Recibo</q-tooltip>
+                </q-btn>
+                <q-btn
+                  flat dense round
+                  color="purple"
+                  icon="sync"
+                  size="sm"
+                  @click="procesarAcopio(cosecha)"
+                  :disable="cosecha.estado !== 'BUENO'"
+                >
+                  <q-tooltip>Procesar (Enviar a Revisión)</q-tooltip>
+                </q-btn>
+              </div>
+            </td>
             <td>{{ cosecha.fecha_cosecha }}</td>
+            <td>{{ cosecha.num_acta }}</td>
             <td>
               {{ cosecha.apiario?.productor.nombre }}
               {{ cosecha.apiario?.productor.apellidos }}
             </td>
-            <td>{{ Number(cosecha.cantidad_kg).toFixed(2) }}</td>
-            <td>{{ cosecha.humedad }}</td>
-            <td>{{ cosecha.temperatura_almacenaje }}</td>
-            <td>{{ cosecha.num_acta }}</td>
-            <td>{{ cosecha.condiciones_almacenaje }}</td>
+            <!-- 2025-11-21: Celda para tipo de materia prima (producto) - Corregido a nombre_producto -->
+            <td>{{ cosecha.producto?.nombre_producto || 'N/A' }}</td>
+            <!-- 2025-11-21: Celda de peso total (antes 'Cantidad kg') -->
+            <td class="text-right">{{ Number(cosecha.cantidad_kg).toFixed(2) }}</td>
+            <!-- 2025-11-21: Celda de precio de compra -->
+            <td class="text-right">{{ Number(cosecha.precio_compra || 0).toFixed(2) }}</td>
+            <!-- 2025-11-21: Celda de costo total calculado -->
+            <td class="text-right">{{ calcularCostoTotal(cosecha) }}</td>
+            <!-- 2025-11-21: Celda de estado con chip mejorado -->
             <td>
               <q-chip
-                :color="cosecha.estado === 'BUENO' ? 'green' : 'red'"
+                :color="obtenerColorEstado(cosecha.estado)"
                 text-color="white"
                 dense size="10px"
               >
-                {{ cosecha.estado.replace('_', ' ') }}
+                {{ obtenerLabelEstado(cosecha.estado) }}
               </q-chip>
             </td>
-            <!-- MODIFICACION 2025-11-17: Boton para abrir dialog de formularios de control -->
+            <!-- MODIFICACION 2025-11-17: Boton para abrir dialog de formularios de control - Movido al final 2025-11-21 -->
             <td class="text-center">
               <q-btn
                 flat
@@ -88,6 +149,10 @@
                 <q-tooltip>Ver Formularios de Control del SENASAG</q-tooltip>
               </q-btn>
             </td>
+            <!-- 2025-11-21: Celdas ocultadas (comentadas) - datos siguen disponibles en dialog de formularios -->
+            <!-- <td>{{ cosecha.humedad }}</td> -->
+            <!-- <td>{{ cosecha.temperatura_almacenaje }}</td> -->
+            <!-- <td>{{ cosecha.condiciones_almacenaje }}</td> -->
           </tr>
           </tbody>
         </q-markup-table>
@@ -562,6 +627,137 @@ export default {
         this.formulariosDialog.tab = 'plagas'
         this.formulariosDialog.open = true
       }
+    },
+
+    /**
+     * Calcular costo total de un acopio
+     * Creado: 2025-11-21
+     * @param {Object} cosecha - Objeto cosecha con cantidad_kg y precio_compra
+     * @returns {String} Costo total formateado con 2 decimales
+     */
+    calcularCostoTotal (cosecha) {
+      const cantidad = parseFloat(cosecha.cantidad_kg || 0)
+      const precio = parseFloat(cosecha.precio_compra || 0)
+      return (cantidad * precio).toFixed(2)
+    },
+
+    /**
+     * Obtener color del chip segun estado
+     * Creado: 2025-11-21
+     * @param {String} estado - Estado del acopio (BUENO, EN_PROCESO, CANCELADO)
+     * @returns {String} Color para el q-chip
+     */
+    obtenerColorEstado (estado) {
+      const colores = {
+        'BUENO': 'green',
+        'EN_PROCESO': 'orange',
+        'CANCELADO': 'red'
+      }
+      return colores[estado] || 'grey'
+    },
+
+    /**
+     * Obtener label mejorado del estado
+     * Creado: 2025-11-21
+     * @param {String} estado - Estado del acopio (BUENO, EN_PROCESO, CANCELADO)
+     * @returns {String} Label descriptivo del estado
+     */
+    obtenerLabelEstado (estado) {
+      const labels = {
+        'BUENO': 'Acopiado',
+        'EN_PROCESO': 'En Revisión',
+        'CANCELADO': 'Cancelado'
+      }
+      return labels[estado] || estado
+    },
+
+    /**
+     * Procesar acopio: cambiar estado de BUENO a EN_PROCESO
+     * Creado: 2025-11-21
+     * @param {Object} cosecha - Objeto cosecha a procesar
+     */
+    procesarAcopio (cosecha) {
+      if (cosecha.estado !== 'BUENO') {
+        this.$q.notify({
+          type: 'warning',
+          message: 'Solo se pueden procesar acopios en estado Acopiado'
+        })
+        return
+      }
+
+      this.$q.dialog({
+        title: 'Procesar Acopio',
+        message: `¿Esta seguro de enviar a revision el acopio del ${cosecha.fecha_cosecha}?`,
+        cancel: {
+          label: 'Cancelar',
+          flat: true,
+          color: 'grey'
+        },
+        ok: {
+          label: 'Procesar',
+          color: 'purple'
+        },
+        persistent: true
+      }).onOk(async () => {
+        try {
+          await this.$axios.put(`/acopio-cosechas/${cosecha.id}`, {
+            ...cosecha,
+            estado: 'EN_PROCESO'
+          })
+          this.$q.notify({
+            type: 'positive',
+            message: 'Acopio enviado a revision correctamente'
+          })
+          this.fetchAcopio()
+        } catch (e) {
+          this.$q.notify({
+            type: 'negative',
+            message: e.response?.data?.message || 'No se pudo procesar el acopio'
+          })
+        }
+      })
+    },
+
+    /**
+     * Imprimir Acta de Conformidad
+     * Creado: 2025-11-21
+     * Placeholder: Se implementara en siguiente fase
+     * @param {Object} cosecha - Objeto cosecha
+     */
+    imprimirActaConformidad (cosecha) {
+      this.$q.notify({
+        type: 'info',
+        message: 'Funcionalidad en desarrollo - Acta de Conformidad',
+        caption: 'Se implementara en la siguiente fase'
+      })
+    },
+
+    /**
+     * Imprimir Acta de Entrega
+     * Creado: 2025-11-21
+     * Placeholder: Se implementara en siguiente fase
+     * @param {Object} cosecha - Objeto cosecha
+     */
+    imprimirActaEntrega (cosecha) {
+      this.$q.notify({
+        type: 'info',
+        message: 'Funcionalidad en desarrollo - Acta de Entrega',
+        caption: 'Se implementara en la siguiente fase'
+      })
+    },
+
+    /**
+     * Imprimir Recibo de Compra
+     * Creado: 2025-11-21
+     * Placeholder: Se implementara en siguiente fase
+     * @param {Object} cosecha - Objeto cosecha
+     */
+    imprimirRecibo (cosecha) {
+      this.$q.notify({
+        type: 'info',
+        message: 'Funcionalidad en desarrollo - Recibo de Compra',
+        caption: 'Se implementara en la siguiente fase'
+      })
     }
   }
 }
