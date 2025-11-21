@@ -214,14 +214,26 @@
         </q-expansion-item>
         <q-expansion-item dense expand-separator icon="inbox" label="Módulo Acopio" active-class="menu-active" v-if="hasPerm('Modulo Acopio')">
           <q-list>
-            <q-item :inset-level="0.3" dense to="/recoleccion" clickable class="menu-item" active-class="menu-active" v-close-popup >
+            <!-- 2025-11-21: Opción 'Registro de Acopio' ocultada - funcionalidad movida a gestión de productores -->
+            <!-- <q-item :inset-level="0.3" dense to="/recoleccion" clickable class="menu-item" active-class="menu-active" v-close-popup >
               <q-item-section avatar>
                 <q-icon name="yard" class="text-white"/>
               </q-item-section>
               <q-item-section>
                 <q-item-label class="text-white">Registro de Acopio</q-item-label>
               </q-item-section>
+            </q-item> -->
+            
+            <!-- 2025-11-21: Dashboard de Acopios con análisis multidimensional -->
+            <q-item :inset-level="0.3" dense to="/dashboard-acopios" clickable class="menu-item" active-class="menu-active" v-close-popup >
+              <q-item-section avatar>
+                <q-icon name="analytics" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Dashboard de Acopios</q-item-label>
+              </q-item-section>
             </q-item>
+            
             <q-item :inset-level="0.3" dense to="/acopios" clickable class="menu-item" active-class="menu-active" v-close-popup >
               <q-item-section avatar>
                 <q-icon name="inbox" class="text-white"/>
@@ -295,7 +307,7 @@
             <q-item-label class="text-white text-uppercase text-bold text-red">Trazabilidad Haci adelante</q-item-label>
           </q-item-section>
         </q-item>-->
-        
+
         <!-- Modifcación de la vista para mejor percepción visual -->
         <q-item-label header class="q-px-md text-grey-3 q-mt-sm text-uppercase text-bold">
           Trazabilidad Adelante

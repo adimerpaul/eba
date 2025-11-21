@@ -14,6 +14,8 @@ const routes = [
       { path: '/acopios', component: () => import('pages/acopio/Acopio.vue'), meta: { requiresAuth: true, perm: 'Acopio' } },
       { path: '/recoleccion', component: () => import('pages/acopio/AcopioCrear.vue'), meta: { requiresAuth: true, perm: 'Acopio' } },
       { path: '/acopio/cosechas/:id', component: () => import('pages/acopio/CosechaShow.vue'), meta: { requiresAuth: true, perm: 'Acopio' } },
+      // 2025-11-21: Dashboard de Acopios con análisis multidimensional (geográfico, temporal, organizacional)
+      { path: '/dashboard-acopios', component: () => import('pages/acopio/DashboardAcopios.vue'), meta: { requiresAuth: true, perm: 'Modulo Acopio' } },
       { path: '/productos', component: () => import('pages/productos/Productos.vue'), meta: { requiresAuth: true, perm: 'Productos' } },
       { path: '/clientes', component: () => import('pages/clientes/Clientes.vue'), meta: { requiresAuth: true, perm: 'Clientes' } },
       { path: '/transportes', component: () => import('pages/transportes/Transportes.vue'), meta: { requiresAuth: true, perm: 'Transportes' } },
