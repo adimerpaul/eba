@@ -10,7 +10,7 @@ class Planta extends Model implements Auditable
 {
     use AuditableTrait, SoftDeletes;
 
-    protected $table = 'plantas';
+    protected $table = 'traza.plantas';
 
     protected $fillable = [
         'codigo_planta',

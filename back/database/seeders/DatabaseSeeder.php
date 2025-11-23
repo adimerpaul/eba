@@ -67,6 +67,7 @@ class DatabaseSeeder extends Seeder
             'Clientes',
             'Transporte',
             'Plantas de procesamiento',
+            'Tanques de almacenamiento',
             'Modulo comercializacion',
             'Modulo reportes',
         ];

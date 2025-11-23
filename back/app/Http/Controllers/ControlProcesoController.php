@@ -71,6 +71,30 @@ class ControlProcesoController extends Controller
 
             $cantidad_total = $acopios->sum('cantidad_kg');
 
+            // Validar capacidad del tanque
+            $tanque = \App\Models\Tanque::findOrFail($request->tanque_id);
+            
+            // Calcular ocupación actual del tanque
+            $ocupacion_procesos = \App\Models\ControlProceso::where('tanque_id', $tanque->id)
+                ->where('estado', 'EN_PROCESO')
+                ->sum('cantidad_entrada_kg');
+            
+            $ocupacion_lotes = \App\Models\Lote::where('tanque_id', $tanque->id)
+                ->sum('cantidad_kg');
+            
+            $ocupacion_actual = $ocupacion_procesos + $ocupacion_lotes;
+            $capacidad_disponible = $tanque->capacidad_kg - $ocupacion_actual;
+
+            if ($cantidad_total > $capacidad_disponible) {
+                return response()->json([
+                    'message' => "Capacidad insuficiente. Disponible: {$capacidad_disponible} kg, Requerido: {$cantidad_total} kg",
+                    'capacidad_disponible' => $capacidad_disponible,
+                    'cantidad_requerida' => $cantidad_total,
+                    'ocupacion_actual' => $ocupacion_actual,
+                    'capacidad_total' => $tanque->capacidad_kg
+                ], 422);
+            }
+
             $control = ControlProceso::create([
                 'tanque_id' => $request->tanque_id,
                 'producto_id' => $request->producto_id,

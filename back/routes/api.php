@@ -206,8 +206,14 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::put('lotes/{lote}', [LoteController::class, 'update']);
     Route::delete('lotes/{lote}', [LoteController::class, 'destroy']);
 
+    Route::get('/tanques/estadisticas', [\App\Http\Controllers\TanqueController::class, 'estadisticas']);
     Route::get('/tanques', [\App\Http\Controllers\TanqueController::class, 'index']);
+    Route::get('/tanques/{id}', [\App\Http\Controllers\TanqueController::class, 'show']);
+    Route::post('/tanques', [\App\Http\Controllers\TanqueController::class, 'store']);
+    Route::put('/tanques/{id}', [\App\Http\Controllers\TanqueController::class, 'update']);
+    Route::delete('/tanques/{id}', [\App\Http\Controllers\TanqueController::class, 'destroy']);
     Route::get('/tanques/{id}/ocupacion', [\App\Http\Controllers\TanqueController::class, 'ocupacion']);
+    Route::get('/tanques/{id}/historial', [\App\Http\Controllers\TanqueController::class, 'historial']);
 
     // Rutas para control de transporte de acopios (trazabilidad de entrada)
     Route::get('acopio-cosechas/{acopioId}/transporte-logs', [\App\Http\Controllers\AcopioTransporteLogController::class, 'index']);

@@ -281,16 +281,6 @@
               </q-item-section>
             </q-item>
 
-            <q-item :inset-level="0.3" dense to="/acopios-rechazados" clickable class="menu-item"
-              active-class="menu-active" v-close-popup>
-              <q-item-section avatar>
-                <q-icon name="cancel" class="text-white" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label class="text-white">Acopios Rechazados</q-item-label>
-              </q-item-section>
-            </q-item>
-
             <q-item :inset-level="0.3" dense to="/historial-procesamientos" clickable class="menu-item"
               active-class="menu-active" v-close-popup>
               <q-item-section avatar>
@@ -300,6 +290,17 @@
                 <q-item-label class="text-white">Historial Procesamientos</q-item-label>
               </q-item-section>
             </q-item>
+
+            <q-item :inset-level="0.3" dense to="/acopios-rechazados" clickable class="menu-item"
+              active-class="menu-active" v-close-popup>
+              <q-item-section avatar>
+                <q-icon name="cancel" class="text-white" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Acopios Rechazados</q-item-label>
+              </q-item-section>
+            </q-item>
+            
           </q-list>
         </q-expansion-item>
 

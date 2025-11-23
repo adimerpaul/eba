@@ -29,6 +29,8 @@ const routes = [
       { path: '/historial-transportes', component: () => import('pages/transportes/HistorialTransportes.vue'), meta: { requiresAuth: true, perm: 'Transportes' } },
       { path: '/dashboard-transportes', component: () => import('pages/transportes/DashboardTransportes.vue'), meta: { requiresAuth: true, perm: 'Transportes' } },
       { path: '/plantas', component: () => import('pages/plantas/Plantas.vue'), meta: { requiresAuth: true, perm: 'Plantas' } },
+      // Tanques de Almacenamiento
+      { path: '/tanques', component: () => import('pages/tanques/Tanques.vue'), meta: { requiresAuth: true, perm: 'Tanques de almacenamiento' } },
       { path: '/ventas/crear', component: () => import('pages/ventas/VentaCrear.vue'), meta: { requiresAuth: true, perm: 'Ventas' } },
       { path: '/ventas', component: () => import('pages/ventas/Ventas.vue'), meta: { requiresAuth: true, perm: 'Ventas' } },
       { path: '/reportes', component: () => import('pages/reportes/Reporte_tabla.vue'),  meta: { requiresAuth: true } },
