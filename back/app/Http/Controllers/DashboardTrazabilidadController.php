@@ -130,7 +130,11 @@ class DashboardTrazabilidadController extends Controller
             SELECT 
                 nombre_plaga,
                 COUNT(*) as total_casos,
-                SUM(CASE WHEN plaga_presente = 'SI' THEN numero_colmenas_apiario ELSE 0 END) as colmenas_afectadas
+                SUM(CASE 
+                    WHEN plaga_presente = 'SI' AND numero_colmenas_apiario ~ '^[0-9]+$' 
+                    THEN CAST(numero_colmenas_apiario AS INTEGER) 
+                    ELSE 0 
+                END) as colmenas_afectadas
             FROM traza.plagas
             WHERE EXTRACT(YEAR FROM fecha) = ?
                 AND deleted_at IS NULL
@@ -205,9 +209,9 @@ class DashboardTrazabilidadController extends Controller
             SELECT 
                 atl.fecha_hora_salida,
                 a.nombre_cip as nombre_apiario,
-                atl.cantidad_kg,
+                ac.cantidad_kg,
                 atl.temperatura_salida,
-                atl.estado_carga,
+                COALESCE(atl.condiciones_envase, 'SIN_REGISTRO') as estado_carga,
                 CASE 
                     WHEN atl.temperatura_salida > 30 THEN 'ALERTA_ALTA'
                     WHEN atl.temperatura_salida < 15 THEN 'ALERTA_BAJA'
@@ -232,8 +236,9 @@ class DashboardTrazabilidadController extends Controller
                 AND deleted_at IS NULL
         ", [$gestion]);
 
-        $totalTransportes = (int) $resumen->total_transportes;
-        $fueraRango = (int) $resumen->fuera_rango;
+        $totalTransportes = (int) ($resumen->total_transportes ?? 0);
+        $fueraRango = (int) ($resumen->fuera_rango ?? 0);
+        $temperaturaPromedio = $resumen->temperatura_promedio !== null ? (float) $resumen->temperatura_promedio : 0;
         $porcentajeFueraRango = $totalTransportes > 0 
             ? round(($fueraRango / $totalTransportes) * 100, 2) 
             : 0;
@@ -242,7 +247,7 @@ class DashboardTrazabilidadController extends Controller
             'gestion' => $gestion,
             'resumen' => [
                 'total_transportes' => $totalTransportes,
-                'temperatura_promedio' => round((float) $resumen->temperatura_promedio, 2),
+                'temperatura_promedio' => round($temperaturaPromedio, 2),
                 'transportes_fuera_rango' => $fueraRango,
                 'porcentaje_fuera_rango' => $porcentajeFueraRango
             ],
@@ -271,8 +276,10 @@ class DashboardTrazabilidadController extends Controller
             SELECT 
                 COUNT(*) as total_acopios,
                 SUM(cantidad_kg) as total_kg,
-                SUM(CASE WHEN estado != 'RECHAZADO' THEN 1 ELSE 0 END) as validados,
-                SUM(CASE WHEN estado = 'RECHAZADO' THEN 1 ELSE 0 END) as rechazados
+                SUM(CASE WHEN COALESCE(estado, 'PENDIENTE') != 'RECHAZADO' THEN 1 ELSE 0 END) as validados,
+                SUM(CASE WHEN estado = 'RECHAZADO' THEN 1 ELSE 0 END) as rechazados,
+                SUM(CASE WHEN COALESCE(estado, 'PENDIENTE') != 'RECHAZADO' THEN cantidad_kg ELSE 0 END) as cantidad_validada,
+                SUM(CASE WHEN estado = 'RECHAZADO' THEN cantidad_kg ELSE 0 END) as cantidad_rechazada
             FROM traza.acopio_cosechas
             WHERE EXTRACT(YEAR FROM fecha_cosecha) = ?
                 AND deleted_at IS NULL
@@ -280,13 +287,13 @@ class DashboardTrazabilidadController extends Controller
 
         $motivosRechazo = DB::select("
             SELECT 
-                motivo_rechazo,
+                COALESCE(observaciones, 'SIN_ESPECIFICAR') as motivo_rechazo,
                 COUNT(*) as total
             FROM traza.acopio_cosechas
             WHERE estado = 'RECHAZADO' 
                 AND EXTRACT(YEAR FROM fecha_cosecha) = ?
                 AND deleted_at IS NULL
-            GROUP BY motivo_rechazo
+            GROUP BY observaciones
             ORDER BY total DESC
         ", [$gestion]);
 
@@ -303,34 +310,41 @@ class DashboardTrazabilidadController extends Controller
             ORDER BY mes ASC
         ", [$gestion]);
 
-        $totalAcopios = (int) $resumen->total_acopios;
-        $validados = (int) $resumen->validados;
-        $rechazados = (int) $resumen->rechazados;
+        $totalAcopios = (int) ($resumen->total_acopios ?? 0);
+        $validados = (int) ($resumen->validados ?? 0);
+        $rechazados = (int) ($resumen->rechazados ?? 0);
+        $cantidadValidada = (float) ($resumen->cantidad_validada ?? 0);
+        $cantidadRechazada = (float) ($resumen->cantidad_rechazada ?? 0);
+        $totalKg = (float) ($resumen->total_kg ?? 0);
 
         return response()->json([
             'gestion' => $gestion,
             'resumen' => [
                 'total_acopios' => $totalAcopios,
-                'total_kg' => round((float) $resumen->total_kg, 2),
-                'validados' => $validados,
-                'rechazados' => $rechazados,
-                'porcentaje_validados' => $totalAcopios > 0 ? round(($validados / $totalAcopios) * 100, 2) : 0,
-                'porcentaje_rechazados' => $totalAcopios > 0 ? round(($rechazados / $totalAcopios) * 100, 2) : 0
+                'cantidad_total' => round($totalKg, 2),
+                'acopios_validados' => $validados,
+                'cantidad_validada' => round($cantidadValidada, 2),
+                'acopios_rechazados' => $rechazados,
+                'cantidad_rechazada' => round($cantidadRechazada, 2),
+                'tasa_validacion' => $totalAcopios > 0 ? round(($validados / $totalAcopios) * 100, 2) : 0,
+                'porcentaje_rechazo' => $totalKg > 0 ? round(($cantidadRechazada / $totalKg) * 100, 2) : 0
             ],
-            'motivos_rechazo' => array_map(function($m) {
+            'motivos_rechazo' => count($motivosRechazo) > 0 ? array_map(function($m) {
                 return [
                     'motivo' => $m->motivo_rechazo ?? 'Sin especificar',
-                    'total' => (int) $m->total
+                    'casos' => (int) $m->total,
+                    'cantidad_kg' => 0,
+                    'porcentaje' => 0
                 ];
-            }, $motivosRechazo),
-            'evolucion_mensual' => array_map(function($e) {
+            }, $motivosRechazo) : [],
+            'evolucion_mensual' => count($evolucionMensual) > 0 ? array_map(function($e) {
+                $mes = explode('-', $e->mes)[1];
                 return [
-                    'mes' => $e->mes,
-                    'total_acopios' => (int) $e->total_acopios,
-                    'total_kg' => round((float) $e->total_kg, 2),
+                    'mes' => (int) $mes,
+                    'validados' => (int) $e->total_acopios - (int) $e->rechazados,
                     'rechazados' => (int) $e->rechazados
                 ];
-            }, $evolucionMensual)
+            }, $evolucionMensual) : []
         ]);
     }
 
@@ -348,10 +362,10 @@ class DashboardTrazabilidadController extends Controller
                 SUM(cantidad_entrada_kg) as entrada_total,
                 SUM(cantidad_salida_kg) as salida_total,
                 SUM(merma_kg) as merma_total,
-                AVG(100 - merma_porcentaje) as eficiencia_promedio
+                AVG(merma_porcentaje) as merma_promedio
             FROM traza.control_procesos
             WHERE estado = 'FINALIZADO' 
-                AND EXTRACT(YEAR FROM fecha_proceso) = ?
+                AND EXTRACT(YEAR FROM fecha_inicio) = ?
                 AND deleted_at IS NULL
         ", [$gestion]);
 
@@ -359,16 +373,17 @@ class DashboardTrazabilidadController extends Controller
             SELECT 
                 t.nombre_tanque,
                 COUNT(cp.id) as procesos,
-                AVG(100 - cp.merma_porcentaje) as eficiencia_promedio,
+                COALESCE(SUM(cp.cantidad_entrada_kg), 0) as entrada_kg,
+                COALESCE(SUM(cp.cantidad_salida_kg), 0) as salida_kg,
                 AVG(cp.merma_porcentaje) as merma_promedio
             FROM traza.control_procesos cp
             JOIN traza.tanques t ON cp.tanque_id = t.id
             WHERE cp.estado = 'FINALIZADO' 
-                AND EXTRACT(YEAR FROM cp.fecha_proceso) = ?
+                AND EXTRACT(YEAR FROM cp.fecha_inicio) = ?
                 AND cp.deleted_at IS NULL
                 AND t.deleted_at IS NULL
             GROUP BY t.id, t.nombre_tanque
-            ORDER BY eficiencia_promedio DESC
+            ORDER BY merma_promedio ASC
         ", [$gestion]);
 
         $distribucionMerma = DB::select("
@@ -382,7 +397,7 @@ class DashboardTrazabilidadController extends Controller
                 COUNT(*) as procesos
             FROM traza.control_procesos
             WHERE estado = 'FINALIZADO' 
-                AND EXTRACT(YEAR FROM fecha_proceso) = ?
+                AND EXTRACT(YEAR FROM fecha_inicio) = ?
                 AND deleted_at IS NULL
             GROUP BY rango_merma
             ORDER BY rango_merma
@@ -391,18 +406,19 @@ class DashboardTrazabilidadController extends Controller
         return response()->json([
             'gestion' => $gestion,
             'resumen' => [
-                'procesos_finalizados' => (int) $resumen->procesos_finalizados,
-                'entrada_total' => round((float) $resumen->entrada_total, 2),
-                'salida_total' => round((float) $resumen->salida_total, 2),
-                'merma_total' => round((float) $resumen->merma_total, 2),
-                'eficiencia_promedio' => round((float) $resumen->eficiencia_promedio, 2)
+                'procesos_finalizados' => (int) ($resumen->procesos_finalizados ?? 0),
+                'entrada_total' => round((float) ($resumen->entrada_total ?? 0), 2),
+                'salida_total' => round((float) ($resumen->salida_total ?? 0), 2),
+                'merma_total' => round((float) ($resumen->merma_total ?? 0), 2),
+                'merma_promedio' => round((float) ($resumen->merma_promedio ?? 0), 2)
             ],
-            'eficiencia_por_tanque' => array_map(function($t) {
+            'eficiencia_tanques' => array_map(function($t) {
                 return [
                     'tanque' => $t->nombre_tanque,
                     'procesos' => (int) $t->procesos,
-                    'eficiencia_promedio' => round((float) $t->eficiencia_promedio, 2),
-                    'merma_promedio' => round((float) $t->merma_promedio, 2)
+                    'entrada_kg' => round((float) $t->entrada_kg, 2),
+                    'salida_kg' => round((float) $t->salida_kg, 2),
+                    'merma_porcentaje' => round((float) $t->merma_promedio, 2)
                 ];
             }, $eficienciaPorTanque),
             'distribucion_merma' => array_map(function($d) {
@@ -426,9 +442,14 @@ class DashboardTrazabilidadController extends Controller
             SELECT 
                 COUNT(DISTINCT l.id) as lotes_generados,
                 SUM(l.cantidad_kg) as total_envasado,
-                SUM(CASE WHEN k.lote_id IS NULL THEN l.cantidad_kg ELSE 0 END) as stock_actual
+                SUM(l.cantidad_kg) - COALESCE(SUM(k.salidas), 0) as stock_actual
             FROM traza.lotes l
-            LEFT JOIN traza.kardex k ON l.id = k.lote_id AND k.venta_id IS NOT NULL
+            LEFT JOIN (
+                SELECT lote_id, SUM(cantidad_salida) as salidas
+                FROM traza.kardex
+                WHERE cantidad_salida IS NOT NULL AND cantidad_salida > 0 AND deleted_at IS NULL
+                GROUP BY lote_id
+            ) k ON l.id = k.lote_id
             WHERE EXTRACT(YEAR FROM l.fecha_envasado) = ?
                 AND l.deleted_at IS NULL
         ", [$gestion]);
@@ -462,8 +483,8 @@ class DashboardTrazabilidadController extends Controller
             return (float) $t->porcentaje_ocupacion > 80;
         });
 
-        $capacidadTotal = array_sum(array_column($tanques, 'capacidad_kg'));
-        $ocupadoTotal = array_sum(array_column($tanques, 'ocupado_kg'));
+        $capacidadTotal = count($tanques) > 0 ? array_sum(array_map(function($t) { return (float) $t->capacidad_kg; }, $tanques)) : 0;
+        $ocupadoTotal = count($tanques) > 0 ? array_sum(array_map(function($t) { return (float) $t->ocupado_kg; }, $tanques)) : 0;
 
         $topProductos = DB::select("
             SELECT 
@@ -479,40 +500,30 @@ class DashboardTrazabilidadController extends Controller
             LIMIT 5
         ", [$gestion]);
 
-        $stockActual = (float) $resumenLotes->stock_actual;
-        $totalEnvasado = (float) $resumenLotes->total_envasado;
+        $stockActual = (float) ($resumenLotes->stock_actual ?? 0);
+        $totalEnvasado = (float) ($resumenLotes->total_envasado ?? 0);
         $porcentajeStock = $totalEnvasado > 0 ? round(($stockActual / $totalEnvasado) * 100, 2) : 0;
+
+        $tanquesCriticosCount = count($tanquesCriticos);
+        $porcentajeOcupacionTotal = $capacidadTotal > 0 ? round(($ocupadoTotal / $capacidadTotal) * 100, 2) : 0;
 
         return response()->json([
             'gestion' => $gestion,
-            'lotes' => [
-                'generados' => (int) $resumenLotes->lotes_generados,
-                'total_envasado' => round($totalEnvasado, 2),
+            'resumen' => [
+                'lotes_generados' => (int) ($resumenLotes->lotes_generados ?? 0),
                 'stock_actual' => round($stockActual, 2),
-                'porcentaje_stock' => $porcentajeStock,
-                'vendidos' => (int) $lotesVendidos->total
+                'ocupacion_tanques' => $porcentajeOcupacionTotal,
+                'tanques_criticos' => $tanquesCriticosCount
             ],
-            'tanques' => [
-                'operativos' => count($tanques),
-                'capacidad_total' => round($capacidadTotal, 2),
-                'ocupado_total' => round($ocupadoTotal, 2),
-                'porcentaje_ocupacion' => $capacidadTotal > 0 ? round(($ocupadoTotal / $capacidadTotal) * 100, 2) : 0,
-                'disponible' => round($capacidadTotal - $ocupadoTotal, 2),
-                'criticos' => array_map(function($t) {
-                    return [
-                        'tanque' => $t->nombre_tanque,
-                        'capacidad' => round((float) $t->capacidad_kg, 2),
-                        'ocupado' => round((float) $t->ocupado_kg, 2),
-                        'porcentaje' => (float) $t->porcentaje_ocupacion
-                    ];
-                }, array_values($tanquesCriticos))
-            ],
-            'top_productos' => array_map(function($p) {
+            'detalle_tanques' => array_map(function($t) {
                 return [
-                    'producto' => $p->nombre_producto,
-                    'total_kg' => round((float) $p->total_kg, 2)
+                    'tanque' => $t->nombre_tanque,
+                    'tipo' => 'Almacenamiento',
+                    'capacidad_kg' => round((float) $t->capacidad_kg, 2),
+                    'stock_actual' => round((float) $t->ocupado_kg, 2),
+                    'ocupacion_porcentaje' => round((float) $t->porcentaje_ocupacion, 2)
                 ];
-            }, $topProductos)
+            }, $tanques)
         ]);
     }
 
@@ -533,7 +544,7 @@ class DashboardTrazabilidadController extends Controller
                 AVG(tiempo_proceso_horas) as tiempo_promedio
             FROM traza.control_procesos
             WHERE estado = 'FINALIZADO' 
-                AND EXTRACT(YEAR FROM fecha_proceso) = ?
+                AND EXTRACT(YEAR FROM fecha_inicio) = ?
                 AND deleted_at IS NULL
             GROUP BY metodo_proceso
             ORDER BY eficiencia_promedio DESC
@@ -541,10 +552,10 @@ class DashboardTrazabilidadController extends Controller
 
         return response()->json([
             'gestion' => $gestion,
-            'metodos' => array_map(function($m) {
+            'metodos_usados' => array_map(function($m) {
                 return [
                     'metodo' => $m->metodo,
-                    'procesos' => (int) $m->procesos,
+                    'usos' => (int) $m->procesos,
                     'eficiencia_promedio' => round((float) $m->eficiencia_promedio, 2),
                     'temperatura_promedio' => round((float) $m->temperatura_promedio, 1),
                     'tiempo_promedio' => round((float) $m->tiempo_promedio, 1)

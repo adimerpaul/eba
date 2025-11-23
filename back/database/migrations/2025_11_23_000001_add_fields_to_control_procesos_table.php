@@ -31,6 +31,9 @@ return new class extends Migration
             if (!Schema::hasColumn('control_procesos', 'metodo_proceso')) {
                 $table->string('metodo_proceso', 100)->nullable();
             }
+            if (!Schema::hasColumn('control_procesos', 'estado')) {
+                $table->enum('estado', ['INICIADO', 'EN_PROCESO', 'FINALIZADO', 'CANCELADO'])->default('INICIADO')->nullable();
+            }
             if (!Schema::hasColumn('control_procesos', 'producto_id')) {
                 $table->foreignId('producto_id')->nullable()->constrained('productos');
             }
