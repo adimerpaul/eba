@@ -77,8 +77,23 @@ class AcopioCosecha extends Model implements Auditable{
     {
         return $this->hasMany(\App\Models\AnalisisCalidad::class, 'cosecha_id');
     }
-    function lotes(){
+    public function lotes(){
         return $this->hasMany(\App\Models\Lote::class, 'cosecha_id');
+    }
+    
+    public function controlesProcesoDirecto()
+    {
+        return $this->hasMany(\App\Models\ControlProceso::class, 'cosecha_id');
+    }
+    
+    public function controlesProcesoRelacionados()
+    {
+        return $this->belongsToMany(
+            \App\Models\ControlProceso::class,
+            'control_proceso_acopios',
+            'acopio_cosecha_id',
+            'control_proceso_id'
+        )->withPivot('cantidad_kg')->withTimestamps();
     }
 
     // Relaciones con los nuevos formularios de control
@@ -95,5 +110,41 @@ class AcopioCosecha extends Model implements Auditable{
     public function medicamentos()
     {
         return $this->hasMany(\App\Models\Medicamento::class, 'acopio_cosecha_id');
+    }
+
+    /**
+     * Relación con rechazos
+     */
+    public function rechazos()
+    {
+        return $this->hasMany(\App\Models\AcopioRechazo::class, 'acopio_cosecha_id');
+    }
+
+    /**
+     * Obtener el rechazo activo (si existe)
+     */
+    public function rechazoActivo()
+    {
+        return $this->hasOne(\App\Models\AcopioRechazo::class, 'acopio_cosecha_id')
+            ->where('estado_devolucion', '!=', 'DEVUELTO')
+            ->latest();
+    }
+
+    /**
+     * Relación con registros de transporte de acopio
+     * Permite trazabilidad completa del transporte de materia prima
+     */
+    public function transporteLogs()
+    {
+        return $this->hasMany(\App\Models\AcopioTransporteLog::class, 'acopio_cosecha_id');
+    }
+
+    /**
+     * Obtener el último registro de transporte
+     */
+    public function transporteActual()
+    {
+        return $this->hasOne(\App\Models\AcopioTransporteLog::class, 'acopio_cosecha_id')
+            ->latest();
     }
 }

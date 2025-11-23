@@ -242,6 +242,43 @@
                 <q-item-label class="text-white">Resumen de Acopios</q-item-label>
               </q-item-section>
             </q-item>
+
+            <q-item :inset-level="0.3" dense to="/control-procesos" clickable class="menu-item" active-class="menu-active" v-close-popup >
+              <q-item-section avatar>
+                <q-icon name="settings" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Control de Procesos</q-item-label>
+              </q-item-section>
+            </q-item>
+            
+            <!-- Procesamiento Masivo -->
+            <q-item :inset-level="0.3" dense to="/acopios-pendientes" clickable class="menu-item" active-class="menu-active" v-close-popup >
+              <q-item-section avatar>
+                <q-icon name="sync_alt" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Procesar Acopios</q-item-label>
+              </q-item-section>
+            </q-item>
+            
+            <q-item :inset-level="0.3" dense to="/historial-procesamientos" clickable class="menu-item" active-class="menu-active" v-close-popup >
+              <q-item-section avatar>
+                <q-icon name="history" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Historial Procesamientos</q-item-label>
+              </q-item-section>
+            </q-item>
+            
+            <q-item :inset-level="0.3" dense to="/acopios-rechazados" clickable class="menu-item" active-class="menu-active" v-close-popup >
+              <q-item-section avatar>
+                <q-icon name="cancel" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Acopios Rechazados</q-item-label>
+              </q-item-section>
+            </q-item>
           </q-list>
         </q-expansion-item>
 
@@ -278,14 +315,40 @@
             <q-item-label class="text-white">Clientes</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item :inset-level="0.3" dense to="/transportes" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Transporte')">
-          <q-item-section avatar>
-            <q-icon name="local_shipping" class="text-white"/>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label class="text-white">Transporte</q-item-label>
-          </q-item-section>
-        </q-item>
+        <q-expansion-item
+          dense
+          icon="local_shipping"
+          label="Transporte"
+          class="menu-item text-white"
+          v-if="hasPerm('Transporte')"
+        >
+          <q-list>
+            <q-item :inset-level="0.5" dense to="/dashboard-transportes" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+              <q-item-section avatar>
+                <q-icon name="dashboard" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Dashboard</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item :inset-level="0.5" dense to="/transportes" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+              <q-item-section avatar>
+                <q-icon name="list" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Gestión de Transportes</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item :inset-level="0.5" dense to="/historial-transportes" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+              <q-item-section avatar>
+                <q-icon name="history" class="text-white"/>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Historial de Viajes</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-expansion-item>
 <!--        plantas-->
         <q-item :inset-level="0.3" dense to="/plantas" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Plantas de procesamiento')">
           <q-item-section avatar>

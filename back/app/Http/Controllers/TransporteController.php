@@ -57,4 +57,21 @@ class TransporteController extends Controller
         $transporte->delete(); // Soft delete
         return response()->json(['deleted' => true]);
     }
+
+    /**
+     * Obtener estadísticas completas de un transporte
+     * GET /transportes/{id}/estadisticas-completas
+     */
+    public function estadisticasCompletas(Transporte $transporte)
+    {
+        return response()->json([
+            'transporte' => [
+                'id' => $transporte->id,
+                'empresa' => $transporte->empresa,
+                'placa' => $transporte->placa,
+                'responsable' => $transporte->responsable,
+            ],
+            'estadisticas' => $transporte->estadisticas_completas
+        ]);
+    }
 }

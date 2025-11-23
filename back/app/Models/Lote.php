@@ -11,6 +11,7 @@ class Lote extends Model implements Auditable
 
     protected $fillable = [
         'cosecha_id',
+        'control_proceso_id',
         'tanque_id',
         'producto_id',
         'codigo_lote',
@@ -25,13 +26,20 @@ class Lote extends Model implements Auditable
         'updated_at',
         'deleted_at',
     ];
-    function apio_cosecha(){
+    
+    public function apio_cosecha(){
         return $this->belongsTo(AcopioCosecha::class,'cosecha_id');
     }
-    function producto(){
+    
+    public function controlProceso(){
+        return $this->belongsTo(ControlProceso::class, 'control_proceso_id');
+    }
+    
+    public function producto(){
         return $this->belongsTo(Producto::class,'producto_id');
     }
-    function tanque(){
+    
+    public function tanque(){
         return $this->belongsTo(Tanque::class, 'tanque_id');
     }
 }

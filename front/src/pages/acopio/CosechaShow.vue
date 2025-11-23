@@ -10,14 +10,12 @@
     <q-card flat bordered>
       <q-tabs v-model="tab" class="text-primary" align="left" dense>
         <q-tab name="general" icon="badge" label="1) Información general" no-caps/>
-        <q-tab name="analisis" icon="science" label="2) Análisis de calidad" no-caps/>
-        <!-- MODIFICACION 2025-11-17: Cambio de label "Formularios" a "Documentos" -->
-        <!-- Los formularios de control (plagas, limpiezas, medicamentos) se movieron a una tab separada -->
-        <q-tab name="formularios" icon="description" label="3) Documentos" no-caps/>
-        <!--<q-tab name="qr" icon="qr_code" label="4) Código QR" no-caps/>-->
-        <q-tab name="lotes" icon="view_list" label="4) Lotes" no-caps/>
-        <!-- MODIFICACION 2025-11-17: Nueva tab para formularios de control del Senasag -->
-        <q-tab name="formularios_control" icon="assignment" label="5) Formularios de Control" no-caps/>
+        <q-tab name="transporte" icon="local_shipping" label="2) Transporte" no-caps/>
+        <q-tab name="analisis" icon="science" label="3) Análisis de calidad" no-caps/>
+        <q-tab name="formularios" icon="description" label="4) Documentos" no-caps/>
+        <q-tab name="lotes" icon="view_list" label="5) Lotes" no-caps/>
+        <q-tab name="formularios_control" icon="assignment" label="6) Formularios de Control" no-caps/>
+        <q-tab name="proceso" icon="factory" label="7) Control de Proceso" no-caps/>
       </q-tabs>
       <q-separator/>
 
@@ -28,6 +26,10 @@
           </q-card-section>
         </q-tab-panel>
 
+        <q-tab-panel name="transporte" class="q-pa-none">
+          <CosechaTransporte v-if="!loading && cosecha" :cosecha="cosecha"/>
+        </q-tab-panel>
+
         <q-tab-panel name="analisis" class="q-pa-none">
           <AnalisisCalidad v-if="!loading && cosecha" :cosecha="cosecha"/>
         </q-tab-panel>
@@ -36,20 +38,16 @@
           <Documentos v-if="!loading && cosecha" :cosecha="cosecha"/>
         </q-tab-panel>
 
-        <!--<q-tab-panel name="qr" class="q-pa-none">
-          <QrCode v-if="!loading && cosecha" :cosecha="cosecha"/>
-        </q-tab-panel>-->
         <q-tab-panel name="lotes" class="q-pa-none">
           <CosechaLotes v-if="!loading && cosecha" :cosecha="cosecha"/>
         </q-tab-panel>
 
-        <!-- MODIFICACION 2025-11-17: Nuevo panel para formularios de control -->
-        <!-- Contiene los 3 formularios del Senasag: Plagas, Limpieza y Medicamentos -->
-        <!-- MODIFICACION 2025-11-17: Activado modo solo lectura (readOnly=true) -->
-        <!-- En esta vista (Acopios), los formularios son solo de consulta e impresion -->
-        <!-- El registro de formularios solo se realiza desde Produccion Primaria (ProductorAcopios.vue) -->
         <q-tab-panel name="formularios_control" class="q-pa-none">
           <FormulariosControl v-if="!loading && cosecha" :cosecha="cosecha" :read-only="true" />
+        </q-tab-panel>
+
+        <q-tab-panel name="proceso" class="q-pa-none">
+          <ProcesoTab v-if="!loading && cosecha" :cosecha="cosecha" />
         </q-tab-panel>
       </q-tab-panels>
     </q-card>
@@ -66,9 +64,9 @@ import AnalisisCalidad from "pages/acopio/tabs/AnalisisCalidad.vue";
 import Documentos from "pages/acopio/tabs/Documentos.vue";
 import QrCode from "pages/acopio/tabs/QrCode.vue";
 import CosechaLotes from "pages/acopio/tabs/CosechaLotes.vue";
-// MODIFICACION 2025-11-17: Importacion del nuevo componente FormulariosControl
-// Este componente contiene los 3 formularios de control del Senasag
 import FormulariosControl from "pages/acopio/tabs/FormulariosControl.vue";
+import ProcesoTab from "pages/acopio/tabs/ProcesoTab.vue";
+import CosechaTransporte from "pages/acopio/tabs/CosechaTransporte.vue";
 
 export default {
   name: 'AcopioCrear',
@@ -82,8 +80,9 @@ export default {
     ProductorForm, 
     ProductorMapa, 
     AcopioFormulario,
-    // MODIFICACION 2025-11-17: Registro del componente FormulariosControl
-    FormulariosControl
+    FormulariosControl,
+    ProcesoTab,
+    CosechaTransporte
   },
   data() {
     return {

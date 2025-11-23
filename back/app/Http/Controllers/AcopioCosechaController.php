@@ -214,4 +214,20 @@ class AcopioCosechaController extends Controller{
         $acopio->delete();
         return response()->json(['deleted' => true]);
     }
+
+    public function disponiblesParaProceso(Request $request)
+    {
+        $query = AcopioCosecha::with(['apiario.productor', 'producto'])
+            ->where('estado', 'BUENO');
+
+        if ($request->has('producto_id')) {
+            $query->where('producto_id', $request->producto_id);
+        }
+
+        if ($request->has('fecha_desde')) {
+            $query->where('fecha_cosecha', '>=', $request->fecha_desde);
+        }
+
+        return $query->orderByDesc('fecha_cosecha')->get();
+    }
 }

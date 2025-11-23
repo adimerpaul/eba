@@ -73,6 +73,20 @@
         <q-card-section>
           <q-form @submit.prevent="onSubmit" ref="formRef">
             <div class="row q-col-gutter-md">
+              <div class="col-12">
+                <q-select
+                  v-model="form.control_proceso_id"
+                  :options="procesosFinalizados"
+                  option-value="id"
+                  :option-label="opt => `Proceso #${opt.id} - ${opt.tanque?.nombre_tanque || 'N/A'} - Disponible: ${Number(opt.disponible_kg || 0).toFixed(2)} kg`"
+                  emit-value map-options
+                  filled dense
+                  label="Control de Proceso (opcional)"
+                  clearable
+                  @update:model-value="onProcesoChange"
+                  hint="Si selecciona un proceso, se validara contra su capacidad"
+                />
+              </div>
               <div class="col-12 col-md-6">
                 <q-select
                   v-model="form.producto_id"
@@ -84,7 +98,6 @@
                   label="Producto "
                   :loading="loadingProductos"
                 />
-<!--                <pre>{{form.producto_id}}</pre>-->
               </div>
               <div class="col-12 col-md-6">
                 <q-select
@@ -257,7 +270,8 @@ export default {
       productoOptions: [],
       tanqueOptions: [],
       loadingProductos: false,
-      loadingTanques: false
+      loadingTanques: false,
+      procesosFinalizados: []
     }
   },
   computed: {
@@ -267,6 +281,12 @@ export default {
 
     // En edición, permitimos usar el espacio del propio registro
     disponibleParaEsteFormulario () {
+      // Si hay un proceso seleccionado, usar su capacidad disponible
+      if (this.form.control_proceso_id) {
+        const proceso = this.procesosFinalizados.find(p => p.id === this.form.control_proceso_id)
+        return proceso ? Number(proceso.disponible_kg || 0) : 0
+      }
+      // De lo contrario, usar la capacidad de la cosecha
       const actual = this.dlg.mode === 'edit' ? Number(this.dlg.row?.cantidad_kg || 0) : 0
       return this.restanteKg + actual
     },
@@ -389,7 +409,7 @@ export default {
     fmt (v) { return Number(v || 0).toFixed(2) },
 
     async fetchAll () {
-      await Promise.all([this.fetchLotes(), this.fetchProductos(), this.fetchTanques()])
+      await Promise.all([this.fetchLotes(), this.fetchProductos(), this.fetchTanques(), this.fetchProcesosFinalizados()])
     },
 
     async fetchLotes () {
@@ -434,6 +454,22 @@ export default {
       }
     },
 
+    async fetchProcesosFinalizados () {
+      try {
+        const { data } = await this.$axios.get('/control-procesos-finalizados')
+        this.procesosFinalizados = data
+      } catch (e) {
+        this.$q.notify({ type: 'warning', message: 'No se pudieron cargar procesos finalizados' })
+      }
+    },
+
+    onProcesoChange (procesoId) {
+      // Si se selecciona un proceso, resetear cantidad para que el usuario vea el disponible
+      if (procesoId && this.dlg.mode === 'create') {
+        this.form.cantidad_kg = null
+      }
+    },
+
     openCreate () {
       this.dlg = { open: true, mode: 'create', row: null }
       this.form = {
@@ -444,7 +480,8 @@ export default {
         codigo_lote: '',
         fecha_envasado: '',
         fecha_caducidad: '',
-        tipo_envase: ''
+        tipo_envase: '',
+        control_proceso_id: null
       }
     },
 
@@ -457,7 +494,8 @@ export default {
         codigo_lote: row.codigo_lote || '',
         fecha_envasado: row.fecha_envasado || '',
         fecha_caducidad: row.fecha_caducidad || '',
-        tipo_envase: row.tipo_envase || ''
+        tipo_envase: row.tipo_envase || '',
+        control_proceso_id: row.control_proceso_id || null
       }
     },
 

@@ -14,6 +14,14 @@ class ControlProceso extends Model implements Auditable
         'producto_id',
         'tanque_id',
         'fecha_proceso',
+        'cantidad_entrada_kg',
+        'cantidad_salida_kg',
+        'merma_kg',
+        'merma_porcentaje',
+        'estado',
+        'temperatura_proceso',
+        'tiempo_proceso_horas',
+        'metodo_proceso',
         'dato1',
         'dato2',
         'dato3',
@@ -32,27 +40,56 @@ class ControlProceso extends Model implements Auditable
         'user_id',
         'observaciones'
     ];
+    
+    protected $casts = [
+        'fecha_proceso' => 'datetime',
+        'cantidad_entrada_kg' => 'decimal:2',
+        'cantidad_salida_kg' => 'decimal:2',
+        'merma_kg' => 'decimal:2',
+        'merma_porcentaje' => 'decimal:2',
+        'temperatura_proceso' => 'decimal:2',
+        'tiempo_proceso_horas' => 'decimal:2',
+    ];
+    
     protected $hidden = [
         'created_at',
         'updated_at',
         'deleted_at',
     ];
 
-    function  cosecha()
+    public function cosecha()
     {
         return $this->belongsTo(AcopioCosecha::class, 'cosecha_id');
     }
-    function producto()
+    
+    public function acopios()
+    {
+        return $this->belongsToMany(
+            AcopioCosecha::class,
+            'control_proceso_acopios',
+            'control_proceso_id',
+            'acopio_cosecha_id'
+        )->withPivot('cantidad_kg')->withTimestamps();
+    }
+    
+    public function producto()
     {
         return $this->belongsTo(Producto::class, 'producto_id');
     }
-    function tanque()
+    
+    public function tanque()
     {
         return $this->belongsTo(Tanque::class, 'tanque_id');
     }
-    function user()
+    
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+    
+    public function lotes()
+    {
+        return $this->hasMany(Lote::class, 'control_proceso_id');
     }
 
     //            $table->unsignedBigInteger('cosecha_id');

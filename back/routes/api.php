@@ -207,7 +207,16 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::delete('lotes/{lote}', [LoteController::class, 'destroy']);
 
     Route::get('/tanques', [\App\Http\Controllers\TanqueController::class, 'index']);
+    Route::get('/tanques/{id}/ocupacion', [\App\Http\Controllers\TanqueController::class, 'ocupacion']);
 
+    // Rutas para control de transporte de acopios (trazabilidad de entrada)
+    Route::get('acopio-cosechas/{acopioId}/transporte-logs', [\App\Http\Controllers\AcopioTransporteLogController::class, 'index']);
+    Route::post('acopio-cosechas/{acopioId}/transporte-logs', [\App\Http\Controllers\AcopioTransporteLogController::class, 'store']);
+    Route::get('transporte-logs/{id}', [\App\Http\Controllers\AcopioTransporteLogController::class, 'show']);
+    Route::put('transporte-logs/{id}', [\App\Http\Controllers\AcopioTransporteLogController::class, 'update']);
+    Route::delete('transporte-logs/{id}', [\App\Http\Controllers\AcopioTransporteLogController::class, 'destroy']);
+    Route::get('transporte-logs-estadisticas', [\App\Http\Controllers\AcopioTransporteLogController::class, 'estadisticas']);
+    Route::get('transporte-logs-alertas', [\App\Http\Controllers\AcopioTransporteLogController::class, 'alertas']);
 
     Route::get('productos', [ProductoController::class, 'index']);          // ?q=...&tipo=3
     Route::get('productos/{producto}', [ProductoController::class, 'show']);
@@ -230,6 +239,7 @@ Route::middleware('auth:sanctum')->group(callback: function () {
 
     Route::get('transportes', [TransporteController::class, 'index']);          // ?q=...&per_page=...
     Route::get('transportes/{transporte}', [TransporteController::class, 'show']);
+    Route::get('transportes/{transporte}/estadisticas-completas', [TransporteController::class, 'estadisticasCompletas']);
     Route::post('transportes', [TransporteController::class, 'store']);
     Route::put('transportes/{transporte}', [TransporteController::class, 'update']);
     Route::delete('transportes/{transporte}', [TransporteController::class, 'destroy']);
@@ -282,11 +292,31 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::put('bp-usuarios/{id}/permissions', [BpUsuarioController::class, 'syncPermissions']);
 
     Route::post('anularVenta', [VentaController::class, 'anularVenta']);
-//    Route::prefix('reportes/acopio')->group(function () {
-//    https://beba.tuprogam.com/api/acopio-cosechas2/resumen-mensual?year=2025
 
-
-//    });
+    Route::get('control-procesos', [\App\Http\Controllers\ControlProcesoController::class, 'index']);
+    Route::post('control-procesos', [\App\Http\Controllers\ControlProcesoController::class, 'store']);
+    Route::get('control-procesos/{id}', [\App\Http\Controllers\ControlProcesoController::class, 'show']);
+    Route::put('control-procesos/{id}', [\App\Http\Controllers\ControlProcesoController::class, 'update']);
+    Route::delete('control-procesos/{id}', [\App\Http\Controllers\ControlProcesoController::class, 'destroy']);
+    Route::put('control-procesos/{id}/finalizar', [\App\Http\Controllers\ControlProcesoController::class, 'finalizarProceso']);
+    Route::get('control-procesos-finalizados', [\App\Http\Controllers\ControlProcesoController::class, 'finalizados']);
+    Route::get('acopios-disponibles-proceso', [AcopioCosechaController::class, 'disponiblesParaProceso']);
+    
+    // Procesamiento masivo de acopios
+    Route::get('procesamiento-masivo/acopios-disponibles', [\App\Http\Controllers\ProcesamientoMasivoController::class, 'acopiosDisponibles']);
+    Route::post('procesamiento-masivo/procesar', [\App\Http\Controllers\ProcesamientoMasivoController::class, 'procesarMasivo']);
+    Route::post('procesamiento-masivo/rechazar', [\App\Http\Controllers\ProcesamientoMasivoController::class, 'rechazarAcopios']);
+    Route::get('procesamiento-masivo/estadisticas', [\App\Http\Controllers\ProcesamientoMasivoController::class, 'obtenerEstadisticas']);
+    Route::get('procesamiento-masivo/historial', [\App\Http\Controllers\ProcesamientoMasivoController::class, 'historial']);
+    
+    // Gestión de acopios rechazados
+    Route::get('acopio-rechazos', [\App\Http\Controllers\AcopioRechazoController::class, 'index']);
+    Route::get('acopio-rechazos/estadisticas', [\App\Http\Controllers\AcopioRechazoController::class, 'estadisticas']);
+    Route::get('acopio-rechazos/{id}', [\App\Http\Controllers\AcopioRechazoController::class, 'show']);
+    Route::get('acopio-rechazos/productor/{productorId}', [\App\Http\Controllers\AcopioRechazoController::class, 'rechazosPorProductor']);
+    Route::patch('acopio-rechazos/{id}/notificar', [\App\Http\Controllers\AcopioRechazoController::class, 'marcarComoNotificado']);
+    Route::patch('acopio-rechazos/{id}/devolver', [\App\Http\Controllers\AcopioRechazoController::class, 'marcarComoDevuelto']);
+    Route::patch('acopio-rechazos/{id}/cancelar', [\App\Http\Controllers\AcopioRechazoController::class, 'cancelar']);
 });
 Route::get('acopiore2', [AcopioCosechaController::class, 'resumenMensual']);
 Route::get('acopiore1', [AcopioCosechaController::class, 'resumenPorProducto']);

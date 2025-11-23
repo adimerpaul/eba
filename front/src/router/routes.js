@@ -16,9 +16,18 @@ const routes = [
       { path: '/acopio/cosechas/:id', component: () => import('pages/acopio/CosechaShow.vue'), meta: { requiresAuth: true, perm: 'Acopio' } },
       // 2025-11-21: Dashboard de Acopios con análisis multidimensional (geográfico, temporal, organizacional)
       { path: '/dashboard-acopios', component: () => import('pages/acopio/DashboardAcopios.vue'), meta: { requiresAuth: true, perm: 'Modulo Acopio' } },
+      // Control de Proceso Productivo
+      { path: '/control-procesos', component: () => import('pages/acopio/ControlProcesos.vue'), meta: { requiresAuth: true, perm: 'Acopio' } },
+      { path: '/control-procesos/:id', component: () => import('pages/acopio/ProcesoDetalle.vue'), meta: { requiresAuth: true, perm: 'Acopio' } },
+      // Procesamiento Masivo de Acopios
+      { path: '/acopios-pendientes', component: () => import('pages/acopio/AcopiosPendientesProcesar.vue'), meta: { requiresAuth: true, perm: 'Acopio' } },
+      { path: '/historial-procesamientos', component: () => import('pages/acopio/HistorialProcesamientos.vue'), meta: { requiresAuth: true, perm: 'Acopio' } },
+      { path: '/acopios-rechazados', component: () => import('pages/acopio/AcopiosRechazados.vue'), meta: { requiresAuth: true, perm: 'Acopio' } },
       { path: '/productos', component: () => import('pages/productos/Productos.vue'), meta: { requiresAuth: true, perm: 'Productos' } },
       { path: '/clientes', component: () => import('pages/clientes/Clientes.vue'), meta: { requiresAuth: true, perm: 'Clientes' } },
       { path: '/transportes', component: () => import('pages/transportes/Transportes.vue'), meta: { requiresAuth: true, perm: 'Transportes' } },
+      { path: '/historial-transportes', component: () => import('pages/transportes/HistorialTransportes.vue'), meta: { requiresAuth: true, perm: 'Transportes' } },
+      { path: '/dashboard-transportes', component: () => import('pages/transportes/DashboardTransportes.vue'), meta: { requiresAuth: true, perm: 'Transportes' } },
       { path: '/plantas', component: () => import('pages/plantas/Plantas.vue'), meta: { requiresAuth: true, perm: 'Plantas' } },
       { path: '/ventas/crear', component: () => import('pages/ventas/VentaCrear.vue'), meta: { requiresAuth: true, perm: 'Ventas' } },
       { path: '/ventas', component: () => import('pages/ventas/Ventas.vue'), meta: { requiresAuth: true, perm: 'Ventas' } },

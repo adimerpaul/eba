@@ -33,40 +33,58 @@ class LoteController extends Controller
     public function store(Request $request, AcopioCosecha $cosecha)
     {
         return DB::transaction(function () use ($request, $cosecha) {
-            // 1) Validar producto tipo 3
             $producto = Producto::findOrFail($request->producto_id);
             if ((int) $producto->tipo_id !== 3) {
                 return response()->json(['message' => 'El producto debe ser de tipo 3.'], 422);
             }
 
-            // 2) Validar capacidad disponible
-            // Bloqueo optimista simple: recalcular dentro de la transacción
-            $asignado  = (float) $cosecha->lotes()->sum('cantidad_kg');
-            $capacidad = (float) ($cosecha->cantidad_kg ?? 0);
-            $cantidad  = (float) $request->cantidad_kg;
+            if ($request->control_proceso_id) {
+                $controlProceso = \App\Models\ControlProceso::where('id', $request->control_proceso_id)
+                    ->where('estado', 'FINALIZADO')
+                    ->first();
 
-            if ($asignado + $cantidad > $capacidad) {
-                return response()->json([
-                    'message'  => 'La cantidad excede el disponible en la cosecha.',
-                    'restante' => max(0, $capacidad - $asignado),
-                ], 422);
+                if (!$controlProceso) {
+                    return response()->json([
+                        'message' => 'El control de proceso no existe o no esta finalizado'
+                    ], 422);
+                }
+
+                $asignadoProceso = $controlProceso->lotes()->sum('cantidad_kg');
+                $disponibleProceso = $controlProceso->cantidad_salida_kg;
+                $cantidad = (float) $request->cantidad_kg;
+
+                if ($asignadoProceso + $cantidad > $disponibleProceso) {
+                    return response()->json([
+                        'message' => 'La cantidad excede el disponible del proceso.',
+                        'disponible' => max(0, $disponibleProceso - $asignadoProceso),
+                    ], 422);
+                }
+            } else {
+                $asignado  = (float) $cosecha->lotes()->sum('cantidad_kg');
+                $capacidad = (float) ($cosecha->cantidad_kg ?? 0);
+                $cantidad  = (float) $request->cantidad_kg;
+
+                if ($asignado + $cantidad > $capacidad) {
+                    return response()->json([
+                        'message'  => 'La cantidad excede el disponible en la cosecha.',
+                        'restante' => max(0, $capacidad - $asignado),
+                    ], 422);
+                }
             }
 
-            // 3) Generar código de lote si no viene
             $codigo = $request->codigo_lote ?: $this->makeCodigoLote($producto, $cosecha);
 
-            // 4) Crear lote
             $lote = new Lote($request->only([
                 'tanque_id','producto_id','cantidad_kg','fecha_envasado','fecha_caducidad','tipo_envase'
             ]));
             $lote->cosecha_id = $cosecha->id;
+            $lote->control_proceso_id = $request->control_proceso_id;
             $lote->codigo_lote = $codigo;
             $lote->save();
 
-            // 5) Ajustar stock del producto
             $producto->increment('cantidad', $cantidad);
 
-            return $lote->load(['producto','tanque']);
+            return $lote->load(['producto','tanque','controlProceso']);
         });
     }
 
@@ -75,44 +93,61 @@ class LoteController extends Controller
         return DB::transaction(function () use ($request, $lote) {
             $cosecha = AcopioCosecha::findOrFail($lote->cosecha_id);
 
-            // 1) Validar producto tipo 3
             $nuevoProducto = Producto::findOrFail($request->producto_id);
             if ((int) $nuevoProducto->tipo_id !== 3) {
                 return response()->json(['message' => 'El producto debe ser de tipo 3.'], 422);
             }
 
-            // 2) Validar capacidad con la nueva cantidad
             $cantidadNueva = (float) $request->cantidad_kg;
             $cantidadVieja = (float) $lote->cantidad_kg;
 
-            // sum(lotes) - loteActual + cantidadNueva <= capacidad
-            $asignadoSinActual = (float) $cosecha->lotes()
-                ->where('id', '!=', $lote->id)
-                ->sum('cantidad_kg');
+            if ($request->control_proceso_id) {
+                $controlProceso = \App\Models\ControlProceso::where('id', $request->control_proceso_id)
+                    ->where('estado', 'FINALIZADO')
+                    ->first();
 
-            $capacidad = (float) ($cosecha->cantidad_kg ?? 0);
-            if ($asignadoSinActual + $cantidadNueva > $capacidad) {
-                return response()->json([
-                    'message'  => 'La cantidad excede el disponible en la cosecha.',
-                    'restante' => max(0, $capacidad - $asignadoSinActual),
-                ], 422);
+                if (!$controlProceso) {
+                    return response()->json([
+                        'message' => 'El control de proceso no existe o no esta finalizado'
+                    ], 422);
+                }
+
+                $asignadoSinActual = (float) $controlProceso->lotes()
+                    ->where('id', '!=', $lote->id)
+                    ->sum('cantidad_kg');
+
+                $disponible = $controlProceso->cantidad_salida_kg;
+                if ($asignadoSinActual + $cantidadNueva > $disponible) {
+                    return response()->json([
+                        'message'  => 'La cantidad excede el disponible del proceso.',
+                        'disponible' => max(0, $disponible - $asignadoSinActual),
+                    ], 422);
+                }
+            } else {
+                $asignadoSinActual = (float) $cosecha->lotes()
+                    ->where('id', '!=', $lote->id)
+                    ->sum('cantidad_kg');
+
+                $capacidad = (float) ($cosecha->cantidad_kg ?? 0);
+                if ($asignadoSinActual + $cantidadNueva > $capacidad) {
+                    return response()->json([
+                        'message'  => 'La cantidad excede el disponible en la cosecha.',
+                        'restante' => max(0, $capacidad - $asignadoSinActual),
+                    ], 422);
+                }
             }
 
-            // 3) Ajuste de stock por cambio de producto o cantidad
             $productoAnterior = Producto::findOrFail($lote->producto_id);
             $delta = $cantidadNueva - $cantidadVieja;
 
             if ($nuevoProducto->id !== $productoAnterior->id) {
-                // Revertir el stock del producto anterior
                 if ($cantidadVieja > 0) {
                     $productoAnterior->decrement('cantidad', $cantidadVieja);
                 }
-                // Sumar al nuevo producto
                 if ($cantidadNueva > 0) {
                     $nuevoProducto->increment('cantidad', $cantidadNueva);
                 }
             } else {
-                // Mismo producto: ajustar por delta
                 if ($delta > 0) {
                     $nuevoProducto->increment('cantidad', $delta);
                 } elseif ($delta < 0) {
@@ -120,17 +155,19 @@ class LoteController extends Controller
                 }
             }
 
-            // 4) Actualizar lote
             $data = $request->only([
                 'tanque_id','producto_id','cantidad_kg','fecha_envasado','fecha_caducidad','tipo_envase'
             ]);
             if ($request->filled('codigo_lote')) {
                 $data['codigo_lote'] = $request->codigo_lote;
             }
+            if ($request->has('control_proceso_id')) {
+                $data['control_proceso_id'] = $request->control_proceso_id;
+            }
 
             $lote->update($data);
 
-            return $lote->load(['producto','tanque']);
+            return $lote->load(['producto','tanque','controlProceso']);
         });
     }
 
