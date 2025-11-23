@@ -20,29 +20,40 @@ class ProductorController extends Controller
 
         // Búsqueda libre MEJORADA
         // MODIFICACIÓN 2025-11-13: Agregada búsqueda por nombre completo concatenado
-        // para permitir búsquedas como "ZUNY MARIA" que encuentre "ZUNY MARIA HURTADO"
+        // MODIFICACIÓN 2025-11-23: Implementada búsqueda por tokens (palabras independientes)
+        // para permitir búsquedas como "ZULMA TORREZ" que encuentre "ZULMA TERESA TORREZ CUENCA"
         if($request->productor_id){
             $q->where('id', $request->productor_id);
         }
         if ($search = trim((string) $request->get('search', ''))) {
-            // Normalizar búsqueda: eliminar espacios extras entre palabras
+            // 2025-11-23: Normalizar búsqueda eliminando espacios extras entre palabras
             $searchNormalized = preg_replace('/\s+/', ' ', $search);
             
-            $q->where(function ($s) use ($search, $searchNormalized) {
-                // NUEVO: Búsqueda por nombre completo concatenado (nombre + apellidos)
-                // Esto permite buscar "ZUNY MARIA" y encontrar registros donde 
-                // nombre="ZUNY" y apellidos="MARIA HURTADO PADILLA"
-                $s->whereRaw("CONCAT(COALESCE(nombre,''), ' ', COALESCE(apellidos,'')) ILIKE ?", ["%{$searchNormalized}%"])
-                  
-                  // Búsquedas originales mantenidas para compatibilidad
-                  ->orWhere('runsa', 'ilike', "%{$search}%")
-                  ->orWhere('sub_codigo', 'ilike', "%{$search}%")
-                  ->orWhere('nombre', 'ilike', "%{$search}%")
-                  ->orWhere('apellidos', 'ilike', "%{$search}%")
+            // 2025-11-23: Dividir búsqueda en tokens (palabras independientes)
+            $tokens = array_filter(explode(' ', $searchNormalized));
+            
+            $q->where(function ($s) use ($search, $searchNormalized, $tokens) {
+                // 2025-11-23: Búsqueda por tokens en nombre completo
+                // Busca que TODAS las palabras estén presentes (sin importar orden)
+                // Ejemplo: "Zulma Torrez" encuentra "ZULMA TERESA TORREZ CUENCA"
+                if (count($tokens) > 1) {
+                    // Búsqueda multi-token: cada palabra debe estar presente
+                    $s->where(function($subQuery) use ($tokens) {
+                        $concat = "CONCAT(COALESCE(nombre,''), ' ', COALESCE(apellidos,''))";
+                        foreach ($tokens as $token) {
+                            $subQuery->whereRaw("{$concat} ILIKE ?", ["%{$token}%"]);
+                        }
+                    });
+                } else {
+                    // Búsqueda simple con una sola palabra
+                    $s->whereRaw("CONCAT(COALESCE(nombre,''), ' ', COALESCE(apellidos,'')) ILIKE ?", ["%{$searchNormalized}%"]);
+                }
+                
+                // 2025-11-23: Búsquedas directas en campos específicos
+                // NOTA: RUNSA excluido intencionalmente (campo repetible que causa confusión)
+                $s->orWhere('sub_codigo', 'ilike', "%{$search}%")
                   ->orWhere('numcarnet', 'ilike', "%{$search}%")
                   ->orWhere('comunidad', 'ilike', "%{$search}%")
-                  ->orWhere('proveedor', 'ilike', "%{$search}%")
-                  ->orWhere('cip_acopio', 'ilike', "%{$search}%")
                   ->orWhere('num_celular', 'ilike', "%{$search}%");
             });
         }
@@ -263,6 +274,12 @@ class ProductorController extends Controller
         $data['ocupacion']='APICULTOR';
         //$data['organizacion_id'] = $organizacion->id;
         $data['municipio_id'] = $organizacion->municipio_id;
+        
+        // 2025-11-23: Asegurar que runsa nunca sea NULL (campo NOT NULL en DB)
+        // Si no viene en el request o es null, establecer como string vacío
+        if (!isset($data['runsa']) || $data['runsa'] === null) {
+            $data['runsa'] = '';
+        }
 
         $p = Productor::create($data);
         return response()->json($p->load(['municipio:id,nombre_municipio,provincia_id,departamento_id','organizacion:id,nombre_organiza']), 201);
@@ -316,6 +333,15 @@ class ProductorController extends Controller
 
     public function destroy(Productor $productor)
     {
+        // 2025-11-23: Validar que el productor no tenga relaciones criticas antes de eliminar
+        $tieneApiarios = $productor->apiarios()->exists();
+        
+        if ($tieneApiarios) {
+            return response()->json([
+                'message' => 'No se puede eliminar el productor porque tiene apiarios registrados'
+            ], 422);
+        }
+        
         $productor->delete();
         return response()->json(['message' => 'Eliminado'], 200);
     }
@@ -801,5 +827,131 @@ class ProductorController extends Controller
             'productor_id' => null,
             'datos' => null
         ]);
+    }
+
+    /**
+     * Generar reporte individual de productor en PDF
+     * 2025-11-23: Creado para imprimir registro desde tabla de productores
+     * @param Productor $productor
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function generarReporteIndividual(Productor $productor)
+    {
+        $productor->load([
+            'municipio:id,nombre_municipio,provincia_id,departamento_id',
+            'municipio.provincia:id,nombre_provincia',
+            'municipio.departamento:id,nombre_departamento',
+            'organizacion',
+            'certificaciones',
+            'runsas',
+            'apiarios.colmenas'
+        ]);
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $sheet->setCellValue('A1', 'REGISTRO DE PRODUCTOR');
+        $sheet->mergeCells('A1:D1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        $fila = 3;
+        
+        $sheet->setCellValue("A{$fila}", 'DATOS PERSONALES');
+        $sheet->mergeCells("A{$fila}:D{$fila}");
+        $sheet->getStyle("A{$fila}")->getFont()->setBold(true)->setSize(12);
+        $sheet->getStyle("A{$fila}")->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FFE0E0E0');
+        $fila++;
+
+        $datosPersonales = [
+            ['ID:', $productor->id],
+            ['Nombre completo:', $productor->nombre_completo],
+            ['CI:', $productor->numcarnet],
+            ['Expedido:', $productor->expedido ?? ''],
+            ['RUNSA:', $productor->runsa ?? ''],
+            ['Sub Codigo:', $productor->sub_codigo ?? ''],
+            ['Celular:', $productor->num_celular ?? ''],
+            ['Fecha nacimiento:', $productor->fec_nacimiento ?? ''],
+            ['Sexo:', $productor->sexo == 1 ? 'Masculino' : ($productor->sexo == 2 ? 'Femenino' : '')],
+            ['Direccion:', $productor->direccion ?? ''],
+            ['Comunidad:', $productor->comunidad ?? ''],
+            ['Estado:', $productor->estado],
+            ['Fecha registro:', $productor->fecha_registro],
+        ];
+
+        foreach ($datosPersonales as $dato) {
+            $sheet->setCellValue("A{$fila}", $dato[0]);
+            $sheet->setCellValue("B{$fila}", $dato[1]);
+            $sheet->getStyle("A{$fila}")->getFont()->setBold(true);
+            $fila++;
+        }
+
+        $fila++;
+        $sheet->setCellValue("A{$fila}", 'UBICACION');
+        $sheet->mergeCells("A{$fila}:D{$fila}");
+        $sheet->getStyle("A{$fila}")->getFont()->setBold(true)->setSize(12);
+        $sheet->getStyle("A{$fila}")->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FFE0E0E0');
+        $fila++;
+
+        $ubicacion = [
+            ['Departamento:', $productor->municipio->departamento->nombre_departamento ?? ''],
+            ['Provincia:', $productor->municipio->provincia->nombre_provincia ?? ''],
+            ['Municipio:', $productor->municipio->nombre_municipio ?? ''],
+            ['Organizacion:', $productor->organizacion->nombre_organiza ?? ''],
+        ];
+
+        foreach ($ubicacion as $dato) {
+            $sheet->setCellValue("A{$fila}", $dato[0]);
+            $sheet->setCellValue("B{$fila}", $dato[1]);
+            $sheet->getStyle("A{$fila}")->getFont()->setBold(true);
+            $fila++;
+        }
+
+        $fila++;
+        $sheet->setCellValue("A{$fila}", 'APIARIOS Y COLMENAS');
+        $sheet->mergeCells("A{$fila}:D{$fila}");
+        $sheet->getStyle("A{$fila}")->getFont()->setBold(true)->setSize(12);
+        $sheet->getStyle("A{$fila}")->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FFE0E0E0');
+        $fila++;
+
+        if ($productor->apiarios->count() > 0) {
+            foreach ($productor->apiarios as $apiario) {
+                $sheet->setCellValue("A{$fila}", 'Apiario:');
+                $sheet->setCellValue("B{$fila}", $apiario->nombre ?? 'Sin nombre');
+                $sheet->getStyle("A{$fila}")->getFont()->setBold(true);
+                $fila++;
+                $sheet->setCellValue("A{$fila}", 'Ubicacion:');
+                $sheet->setCellValue("B{$fila}", $apiario->ubicacion ?? '');
+                $fila++;
+                $sheet->setCellValue("A{$fila}", 'Colmenas:');
+                $sheet->setCellValue("B{$fila}", $apiario->colmenas->count());
+                $fila++;
+                $fila++;
+            }
+        } else {
+            $sheet->setCellValue("A{$fila}", 'Sin apiarios registrados');
+            $fila++;
+        }
+
+        $sheet->getColumnDimension('A')->setWidth(25);
+        $sheet->getColumnDimension('B')->setWidth(40);
+
+        $filename = 'productor_' . $productor->id . '_' . str_replace(' ', '_', $productor->nombre_completo) . '.xlsx';
+        $output = public_path('reportes/' . $filename);
+
+        if (!file_exists(public_path('reportes'))) {
+            mkdir(public_path('reportes'), 0777, true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($output);
+
+        return response()->download($output)->deleteFileAfterSend(true);
     }
 }

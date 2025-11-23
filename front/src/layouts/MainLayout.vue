@@ -174,7 +174,7 @@
           Trazabilidad Atrás
         </q-item-label>
 
-        <q-expansion-item dense expand-separator icon="gavel" label="Modulo Producción Primaria" active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
+        <q-expansion-item v-model="expansionProduccion" dense expand-separator icon="gavel" label="Modulo Producción Primaria" active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
           <q-list>
             <q-item :inset-level="0.3" dense to="/productores/crear" clickable class="menu-item" active-class="menu-active" v-close-popup >
               <q-item-section avatar>
@@ -212,7 +212,7 @@
             </q-item>
           </q-list>
         </q-expansion-item>
-        <q-expansion-item dense expand-separator icon="inbox" label="Módulo Acopio" active-class="menu-active" v-if="hasPerm('Modulo Acopio')">
+        <q-expansion-item v-model="expansionAcopio" dense expand-separator icon="inbox" label="Módulo Acopio" active-class="menu-active" v-if="hasPerm('Modulo Acopio')">
           <q-list>
             <!-- 2025-11-21: Opción 'Registro de Acopio' ocultada - funcionalidad movida a gestión de productores -->
             <!-- <q-item :inset-level="0.3" dense to="/recoleccion" clickable class="menu-item" active-class="menu-active" v-close-popup >
@@ -260,7 +260,7 @@
         </q-item-label>
 
 <!--        productos cleintes transporte-->
-        <q-expansion-item dense expand-separator icon="gavel" label="Módulo de control de proceso productivo " active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
+        <q-expansion-item v-model="expansionProceso" dense expand-separator icon="gavel" label="Módulo de control de proceso productivo " active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
           <q-list>
         <q-item :inset-level="0.3" dense to="/productos" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Productos')">
           <q-item-section avatar>
@@ -313,7 +313,7 @@
           Trazabilidad Adelante
         </q-item-label>
 
-        <q-expansion-item dense expand-separator icon="store" label="Módulo Comercialización" active-class="menu-active" v-if="hasPerm('Modulo comercializacion')">
+        <q-expansion-item v-model="expansionComercializacion" dense expand-separator icon="store" label="Módulo Comercialización" active-class="menu-active" v-if="hasPerm('Modulo comercializacion')">
           <q-list>
 <!--            crear ventas-->
             <q-item :inset-level="0.3" dense to="/ventas/crear" clickable class="menu-item" active-class="menu-active" v-close-popup >
@@ -335,7 +335,7 @@
             </q-item>
           </q-list>
         </q-expansion-item>
-        <q-expansion-item dense expand-separator icon="data_thresholding" label="Módulo Reportes" active-class="menu-active" v-if="hasPerm('Modulo reportes')">
+        <q-expansion-item v-model="expansionReportes" dense expand-separator icon="data_thresholding" label="Módulo Reportes" active-class="menu-active" v-if="hasPerm('Modulo reportes')">
           <q-list>
 <!--            crear ventas-->
 <!--            <q-item :inset-level="0.3" dense to="/reportesActuales" clickable class="menu-item" active-class="menu-active" v-close-popup >-->
@@ -393,6 +393,13 @@ const { proxy } = getCurrentInstance()
 const store = useCounterStore()
 
 const leftDrawerOpen = ref(false)
+
+// 2025-11-23: Estados de expansión persistentes para mantener secciones abiertas
+const expansionProduccion = ref(true)
+const expansionAcopio = ref(true)
+const expansionProceso = ref(true)
+const expansionComercializacion = ref(true)
+const expansionReportes = ref(true)
 
 // Helpers de permisos
 function hasPerm (perm) {

@@ -1,58 +1,203 @@
 <template>
   <q-page class="q-pa-md">
+    <!-- 2025-11-23: Header reorganizado con botones de accion -->
     <div class="row items-center q-gutter-sm q-mb-sm">
       <q-avatar icon="person_search" color="primary" text-color="white" />
       <div class="text-h6 text-weight-bold">Productores</div>
       <q-space />
+      <!-- 2025-11-23: Botones de accion movidos al header -->
       <q-btn color="primary" icon="forest" label="Actualizar árbol geo" @click="loadTree" :loading="loadingTree"
         no-caps />
+      <!-- 2025-11-23: Botón para abrir modal de registro rápido -->
+      <q-btn color="primary" icon="person_add" label="Nuevo Productor" :loading="loading"
+        @click="showModalCrear = true" no-caps />
+      <q-btn color="green" icon="download" label="EXCEL" @click="genrarExcel" :loading="loading" no-caps />
     </div>
 
     <q-card flat bordered class="q-mb-md">
       <q-card-section class="row q-col-gutter-sm">
-        <div class="col-12 col-md-3">
+        <!-- 2025-11-23: Campo de busqueda principal actualizado -->
+        <!-- <div class="col-12 col-md-3">
           <q-input v-model="filters.search" dense outlined placeholder="Buscar (RUNSA, nombre, carnet, celular...)"
             @keyup.enter="applyFilters">
             <template #append><q-icon name="search" /></template>
           </q-input>
+        </div> -->
+        <div class="col-12 col-md-4">
+          <q-input 
+            v-model="filters.search" 
+            dense 
+            outlined 
+            placeholder="Buscar por nombre, apellido o CI..."
+            :loading="loading"
+            clearable
+            @keyup.enter="applyFilters"
+          >
+            <template #append>
+              <q-icon name="search" />
+            </template>
+          </q-input>
         </div>
 
-        <div class="col-12 col-md-2">
-          <q-select v-model="filters.estado" :options="['VIGENTE', 'VENCIDO', 'ACTIVO', 'INACTIVO']" dense outlined
-            label="Estado" clearable />
+        <!-- 2025-11-23: Boton para mostrar/ocultar filtros avanzados -->
+        <div class="col-auto">
+          <q-btn 
+            flat 
+            dense
+            :icon="mostrarFiltrosAvanzados ? 'filter_list_off' : 'filter_list'"
+            :label="mostrarFiltrosAvanzados ? 'Ocultar filtros' : 'Más filtros'"
+            @click="mostrarFiltrosAvanzados = !mostrarFiltrosAvanzados"
+            color="primary"
+          >
+            <q-badge v-if="filtrosActivosCount > 0" color="red" floating>{{ filtrosActivosCount }}</q-badge>
+          </q-btn>
         </div>
 
-        <div class="col-12 col-md-2">
-          <q-select v-model="filters.sexo" :options="sexoOptions" dense outlined label="Sexo" clearable />
+        <!-- 2025-11-23: Boton para aplicar filtros manualmente -->
+        <div class="col-auto">
+          <q-btn 
+            color="secondary" 
+            icon="refresh" 
+            label="Aplicar" 
+            :loading="loading" 
+            @click="applyFilters" 
+            no-caps 
+          />
         </div>
 
-        <div class="col-12 col-md-2">
-          <q-input v-model="filters.fecha_desde" type="date" dense outlined label="Desde" />
-        </div>
-        <div class="col-12 col-md-2">
-          <q-input v-model="filters.fecha_hasta" type="date" dense outlined label="Hasta" />
-        </div>
+        <!-- 2025-11-23: Filtros avanzados colapsables con transicion -->
+        <q-slide-transition>
+          <div v-show="mostrarFiltrosAvanzados" class="col-12">
+            <div class="row q-col-gutter-sm">
+              <div class="col-12 col-md-3">
+                <q-select v-model="filters.estado" :options="['VIGENTE', 'VENCIDO', 'ACTIVO', 'INACTIVO']" dense outlined
+                  label="Estado" clearable />
+              </div>
 
-        <div class="col-12 col-md-3">
-          <q-select v-model="filters.departamento_id" :options="depOptions" option-label="label" option-value="value"
-            emit-value map-options dense outlined label="Departamento" @update:model-value="onDepChange" />
-        </div>
-        <div class="col-12 col-md-3">
-          <q-select v-model="filters.provincia_id" :options="provOptions" option-label="label" option-value="value"
-            emit-value map-options dense outlined label="Provincia" :disable="!filters.departamento_id"
-            @update:model-value="onProvChange" />
-        </div>
-        <div class="col-12 col-md-3">
-          <q-select v-model="filters.municipio_id" :options="munOptions" option-label="label" option-value="value"
-            emit-value map-options dense outlined label="Municipio" :disable="!filters.provincia_id" />
-        </div>
+              <div class="col-12 col-md-2">
+                <q-select v-model="filters.sexo" :options="sexoOptions" dense outlined label="Sexo" clearable />
+              </div>
 
-        <div class="col-12 col-md-auto q-gutter-sm">
-          <q-btn color="secondary" icon="refresh" label="Aplicar" :loading="loading" @click="applyFilters" no-caps />
-          <!--          btn craear productos-->
-          <q-btn color="primary" icon="person_add" label="Nuevo Productor" :loading="loading"
-            @click="$router.push('/productores/crear')" no-caps />
-          <q-btn color="green" label="EXCEL" @click="genrarExcel" :loading="loading" />
+              <div class="col-12 col-md-2">
+                <q-input v-model="filters.fecha_desde" type="date" dense outlined label="Desde" />
+              </div>
+              <div class="col-12 col-md-2">
+                <q-input v-model="filters.fecha_hasta" type="date" dense outlined label="Hasta" />
+              </div>
+
+              <div class="col-12 col-md-3">
+                <q-select v-model="filters.departamento_id" :options="depOptions" option-label="label" option-value="value"
+                  emit-value map-options dense outlined label="Departamento" @update:model-value="onDepChange" />
+              </div>
+              <div class="col-12 col-md-3">
+                <q-select v-model="filters.provincia_id" :options="provOptions" option-label="label" option-value="value"
+                  emit-value map-options dense outlined label="Provincia" :disable="!filters.departamento_id"
+                  @update:model-value="onProvChange" />
+              </div>
+              <div class="col-12 col-md-3">
+                <q-select v-model="filters.municipio_id" :options="munOptions" option-label="label" option-value="value"
+                  emit-value map-options dense outlined label="Municipio" :disable="!filters.provincia_id" />
+              </div>
+            </div>
+          </div>
+        </q-slide-transition>
+      </q-card-section>
+    </q-card>
+
+    <!-- 2025-11-23: Chips de filtros activos -->
+    <q-card v-if="filtrosActivosCount > 0" flat bordered class="q-mb-md">
+      <q-card-section class="q-pa-sm">
+        <div class="row items-center q-gutter-sm">
+          <div class="text-caption text-grey-7">Filtros activos:</div>
+          
+          <q-chip
+            v-if="filters.estado"
+            removable
+            @remove="removerFiltro('estado')"
+            color="primary"
+            text-color="white"
+            size="sm"
+          >
+            Estado: {{ filters.estado }}
+          </q-chip>
+          
+          <q-chip
+            v-if="filters.sexo"
+            removable
+            @remove="removerFiltro('sexo')"
+            color="primary"
+            text-color="white"
+            size="sm"
+          >
+            Sexo: {{ sexoOptions.find(s => s.value === filters.sexo)?.label }}
+          </q-chip>
+          
+          <q-chip
+            v-if="filters.fecha_desde"
+            removable
+            @remove="removerFiltro('fecha_desde')"
+            color="primary"
+            text-color="white"
+            size="sm"
+          >
+            Desde: {{ filters.fecha_desde }}
+          </q-chip>
+          
+          <q-chip
+            v-if="filters.fecha_hasta"
+            removable
+            @remove="removerFiltro('fecha_hasta')"
+            color="primary"
+            text-color="white"
+            size="sm"
+          >
+            Hasta: {{ filters.fecha_hasta }}
+          </q-chip>
+          
+          <q-chip
+            v-if="filters.departamento_id"
+            removable
+            @remove="removerFiltro('departamento_id')"
+            color="primary"
+            text-color="white"
+            size="sm"
+          >
+            Depto: {{ depOptions.find(d => d.value === filters.departamento_id)?.label }}
+          </q-chip>
+          
+          <q-chip
+            v-if="filters.provincia_id"
+            removable
+            @remove="removerFiltro('provincia_id')"
+            color="primary"
+            text-color="white"
+            size="sm"
+          >
+            Prov: {{ provOptions.find(p => p.value === filters.provincia_id)?.label }}
+          </q-chip>
+          
+          <q-chip
+            v-if="filters.municipio_id"
+            removable
+            @remove="removerFiltro('municipio_id')"
+            color="primary"
+            text-color="white"
+            size="sm"
+          >
+            Mun: {{ munOptions.find(m => m.value === filters.municipio_id)?.label }}
+          </q-chip>
+          
+          <q-space />
+          
+          <q-btn
+            flat
+            dense
+            label="Limpiar filtros"
+            icon="clear_all"
+            color="negative"
+            size="sm"
+            @click="limpiarTodosFiltros"
+          />
         </div>
       </q-card-section>
     </q-card>
@@ -110,6 +255,8 @@
             <th class="text-left" v-if="!trazabilidadActiva">Comunidad</th>
             <th class="text-left">Estado</th>
             <th class="text-left" v-if="!trazabilidadActiva">Registro</th>
+            <!-- 2025-11-23: Columna de acciones agregada al final -->
+            <th class="text-center" v-if="!trazabilidadActiva">Acciones</th>
 
             <!-- Columnas dinamicas mensuales cuando trazabilidad esta activa -->
             <th v-if="trazabilidadActiva" v-for="mes in mesesTemporada" :key="mes.offset"
@@ -147,6 +294,25 @@
               </q-chip>
             </td>
             <td class="text-left" v-if="!trazabilidadActiva">{{ row.fecha_registro }}</td>
+            
+            <!-- 2025-11-23: Celda de acciones con botones de Editar, Eliminar e Imprimir -->
+            <td class="text-center acciones-cell" v-if="!trazabilidadActiva">
+              <q-btn flat dense round size="sm" color="primary" icon="edit" 
+                @click.stop="openDetails(row)"
+                title="Editar productor">
+                <q-tooltip>Editar</q-tooltip>
+              </q-btn>
+              <q-btn flat dense round size="sm" color="negative" icon="delete" 
+                @click.stop="deleteProductor(row)"
+                title="Eliminar productor">
+                <q-tooltip>Eliminar</q-tooltip>
+              </q-btn>
+              <q-btn flat dense round size="sm" color="secondary" icon="print" 
+                @click.stop="printProductor(row)"
+                title="Imprimir registro">
+                <q-tooltip>Imprimir</q-tooltip>
+              </q-btn>
+            </td>
 
             <!-- Columnas dinamicas de acopios mensuales -->
             <td v-if="trazabilidadActiva" v-for="mes in mesesTemporada" :key="`${row.id}-${mes.offset}`"
@@ -167,7 +333,8 @@
             </td>
           </tr>
           <tr v-if="!loading && rows?.length === 0">
-            <td :colspan="trazabilidadActiva ? 15 : 9" class="text-center text-grey q-pa-md">No hay resultados</td>
+            <!-- 2025-11-23: Colspan actualizado para incluir columna de acciones -->
+            <td :colspan="trazabilidadActiva ? 15 : 10" class="text-center text-grey q-pa-md">No hay resultados</td>
           </tr>
         </tbody>
       </q-markup-table>
@@ -187,13 +354,23 @@
       </div>
     </q-card>
 
+    <!-- 2025-11-23: Modal de creacion rapida de productores -->
+    <ProductorModalCrear 
+      ref="modalCrear"
+      @created="onProductorCreado"
+      @close="showModalCrear = false"
+    />
+
   </q-page>
 </template>
 
 <script>
 import moment from 'moment';
+import ProductorModalCrear from './ProductorModalCrear.vue';
+
 export default {
   name: 'ProductoresPage',
+  components: { ProductorModalCrear },
   data() {
     return {
 
@@ -206,6 +383,14 @@ export default {
 
       loadingTree: false,
       tree: [],
+      // 2025-11-23: Control de modal de creacion rapida
+      showModalCrear: false,
+      // 2025-11-23: Control de filtros avanzados colapsables
+      mostrarFiltrosAvanzados: false,
+      // 2025-11-23: Timer para implementar debounce en busqueda
+      searchDebounceTimer: null,
+      // 2025-11-23: Control de modal de creacion rapida
+      showModalCrear: false,
       filters: {
         search: '',
         estado: null,
@@ -270,6 +455,30 @@ export default {
       const dep = (this.tree || []).find(d => d.id === depId)
       const prov = (dep?.provincias || []).find(p => p.id === provId)
       return (prov?.municipios || []).map(m => ({ label: m.nombre_municipio, value: m.id }))
+    },
+    // 2025-11-23: Computed para contar cuantos filtros avanzados estan activos
+    filtrosActivosCount() {
+      let count = 0
+      if (this.filters.estado) count++
+      if (this.filters.sexo) count++
+      if (this.filters.fecha_desde) count++
+      if (this.filters.fecha_hasta) count++
+      if (this.filters.departamento_id) count++
+      if (this.filters.provincia_id) count++
+      if (this.filters.municipio_id) count++
+      return count
+    }
+  },
+  // 2025-11-23: Watcher para busqueda en tiempo real con debounce
+  watch: {
+    'filters.search'(newVal) {
+      this.debouncedSearch()
+    },
+    // 2025-11-23: Watcher para abrir modal cuando showModalCrear cambia
+    showModalCrear(newVal) {
+      if (newVal && this.$refs.modalCrear) {
+        this.$refs.modalCrear.abrir()
+      }
     }
   },
   mounted() {
@@ -278,7 +487,61 @@ export default {
     this.cargarProductos()
     this.fetchPage()
   },
+  // 2025-11-23: Cleanup de timer de debounce para evitar memory leaks
+  beforeUnmount() {
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer)
+      this.searchDebounceTimer = null
+    }
+  },
   methods: {
+    // 2025-11-23: Implementacion de debounce para busqueda en tiempo real
+    // Espera 600ms despues de que usuario deja de escribir antes de buscar
+    // Solo busca si hay 3+ caracteres o campo esta vacio
+    debouncedSearch() {
+      if (this.searchDebounceTimer) {
+        clearTimeout(this.searchDebounceTimer)
+      }
+      
+      this.searchDebounceTimer = setTimeout(() => {
+        // 2025-11-23: Sanitizar busqueda eliminando espacios multiples y trim
+        if (this.filters.search) {
+          this.filters.search = this.filters.search.trim().replace(/\s+/g, ' ')
+        }
+        
+        const searchLength = this.filters.search?.length || 0
+        if (searchLength === 0 || searchLength >= 3) {
+          this.applyFilters()
+        }
+      }, 600)
+    },
+
+    // 2025-11-23: Metodo para remover un filtro especifico
+    removerFiltro(campo) {
+      this.filters[campo] = null
+      
+      if (campo === 'departamento_id') {
+        this.filters.provincia_id = null
+        this.filters.municipio_id = null
+      } else if (campo === 'provincia_id') {
+        this.filters.municipio_id = null
+      }
+      
+      this.applyFilters()
+    },
+
+    // 2025-11-23: Metodo para limpiar todos los filtros avanzados
+    limpiarTodosFiltros() {
+      this.filters.estado = null
+      this.filters.sexo = null
+      this.filters.fecha_desde = null
+      this.filters.fecha_hasta = null
+      this.filters.departamento_id = null
+      this.filters.provincia_id = null
+      this.filters.municipio_id = null
+      this.applyFilters()
+    },
+
     async genrarExcel() {
       this.loading = true
 
@@ -388,7 +651,22 @@ export default {
       this.pagination.page = 1
       this.fetchPage()
     },
+    // applyFilters() {
+    //   this.pagination.page = 1
+    //   this.fetchPage()
+    // },
+    // 2025-11-23: Actualizado para cancelar timer de debounce antes de aplicar filtros
     applyFilters() {
+      if (this.searchDebounceTimer) {
+        clearTimeout(this.searchDebounceTimer)
+        this.searchDebounceTimer = null
+      }
+      
+      // 2025-11-23: Sanitizar busqueda eliminando espacios multiples y trim
+      if (this.filters.search) {
+        this.filters.search = this.filters.search.trim().replace(/\s+/g, ' ')
+      }
+      
       this.pagination.page = 1
       this.fetchPage()
     },
@@ -489,6 +767,64 @@ export default {
         ? this.trazabilidad.gestion
         : this.trazabilidad.gestion + 1
       return `${mes.nombre} ${anio.toString().slice(-2)}`
+    },
+    
+    // 2025-11-23: Metodo para manejar cuando se crea un productor desde el modal
+    onProductorCreado(productor) {
+      // Refrescar la lista de productores
+      this.applyFilters()
+    },
+
+    // 2025-11-23: Metodo para eliminar productor con confirmacion
+    deleteProductor(row) {
+      this.$q.dialog({
+        title: 'Confirmar eliminación',
+        message: `¿Está seguro de eliminar al productor ${row.nombre_completo}?`,
+        cancel: {
+          label: 'Cancelar',
+          flat: true,
+          color: 'primary'
+        },
+        ok: {
+          label: 'Eliminar',
+          color: 'negative'
+        },
+        persistent: true
+      }).onOk(async () => {
+        try {
+          await this.$axios.delete(`productores/${row.id}`)
+          this.$alert?.success?.('Productor eliminado correctamente')
+          this.applyFilters()
+        } catch (e) {
+          const msg = e.response?.data?.message || 'Error al eliminar el productor'
+          this.$alert?.error?.(msg)
+        }
+      })
+    },
+
+    // 2025-11-23: Metodo para imprimir registro de productor
+    async printProductor(row) {
+      try {
+        const response = await this.$axios.get(`productores/${row.id}/reporte`, {
+          responseType: 'blob'
+        })
+        
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `productor_${row.id}_${row.nombre_completo}.pdf`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+      } catch (e) {
+        if (e.response?.status === 404) {
+          this.$alert?.warning?.('Endpoint de reporte no implementado. Abriendo vista de edición.')
+          window.open(`/productores/editar/${row.id}`, '_blank')
+        } else {
+          this.$alert?.error?.('Error al generar el reporte')
+        }
+      }
     }
   }
 }
@@ -501,6 +837,17 @@ export default {
 
 .row-click:hover {
   background: rgba(0, 0, 0, 0.04);
+}
+
+/* 2025-11-23: Estilos para columna de acciones */
+.acciones-cell {
+  min-width: 150px;
+  white-space: nowrap;
+  padding: 4px 8px;
+}
+
+.acciones-cell .q-btn {
+  margin: 0 2px;
 }
 
 /* Estilos para columnas de trazabilidad mensual */

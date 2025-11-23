@@ -7,49 +7,27 @@
         <div class="text-h5">Dashboard de Acopios</div>
         <div class="text-caption text-grey-7">Análisis multidimensional de producción</div>
       </div>
-      
+
       <q-space />
-      
+
       <!-- 2025-11-21: Selectores globales de gestión y producto -->
       <div class="col-12 col-md-4 q-gutter-sm">
         <div class="row q-gutter-sm">
           <div class="col">
-            <q-select
-              v-model="gestionSeleccionada"
-              :options="gestiones"
-              label="Gestión"
-              dense
-              outlined
-              @update:model-value="cambioFiltroGlobal"
-            />
+            <q-select v-model="gestionSeleccionada" :options="gestiones" label="Gestión" dense outlined
+              @update:model-value="cambioFiltroGlobal" />
           </div>
           <div class="col">
-            <q-select
-              v-model="productoSeleccionado"
-              :options="productos"
-              option-label="nombre_producto"
-              option-value="id"
-              label="Producto"
-              dense
-              outlined
-              emit-value
-              map-options
-              @update:model-value="cambioFiltroGlobal"
-            />
+            <q-select v-model="productoSeleccionado" :options="productos" option-label="nombre_producto"
+              option-value="id" label="Producto" dense outlined emit-value map-options
+              @update:model-value="cambioFiltroGlobal" />
           </div>
         </div>
       </div>
-      
+
       <!-- 2025-11-21: Botón de actualizar datos -->
       <div class="col-auto">
-        <q-btn
-          flat
-          round
-          icon="refresh"
-          color="primary"
-          :loading="loadingActualizar"
-          @click="actualizarDatos"
-        >
+        <q-btn flat round icon="refresh" color="primary" :loading="loadingActualizar" @click="actualizarDatos">
           <q-tooltip>Actualizar datos</q-tooltip>
         </q-btn>
       </div>
@@ -67,12 +45,8 @@
         <q-chip color="orange" text-color="white" icon="analytics" dense>
           Promedio: {{ indicadoresGlobales.promedioKg?.toFixed(2) || '0.00' }} Kg/Productor
         </q-chip>
-        <q-chip
-          :color="indicadoresGlobales.crecimiento >= 0 ? 'positive' : 'negative'"
-          text-color="white"
-          :icon="indicadoresGlobales.crecimiento >= 0 ? 'trending_up' : 'trending_down'"
-          dense
-        >
+        <q-chip :color="indicadoresGlobales.crecimiento >= 0 ? 'positive' : 'negative'" text-color="white"
+          :icon="indicadoresGlobales.crecimiento >= 0 ? 'trending_up' : 'trending_down'" dense>
           Crecimiento: {{ indicadoresGlobales.crecimiento?.toFixed(2) || '0.00' }}%
         </q-chip>
       </div>
@@ -80,14 +54,7 @@
 
     <!-- TABS PRINCIPALES -->
     <q-card flat bordered>
-      <q-tabs
-        v-model="tabActiva"
-        dense
-        align="left"
-        active-color="primary"
-        indicator-color="primary"
-        class="text-grey"
-      >
+      <q-tabs v-model="tabActiva" dense align="left" active-color="primary" indicator-color="primary" class="text-grey">
         <q-tab name="resumen" icon="dashboard" label="Resumen General" no-caps />
         <q-tab name="geografico" icon="location_on" label="Análisis Geográfico" no-caps />
         <q-tab name="productos" icon="inventory" label="Análisis por Producto" no-caps />
@@ -147,7 +114,7 @@
             <div class="col-12 col-md-4">
               <q-card flat bordered>
                 <q-card-section>
-                  <q-inner-loading :showing="loadingTablas" />
+                  <q-inner-loading :showing="loadingTop3" />
                   <div class="text-subtitle1 q-mb-md">Top 3 Departamentos</div>
                   <q-list dense v-if="topDepartamentos.length > 0">
                     <q-item v-for="(item, index) in topDepartamentos" :key="index">
@@ -170,7 +137,7 @@
             <div class="col-12 col-md-4">
               <q-card flat bordered>
                 <q-card-section>
-                  <q-inner-loading :showing="loadingTablas" />
+                  <q-inner-loading :showing="loadingTop3" />
                   <div class="text-subtitle1 q-mb-md">Top 3 Municipios</div>
                   <q-list dense v-if="topMunicipios.length > 0">
                     <q-item v-for="(item, index) in topMunicipios" :key="index">
@@ -193,7 +160,7 @@
             <div class="col-12 col-md-4">
               <q-card flat bordered>
                 <q-card-section>
-                  <q-inner-loading :showing="loadingTablas" />
+                  <q-inner-loading :showing="loadingTop3" />
                   <div class="text-subtitle1 q-mb-md">Top 3 Organizaciones</div>
                   <q-list dense v-if="topOrganizaciones.length > 0">
                     <q-item v-for="(item, index) in topOrganizaciones" :key="index">
@@ -222,45 +189,18 @@
           <!-- 2025-11-21: Filtros geográficos en cascada -->
           <div class="row q-col-gutter-md q-mb-md">
             <div class="col-12 col-md-4">
-              <q-select
-                v-model="filtroDepartamento"
-                :options="departamentos"
-                option-label="nombre_departamento"
-                option-value="id"
-                label="Departamento"
-                dense
-                outlined
-                clearable
-                emit-value
-                map-options
-                @update:model-value="onDepartamentoChange"
-              />
+              <q-select v-model="filtroDepartamento" :options="departamentos" option-label="nombre_departamento"
+                option-value="id" label="Departamento" dense outlined clearable emit-value map-options
+                @update:model-value="onDepartamentoChange" />
             </div>
             <div class="col-12 col-md-4">
-              <q-select
-                v-model="filtroMunicipio"
-                :options="municipios"
-                option-label="nombre_municipio"
-                option-value="id"
-                label="Municipio"
-                dense
-                outlined
-                clearable
-                emit-value
-                map-options
-                :disable="!filtroDepartamento"
-                @update:model-value="aplicarFiltroGeografico"
-              />
+              <q-select v-model="filtroMunicipio" :options="municipios" option-label="nombre_municipio"
+                option-value="id" label="Municipio" dense outlined clearable emit-value map-options
+                :disable="!filtroDepartamento" @update:model-value="aplicarFiltroGeografico" />
             </div>
             <div class="col-12 col-md-4">
-              <q-btn
-                color="primary"
-                label="Aplicar Filtros"
-                icon="filter_alt"
-                @click="aplicarFiltroGeografico"
-                :disable="!filtroDepartamento"
-                no-caps
-              />
+              <q-btn color="primary" label="Aplicar Filtros" icon="filter_alt" @click="aplicarFiltroGeografico"
+                :disable="!filtroDepartamento" no-caps />
             </div>
           </div>
 
@@ -292,35 +232,14 @@
               <div class="row items-center q-mb-md">
                 <div class="text-subtitle1">Detalle por Ubicación</div>
                 <q-space />
-                <q-btn
-                  flat
-                  dense
-                  icon="download"
-                  color="primary"
-                  label="Exportar"
-                  @click="exportarDashboard('geografico')"
-                  :disable="tablaGeografica.length === 0"
-                  no-caps
-                />
+                <q-btn flat dense icon="download" color="primary" label="Exportar"
+                  @click="exportarDashboard('geografico')" :disable="tablaGeografica.length === 0" no-caps />
               </div>
-              <q-table
-                :rows="tablaGeografica"
-                :columns="columnasGeograficas"
-                row-key="ubicacion"
-                dense
-                flat
-                :loading="loadingTablas"
-                :pagination="paginacionGeo"
-                binary-state-sort
-              >
+              <q-table :rows="tablaGeografica" :columns="columnasGeograficas" row-key="ubicacion" dense flat
+                :loading="loadingTablas" :pagination="paginacionGeo" binary-state-sort>
                 <template v-slot:body-cell-porcentaje="props">
                   <q-td :props="props">
-                    <q-linear-progress
-                      :value="props.row.porcentaje / 100"
-                      color="primary"
-                      size="md"
-                      class="q-mb-xs"
-                    />
+                    <q-linear-progress :value="props.row.porcentaje / 100" color="primary" size="md" class="q-mb-xs" />
                     <div class="text-caption">{{ props.row.porcentaje }}%</div>
                   </q-td>
                 </template>
@@ -364,14 +283,8 @@
                 <q-card-section>
                   <q-inner-loading :showing="loadingTablas" />
                   <div class="text-subtitle1 q-mb-md">Distribución Geográfica</div>
-                  <q-table
-                    :rows="tablaDistribucionProducto"
-                    :columns="columnasDistribucionProducto"
-                    row-key="ubicacion"
-                    dense
-                    flat
-                    :pagination="{ rowsPerPage: 5 }"
-                  />
+                  <q-table :rows="tablaDistribucionProducto" :columns="columnasDistribucionProducto" row-key="ubicacion"
+                    dense flat :pagination="{ rowsPerPage: 5 }" />
                 </q-card-section>
               </q-card>
             </div>
@@ -385,17 +298,8 @@
           <!-- 2025-11-21: Selector de gestiones múltiples para comparar -->
           <div class="row q-col-gutter-md q-mb-md">
             <div class="col-12 col-md-6">
-              <q-select
-                v-model="gestionesComparar"
-                :options="gestiones"
-                label="Gestiones a Comparar (máx. 3)"
-                dense
-                outlined
-                multiple
-                use-chips
-                max-values="3"
-                @update:model-value="generarGraficoTemporal"
-              />
+              <q-select v-model="gestionesComparar" :options="gestiones" label="Gestiones a Comparar (máx. 3)" dense
+                outlined multiple use-chips max-values="3" @update:model-value="generarGraficoTemporal" />
             </div>
           </div>
 
@@ -420,20 +324,13 @@
                 <q-card-section>
                   <q-inner-loading :showing="loadingTablas" />
                   <div class="text-subtitle1 q-mb-md">Análisis de Estacionalidad</div>
-                  <q-table
-                    :rows="tablaEstacionalidad"
-                    :columns="columnasEstacionalidad"
-                    row-key="mes"
-                    dense
-                    flat
-                    :pagination="{ rowsPerPage: 12 }"
-                  >
+                  <q-table :rows="tablaEstacionalidad" :columns="columnasEstacionalidad" row-key="mes" dense flat
+                    :pagination="{ rowsPerPage: 12 }">
                     <template v-slot:body-cell-tendencia="props">
                       <q-td :props="props">
                         <q-badge
                           :color="props.row.ranking <= 3 ? 'positive' : (props.row.ranking >= 10 ? 'negative' : 'grey')"
-                          :label="props.row.ranking <= 3 ? 'Alto' : (props.row.ranking >= 10 ? 'Bajo' : 'Medio')"
-                        />
+                          :label="props.row.ranking <= 3 ? 'Alto' : (props.row.ranking >= 10 ? 'Bajo' : 'Medio')" />
                       </q-td>
                     </template>
                   </q-table>
@@ -447,21 +344,13 @@
                 <q-card-section>
                   <q-inner-loading :showing="loadingTablas" />
                   <div class="text-subtitle1 q-mb-md">Comparativa Año vs Año</div>
-                  <q-table
-                    :rows="tablaComparativa"
-                    :columns="columnasComparativa"
-                    row-key="mes"
-                    dense
-                    flat
-                    :pagination="{ rowsPerPage: 12 }"
-                  >
+                  <q-table :rows="tablaComparativa" :columns="columnasComparativa" row-key="mes" dense flat
+                    :pagination="{ rowsPerPage: 12 }">
                     <template v-slot:body-cell-variacion="props">
                       <q-td :props="props">
-                        <q-badge
-                          :color="props.row.variacion >= 0 ? 'positive' : 'negative'"
+                        <q-badge :color="props.row.variacion >= 0 ? 'positive' : 'negative'"
                           :icon="props.row.variacion >= 0 ? 'trending_up' : 'trending_down'"
-                          :label="props.row.variacion.toFixed(2) + '%'"
-                        />
+                          :label="props.row.variacion.toFixed(2) + '%'" />
                       </q-td>
                     </template>
                   </q-table>
@@ -482,32 +371,14 @@
               <div class="row items-center q-mb-md">
                 <div class="text-subtitle1">Ranking de Organizaciones</div>
                 <q-space />
-                <q-btn
-                  flat
-                  dense
-                  icon="download"
-                  color="primary"
-                  label="Exportar"
-                  @click="exportarDashboard('organizacional')"
-                  :disable="tablaOrganizaciones.length === 0"
-                  no-caps
-                />
+                <q-btn flat dense icon="download" color="primary" label="Exportar"
+                  @click="exportarDashboard('organizacional')" :disable="tablaOrganizaciones.length === 0" no-caps />
               </div>
-              <q-table
-                :rows="tablaOrganizaciones"
-                :columns="columnasOrganizaciones"
-                row-key="asociacion"
-                dense
-                flat
-                :pagination="{ rowsPerPage: 10 }"
-              >
+              <q-table :rows="tablaOrganizaciones" :columns="columnasOrganizaciones" row-key="asociacion" dense flat
+                :pagination="{ rowsPerPage: 10 }">
                 <template v-slot:body-cell-posicion="props">
                   <q-td :props="props">
-                    <q-avatar
-                      :color="props.row.posicion <= 3 ? 'primary' : 'grey'"
-                      text-color="white"
-                      size="sm"
-                    >
+                    <q-avatar :color="props.row.posicion <= 3 ? 'primary' : 'grey'" text-color="white" size="sm">
                       {{ props.row.posicion }}
                     </q-avatar>
                   </q-td>
@@ -528,16 +399,9 @@
                       <q-tooltip>Acopio mensual de organización seleccionada</q-tooltip>
                     </q-icon>
                   </div>
-                  <q-select
-                    v-model="orgSeleccionada"
-                    :options="listaOrganizaciones"
-                    option-label="asociacion"
-                    label="Seleccionar Organización"
-                    dense
-                    outlined
-                    @update:model-value="generarGraficoPerformanceOrg"
-                    class="q-mb-md"
-                  />
+                  <q-select v-model="orgSeleccionada" :options="listaOrganizaciones" option-label="asociacion"
+                    label="Seleccionar Organización" dense outlined @update:model-value="generarGraficoPerformanceOrg"
+                    class="q-mb-md" />
                   <canvas ref="chartPerformance" height="150"></canvas>
                 </q-card-section>
               </q-card>
@@ -553,12 +417,7 @@
                     <q-item v-for="item in tablaContribucion" :key="item.asociacion">
                       <q-item-section>
                         <q-item-label>{{ item.asociacion }}</q-item-label>
-                        <q-linear-progress
-                          :value="item.porcentaje / 100"
-                          color="primary"
-                          size="lg"
-                          class="q-mt-xs"
-                        />
+                        <q-linear-progress :value="item.porcentaje / 100" color="primary" size="lg" class="q-mt-xs" />
                       </q-item-section>
                       <q-item-section side>
                         <q-item-label caption>{{ item.porcentaje }}%</q-item-label>
@@ -581,37 +440,38 @@ import moment from 'moment'
 
 export default {
   name: 'DashboardAcopios',
-  
+
   data() {
     return {
       // 2025-11-21: Control de tabs y filtros globales
       tabActiva: 'resumen',
       gestionSeleccionada: moment().year(),
       productoSeleccionado: null,
-      
+
       // 2025-11-21: Catálogos
       gestiones: [],
       productos: [],
       departamentos: [],
       municipios: [],
       listaOrganizaciones: [],
-      
+
       // 2025-11-21: Estados de loading
       loadingActualizar: false,
       loadingKpis: false,
       loadingGraficos: false,
       loadingTablas: false,
-      
+      loadingTop3: false,
+
       // 2025-11-21: Indicadores globales permanentes
       indicadoresGlobales: null,
-      
+
       // 2025-11-21: TAB RESUMEN GENERAL - Datos
       kpisResumen: [],
       datosEvolucionAnual: [],
       topDepartamentos: [],
       topMunicipios: [],
       topOrganizaciones: [],
-      
+
       // 2025-11-21: TAB ANALISIS GEOGRAFICO - Datos
       filtroDepartamento: null,
       filtroMunicipio: null,
@@ -625,7 +485,7 @@ export default {
         { name: 'promedio', label: 'Promedio Kg/Productor', field: 'promedio', align: 'right', sortable: true, format: val => val?.toFixed(2) },
         { name: 'porcentaje', label: '% del Total', field: 'porcentaje', align: 'center', sortable: true }
       ],
-      
+
       // 2025-11-21: TAB ANALISIS POR PRODUCTO - Datos
       datosProductos: [],
       tablaDistribucionProducto: [],
@@ -635,7 +495,7 @@ export default {
         { name: 'porcentaje', label: '% del Producto', field: 'porcentaje', align: 'center', format: val => val?.toFixed(2) + '%' },
         { name: 'productores', label: 'Productores', field: 'productores', align: 'center' }
       ],
-      
+
       // 2025-11-21: TAB ANALISIS TEMPORAL - Datos
       gestionesComparar: [],
       tablaEstacionalidad: [],
@@ -654,7 +514,7 @@ export default {
         { name: 'diferencia', label: 'Diferencia (Kg)', field: 'diferencia', align: 'right', format: val => val?.toFixed(2) },
         { name: 'variacion', label: 'Variación %', field: 'variacion', align: 'center' }
       ],
-      
+
       // 2025-11-21: TAB ANALISIS ORGANIZACIONAL - Datos
       tablaOrganizaciones: [],
       orgSeleccionada: null,
@@ -667,41 +527,42 @@ export default {
         { name: 'promedio', label: 'Promedio Kg/Productor', field: 'promedio', align: 'right', sortable: true, format: val => val?.toFixed(2) },
         { name: 'porcentaje', label: '% del Total', field: 'porcentaje', align: 'center', sortable: true, format: val => val?.toFixed(2) + '%' }
       ],
-      
+
       // 2025-11-21: Instancias de Chart.js
       chartInstances: []
     }
   },
-  
+
   watch: {
     // 2025-11-21: Lazy loading - cargar datos solo cuando se accede a la tab
     tabActiva(nuevaTab) {
       this.cargarDatosTab(nuevaTab)
     }
   },
-  
+
   mounted() {
     this.cargarDatosIniciales()
   },
-  
+
   beforeUnmount() {
     // 2025-11-21: Destruir todas las instancias de Chart.js para evitar memory leaks
     this.destruirCharts()
   },
-  
+
   methods: {
     // ============================================
     // 2025-11-21: METODOS DE INICIALIZACION
     // ============================================
-    
-    cargarDatosIniciales() {
+
+    async cargarDatosIniciales() {
       this.generarGestiones()
-      this.cargarProductos()
-      this.cargarDepartamentos()
+      await this.cargarProductos()
+      await this.cargarDepartamentos()
       this.gestionesComparar = [this.gestionSeleccionada]
+      await this.actualizarIndicadoresGlobales()
       this.cargarDatosDashboard()
     },
-    
+
     generarGestiones() {
       const anioActual = moment().year()
       this.gestiones = []
@@ -709,7 +570,7 @@ export default {
         this.gestiones.push(i)
       }
     },
-    
+
     async cargarProductos() {
       try {
         const { data } = await this.$axios.get('/productos/tipo/1')
@@ -721,7 +582,7 @@ export default {
         this.$alert?.error?.('Error al cargar productos')
       }
     },
-    
+
     async cargarDepartamentos() {
       try {
         const { data } = await this.$axios.get('/departamentos')
@@ -730,79 +591,90 @@ export default {
         this.$alert?.error?.('Error al cargar departamentos')
       }
     },
-    
+
     // ============================================
     // 2025-11-21: METODOS DE CONTROL GENERAL
     // ============================================
-    
+
     cambioFiltroGlobal() {
       this.actualizarIndicadoresGlobales()
       this.cargarDatosTab(this.tabActiva)
     },
-    
-    actualizarDatos() {
+
+    async actualizarDatos() {
       this.loadingActualizar = true
-      this.cargarDatosTab(this.tabActiva)
-      setTimeout(() => {
-        this.loadingActualizar = false
-        this.$q.notify({ type: 'positive', message: 'Datos actualizados' })
-      }, 1000)
+      await this.actualizarIndicadoresGlobales()
+      await this.cargarDatosTab(this.tabActiva)
+      this.loadingActualizar = false
+      this.$q.notify({ type: 'positive', message: 'Datos actualizados' })
     },
-    
+
     cargarDatosDashboard() {
-      this.actualizarIndicadoresGlobales()
       this.cargarDatosTab(this.tabActiva)
     },
-    
-    cargarDatosTab(nombreTab) {
+
+    async cargarDatosTab(nombreTab) {
       switch (nombreTab) {
         case 'resumen':
-          this.cargarKpisResumen()
-          this.generarGraficoEvolucionAnual()
-          this.cargarTop3()
+          // 2025-11-21: Cargar en secuencia estricta para evitar conflictos
+          try {
+            await this.cargarTop3()
+          } catch (error) {
+            console.error('Error en cargarTop3:', error)
+          }
+          try {
+            await this.cargarKpisResumen()
+          } catch (error) {
+            console.error('Error en cargarKpisResumen:', error)
+          }
+          try {
+            await this.generarGraficoEvolucionAnual()
+          } catch (error) {
+            console.error('Error en generarGraficoEvolucionAnual:', error)
+          }
           break
         case 'geografico':
           if (this.filtroDepartamento) {
-            this.aplicarFiltroGeografico()
+            await this.aplicarFiltroGeografico()
           }
           break
         case 'productos':
-          this.generarGraficoProductos()
-          this.cargarDistribucionProducto()
+          await this.generarGraficoProductos()
+          await this.cargarDistribucionProducto()
           break
         case 'temporal':
-          this.generarGraficoTemporal()
-          this.cargarEstacionalidad()
-          this.cargarComparativaAnual()
+          await this.generarGraficoTemporal()
+          await this.cargarEstacionalidad()
+          await this.cargarComparativaAnual()
           break
         case 'organizacional':
-          this.cargarRankingOrganizaciones()
+          await this.cargarRankingOrganizaciones()
           this.cargarMapaContribucion()
           break
       }
     },
-    
+
     // ============================================
     // 2025-11-21: TAB RESUMEN GENERAL - Métodos
     // ============================================
-    
+
     async actualizarIndicadoresGlobales() {
       try {
         const { data } = await this.$axios.get('/acopiore2', {
           params: { year: this.gestionSeleccionada }
         })
-        
+
         const totalKg = data?.data?.reduce((sum, val) => sum + parseFloat(val || 0), 0) || 0
-        
+
         const anioAnterior = await this.$axios.get('/acopiore2', {
           params: { year: this.gestionSeleccionada - 1 }
         })
         const totalKgAnterior = anioAnterior?.data?.data?.reduce((sum, val) => sum + parseFloat(val || 0), 0) || 0
-        
-        const crecimiento = totalKgAnterior > 0 
-          ? ((totalKg - totalKgAnterior) / totalKgAnterior) * 100 
+
+        const crecimiento = totalKgAnterior > 0
+          ? ((totalKg - totalKgAnterior) / totalKgAnterior) * 100
           : 0
-        
+
         this.indicadoresGlobales = {
           totalKg: totalKg,
           totalProductores: 0,
@@ -818,16 +690,16 @@ export default {
         }
       }
     },
-    
+
     async cargarKpisResumen() {
       this.loadingKpis = true
       try {
         const { data } = await this.$axios.get('/acopiore2', {
           params: { year: this.gestionSeleccionada }
         })
-        
+
         const totalKg = data?.data?.reduce((sum, val) => sum + parseFloat(val || 0), 0) || 0
-        
+
         this.kpisResumen = [
           {
             label: 'Total Kg Acopiados',
@@ -860,27 +732,27 @@ export default {
         this.loadingKpis = false
       }
     },
-    
+
     async generarGraficoEvolucionAnual() {
       this.loadingGraficos = true
       try {
         const { data } = await this.$axios.get('/acopiore2', {
           params: { year: this.gestionSeleccionada }
         })
-        
+
         this.datosEvolucionAnual = data?.data || []
-        
+
         await this.$nextTick()
-        
+
         const canvas = this.$refs.chartEvolucionAnual
         if (!canvas) return
-        
+
         const existingChart = this.chartInstances.find(c => c.canvas === canvas)
         if (existingChart) {
           existingChart.destroy()
           this.chartInstances = this.chartInstances.filter(c => c.canvas !== canvas)
         }
-        
+
         const ctx = canvas.getContext('2d')
         const chart = new Chart(ctx, {
           type: 'line',
@@ -906,7 +778,7 @@ export default {
             }
           }
         })
-        
+
         this.chartInstances.push(chart)
       } catch (error) {
         this.$alert?.error?.('Error al generar gráfico de evolución')
@@ -914,46 +786,86 @@ export default {
         this.loadingGraficos = false
       }
     },
-    
+
     async cargarTop3() {
-      this.loadingTablas = true
+      this.loadingTop3 = true
       try {
-        const { data } = await this.$axios.post('/reporteAcopioProveedorDep', {
+        // 2025-11-21: Cargar Top 3 Departamentos
+        const depData = await this.$axios.post('/reporteAcopioProveedorDep', {
           producto_id: this.productoSeleccionado,
           inicio: `${this.gestionSeleccionada}-01-01`,
           fin: `${this.gestionSeleccionada}-12-31`
         })
-        
-        const departamentos = (data?.data || data || [])
+
+        const departamentos = (depData?.data?.data || depData?.data || [])
           .map(d => ({
             nombre: d.departamento,
             kg: parseFloat(d.total || 0)
           }))
           .sort((a, b) => b.kg - a.kg)
-        
+
         this.topDepartamentos = departamentos.slice(0, 3)
-        this.topMunicipios = []
-        this.topOrganizaciones = []
+
+        // 2025-11-21: Cargar Top 3 Municipios
+        const munData = await this.$axios.post('/reporteAcopioProveedorMun', {
+          producto_id: this.productoSeleccionado,
+          inicio: `${this.gestionSeleccionada}-01-01`,
+          fin: `${this.gestionSeleccionada}-12-31`
+        })
+
+        const municipios = (munData?.data?.data || munData?.data || [])
+          .map(m => ({
+            nombre: m.municipio,
+            kg: parseFloat(m.total || 0)
+          }))
+          .sort((a, b) => b.kg - a.kg)
+
+        this.topMunicipios = municipios.slice(0, 3)
+
+        // 2025-11-21: Cargar Top 3 Organizaciones
+        const orgData = await this.$axios.post('/reportAcopioOrg', {
+          gestion: this.gestionSeleccionada,
+          producto_id: this.productoSeleccionado
+        })
+
+        const mesesValidos = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+        const organizaciones = (orgData?.data?.data || orgData?.data || [])
+          .map(org => {
+            // 2025-11-21: Sumar solo los campos que corresponden a meses
+            const totalKg = mesesValidos.reduce((sum, mes) => {
+              return sum + parseFloat(org[mes] || 0)
+            }, 0)
+
+            return {
+              nombre: org.asociacion || 'Sin nombre',
+              kg: totalKg
+            }
+          })
+          .filter(org => org.kg > 0) // 2025-11-21: Filtrar organizaciones sin acopio
+          .sort((a, b) => b.kg - a.kg)
+
+        this.topOrganizaciones = organizaciones.slice(0, 3)
       } catch (error) {
-        this.topDepartamentos = []
-        this.topMunicipios = []
-        this.topOrganizaciones = []
+        // 2025-11-21: No limpiar datos si ya existen para evitar parpadeo
+        if (this.topDepartamentos.length === 0) this.topDepartamentos = []
+        if (this.topMunicipios.length === 0) this.topMunicipios = []
+        if (this.topOrganizaciones.length === 0) this.topOrganizaciones = []
       } finally {
-        this.loadingTablas = false
+        this.loadingTop3 = false
       }
     },
-    
+
     // ============================================
     // 2025-11-21: TAB ANALISIS GEOGRAFICO - Métodos
     // ============================================
-    
+
     async onDepartamentoChange() {
       this.filtroMunicipio = null
       if (this.filtroDepartamento) {
         await this.cargarMunicipios()
       }
     },
-    
+
     async cargarMunicipios() {
       if (!this.filtroDepartamento) return
       try {
@@ -965,27 +877,27 @@ export default {
         this.$alert?.error?.('Error al cargar municipios')
       }
     },
-    
+
     async aplicarFiltroGeografico() {
       this.loadingGraficos = true
       this.loadingTablas = true
-      
+
       try {
-        const endpoint = this.filtroMunicipio 
-          ? '/reporteAcopioProveedorMun' 
+        const endpoint = this.filtroMunicipio
+          ? '/reporteAcopioProveedorMun'
           : '/reporteAcopioProveedorDep'
-        
+
         const { data } = await this.$axios.post(endpoint, {
           producto_id: this.productoSeleccionado,
           inicio: `${this.gestionSeleccionada}-01-01`,
           fin: `${this.gestionSeleccionada}-12-31`
         })
-        
+
         const datos = data?.data || data || []
         this.datosGeograficos = datos
-        
+
         const totalGeneral = datos.reduce((sum, item) => sum + parseFloat(item.total || 0), 0)
-        
+
         this.tablaGeografica = datos.map(item => {
           const totalKg = parseFloat(item.total || 0)
           const productores = parseInt(item.productores || 0)
@@ -997,7 +909,7 @@ export default {
             porcentaje: totalGeneral > 0 ? ((totalKg / totalGeneral) * 100).toFixed(2) : 0
           }
         })
-        
+
         await this.generarGraficoGeografico()
       } catch (error) {
         this.$alert?.error?.('Error al cargar datos geográficos')
@@ -1006,19 +918,19 @@ export default {
         this.loadingTablas = false
       }
     },
-    
+
     async generarGraficoGeografico() {
       await this.$nextTick()
-      
+
       const canvas = this.$refs.chartGeografico
       if (!canvas || this.datosGeograficos.length === 0) return
-      
+
       const existingChart = this.chartInstances.find(c => c.canvas === canvas)
       if (existingChart) {
         existingChart.destroy()
         this.chartInstances = this.chartInstances.filter(c => c.canvas !== canvas)
       }
-      
+
       const ctx = canvas.getContext('2d')
       const chart = new Chart(ctx, {
         type: 'bar',
@@ -1044,34 +956,34 @@ export default {
           }
         }
       })
-      
+
       this.chartInstances.push(chart)
     },
-    
+
     // ============================================
     // 2025-11-21: TAB ANALISIS POR PRODUCTO - Métodos
     // ============================================
-    
+
     async generarGraficoProductos() {
       this.loadingGraficos = true
       try {
         const { data } = await this.$axios.get('/acopiore1', {
           params: { year: this.gestionSeleccionada }
         })
-        
+
         this.datosProductos = data?.data || []
-        
+
         await this.$nextTick()
-        
+
         const canvas = this.$refs.chartProductos
         if (!canvas) return
-        
+
         const existingChart = this.chartInstances.find(c => c.canvas === canvas)
         if (existingChart) {
           existingChart.destroy()
           this.chartInstances = this.chartInstances.filter(c => c.canvas !== canvas)
         }
-        
+
         const ctx = canvas.getContext('2d')
         const chart = new Chart(ctx, {
           type: 'doughnut',
@@ -1097,7 +1009,7 @@ export default {
             }
           }
         })
-        
+
         this.chartInstances.push(chart)
       } catch (error) {
         this.$alert?.error?.('Error al generar gráfico de productos')
@@ -1105,7 +1017,7 @@ export default {
         this.loadingGraficos = false
       }
     },
-    
+
     async cargarDistribucionProducto() {
       this.loadingTablas = true
       try {
@@ -1114,10 +1026,10 @@ export default {
           inicio: `${this.gestionSeleccionada}-01-01`,
           fin: `${this.gestionSeleccionada}-12-31`
         })
-        
+
         const datos = data?.data || data || []
         const totalProducto = datos.reduce((sum, item) => sum + parseFloat(item.total || 0), 0)
-        
+
         this.tablaDistribucionProducto = datos.slice(0, 5).map(item => ({
           ubicacion: item.departamento,
           kg: parseFloat(item.total || 0),
@@ -1130,11 +1042,11 @@ export default {
         this.loadingTablas = false
       }
     },
-    
+
     // ============================================
     // 2025-11-21: TAB ANALISIS TEMPORAL - Métodos
     // ============================================
-    
+
     async generarGraficoTemporal() {
       this.loadingGraficos = true
       try {
@@ -1144,13 +1056,13 @@ export default {
           'rgb(76, 175, 80)',
           'rgb(255, 152, 0)'
         ]
-        
+
         for (let i = 0; i < this.gestionesComparar.length && i < 3; i++) {
           const gestion = this.gestionesComparar[i]
           const { data } = await this.$axios.get('/acopiore2', {
             params: { year: gestion }
           })
-          
+
           datasets.push({
             label: `Gestión ${gestion}`,
             data: data?.data || [],
@@ -1159,24 +1071,24 @@ export default {
             tension: 0.4
           })
         }
-        
+
         await this.$nextTick()
-        
+
         const canvas = this.$refs.chartTemporal
         if (!canvas) return
-        
+
         const existingChart = this.chartInstances.find(c => c.canvas === canvas)
         if (existingChart) {
           existingChart.destroy()
           this.chartInstances = this.chartInstances.filter(c => c.canvas !== canvas)
         }
-        
+
         const ctx = canvas.getContext('2d')
         const chart = new Chart(ctx, {
           type: 'line',
           data: {
-            labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-                     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+              'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
             datasets: datasets
           },
           options: {
@@ -1190,7 +1102,7 @@ export default {
             }
           }
         })
-        
+
         this.chartInstances.push(chart)
       } catch (error) {
         this.$alert?.error?.('Error al generar gráfico temporal')
@@ -1198,7 +1110,7 @@ export default {
         this.loadingGraficos = false
       }
     },
-    
+
     async cargarEstacionalidad() {
       this.loadingTablas = true
       try {
@@ -1207,7 +1119,7 @@ export default {
           inicio: `${this.gestionSeleccionada}-01-01`,
           fin: `${this.gestionSeleccionada}-12-31`
         })
-        
+
         const datos = data?.data || data || []
         const mesesOrdenados = datos
           .map((item, index) => ({
@@ -1217,11 +1129,11 @@ export default {
             ranking: 0
           }))
           .sort((a, b) => b.totalKg - a.totalKg)
-        
+
         mesesOrdenados.forEach((item, index) => {
           item.ranking = index + 1
         })
-        
+
         this.tablaEstacionalidad = mesesOrdenados.sort((a, b) => a.mes.localeCompare(b.mes))
       } catch (error) {
         this.tablaEstacionalidad = []
@@ -1229,7 +1141,7 @@ export default {
         this.loadingTablas = false
       }
     },
-    
+
     async cargarComparativaAnual() {
       this.loadingTablas = true
       try {
@@ -1237,18 +1149,18 @@ export default {
           this.$axios.get('/acopiore2', { params: { year: this.gestionSeleccionada } }),
           this.$axios.get('/acopiore2', { params: { year: this.gestionSeleccionada - 1 } })
         ])
-        
+
         const actual = actualData?.data?.data || []
         const anterior = anteriorData?.data?.data || []
-        const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-                       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-        
+        const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+          'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+
         this.tablaComparativa = meses.map((mes, index) => {
           const anioActual = parseFloat(actual[index] || 0)
           const anioAnterior = parseFloat(anterior[index] || 0)
           const diferencia = anioActual - anioAnterior
           const variacion = anioAnterior > 0 ? ((diferencia / anioAnterior) * 100) : 0
-          
+
           return {
             mes: mes,
             anioActual: anioActual,
@@ -1263,11 +1175,11 @@ export default {
         this.loadingTablas = false
       }
     },
-    
+
     // ============================================
     // 2025-11-21: TAB ANALISIS ORGANIZACIONAL - Métodos
     // ============================================
-    
+
     async cargarRankingOrganizaciones() {
       this.loadingTablas = true
       try {
@@ -1275,7 +1187,7 @@ export default {
           gestion: this.gestionSeleccionada,
           producto_id: this.productoSeleccionado
         })
-        
+
         const datos = data?.data || data || []
         const totalGeneral = datos.reduce((sum, item) => {
           const total = Object.keys(item)
@@ -1283,14 +1195,14 @@ export default {
             .reduce((s, key) => s + parseFloat(item[key] || 0), 0)
           return sum + total
         }, 0)
-        
+
         this.listaOrganizaciones = datos
         this.tablaOrganizaciones = datos
           .map(item => {
             const totalKg = Object.keys(item)
               .filter(key => key !== 'asociacion')
               .reduce((sum, key) => sum + parseFloat(item[key] || 0), 0)
-            
+
             return {
               asociacion: item.asociacion,
               totalKg: totalKg,
@@ -1311,26 +1223,26 @@ export default {
         this.loadingTablas = false
       }
     },
-    
+
     async generarGraficoPerformanceOrg() {
       if (!this.orgSeleccionada) return
-      
+
       this.loadingGraficos = true
       try {
         await this.$nextTick()
-        
+
         const canvas = this.$refs.chartPerformance
         if (!canvas) return
-        
+
         const existingChart = this.chartInstances.find(c => c.canvas === canvas)
         if (existingChart) {
           existingChart.destroy()
           this.chartInstances = this.chartInstances.filter(c => c.canvas !== canvas)
         }
-        
+
         const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
         const datosOrg = meses.map(mes => parseFloat(this.orgSeleccionada[mes] || 0))
-        
+
         const ctx = canvas.getContext('2d')
         const chart = new Chart(ctx, {
           type: 'bar',
@@ -1355,7 +1267,7 @@ export default {
             }
           }
         })
-        
+
         this.chartInstances.push(chart)
       } catch (error) {
         this.$alert?.error?.('Error al generar gráfico de performance')
@@ -1363,25 +1275,25 @@ export default {
         this.loadingGraficos = false
       }
     },
-    
+
     cargarMapaContribucion() {
       this.tablaContribucion = this.tablaOrganizaciones.map(item => ({
         asociacion: item.asociacion,
         porcentaje: item.porcentaje
       }))
     },
-    
+
     // ============================================
     // 2025-11-21: METODOS AUXILIARES
     // ============================================
-    
+
     exportarDashboard(tipo) {
       this.$q.notify({
         type: 'info',
         message: 'Funcionalidad de exportación en desarrollo'
       })
     },
-    
+
     destruirCharts() {
       this.chartInstances.forEach(chart => {
         if (chart && typeof chart.destroy === 'function') {
