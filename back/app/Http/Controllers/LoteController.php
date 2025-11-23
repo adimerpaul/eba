@@ -184,6 +184,111 @@ class LoteController extends Controller
         });
     }
 
+    /**
+     * Trazabilidad completa de un lote por código
+     * GET /lotes/trazabilidad?codigo_lote=XXXXXXXX
+     */
+    public function trazabilidad(Request $request)
+    {
+        $codigoLote = $request->input('codigo_lote');
+        
+        if (!$codigoLote) {
+            return response()->json(['message' => 'Código de lote requerido'], 400);
+        }
+
+        $lote = Lote::with(['producto', 'tanque', 'controlProceso'])
+            ->where('codigo_lote', $codigoLote)
+            ->first();
+
+        if (!$lote) {
+            return response()->json(['message' => 'Lote no encontrado'], 404);
+        }
+
+        $trazabilidad = DB::selectOne("
+            SELECT 
+                l.id as lote_id,
+                l.codigo_lote,
+                l.fecha_envasado,
+                p.nombre as producto,
+                l.cantidad_kg,
+                COALESCE(k.stock_actual, 0) as stock_actual,
+                COALESCE(k.cantidad_vendida, 0) as cantidad_vendida
+            FROM traza.lotes l
+            LEFT JOIN traza.productos p ON p.id = l.producto_id
+            LEFT JOIN (
+                SELECT 
+                    lote_id,
+                    SUM(CASE WHEN movimiento = 'ENTRADA' THEN cantidad_kg ELSE -cantidad_kg END) as stock_actual,
+                    SUM(CASE WHEN movimiento = 'SALIDA' AND tipo_movimiento = 'VENTA' THEN cantidad_kg ELSE 0 END) as cantidad_vendida
+                FROM traza.kardex
+                GROUP BY lote_id
+            ) k ON k.lote_id = l.id
+            WHERE l.codigo_lote = ?
+        ", [$codigoLote]);
+
+        $productores = DB::select("
+            SELECT DISTINCT
+                pr.nombre_completo as nombre,
+                pr.codigo_runsa as runsa,
+                STRING_AGG(DISTINCT a.nombre, ', ') as apiarios,
+                MIN(ac.fecha_cosecha) as fecha_cosecha,
+                SUM(ac.cantidad_kg) as cantidad_kg
+            FROM traza.lotes l
+            INNER JOIN traza.acopio_cosechas ac ON ac.id = l.cosecha_id
+            INNER JOIN traza.apiarios a ON a.id = ac.apiario_id
+            INNER JOIN traza.productores pr ON pr.id = a.productor_id
+            WHERE l.codigo_lote = ?
+            GROUP BY pr.id, pr.nombre_completo, pr.codigo_runsa
+        ", [$codigoLote]);
+
+        $proceso = null;
+        if ($lote->controlProceso) {
+            $proceso = DB::selectOne("
+                SELECT 
+                    t.nombre as tanque,
+                    cp.metodo_proceso,
+                    cp.fecha_inicio,
+                    cp.fecha_fin,
+                    cp.temperatura,
+                    cp.merma_porcentaje
+                FROM traza.control_procesos cp
+                LEFT JOIN traza.tanques t ON t.id = cp.tanque_id
+                WHERE cp.id = ?
+            ", [$lote->controlProceso->id]);
+        }
+
+        $ventas = DB::select("
+            SELECT 
+                v.id as venta_id,
+                v.fecha as fecha_venta,
+                c.nombre_completo as comprador,
+                k.cantidad_kg,
+                vd.precio_unitario * vd.cantidad as monto_total,
+                v.lugar_destino
+            FROM traza.kardex k
+            INNER JOIN traza.ventas v ON v.id = k.venta_id
+            INNER JOIN traza.venta_detalles vd ON vd.venta_id = v.id AND vd.lote_id = k.lote_id
+            LEFT JOIN traza.clientes c ON c.id = v.cliente_id
+            WHERE k.lote_id = ? 
+            AND k.movimiento = 'SALIDA' 
+            AND k.tipo_movimiento = 'VENTA'
+            ORDER BY v.fecha DESC
+        ", [$lote->id]);
+
+        return response()->json([
+            'lote_id' => $trazabilidad->lote_id,
+            'codigo_lote' => $trazabilidad->codigo_lote,
+            'fecha_envasado' => $trazabilidad->fecha_envasado,
+            'producto' => $trazabilidad->producto,
+            'cantidad_kg' => $trazabilidad->cantidad_kg,
+            'stock_actual' => $trazabilidad->stock_actual,
+            'cantidad_vendida' => $trazabilidad->cantidad_vendida,
+            'productores' => $productores,
+            'proceso' => $proceso,
+            'ventas' => $ventas
+        ]);
+    }
+
     private function makeCodigoLote(Producto $producto, AcopioCosecha $cosecha): string
     {
         // Formato: AAAAMMDD-PRODID-COSECHAID-SEC

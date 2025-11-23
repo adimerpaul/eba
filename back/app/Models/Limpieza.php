@@ -14,6 +14,8 @@ use OwenIt\Auditing\Contracts\Auditable;
 class Limpieza extends Model implements Auditable
 {
     use AuditableTrait, SoftDeletes;
+
+    protected $table = 'traza.limpiezas';
     
     // Campos actualizados según formulario físico
     protected $fillable = [

@@ -9,6 +9,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\CogController;
 use App\Http\Controllers\DepartamentoController;
+use App\Http\Controllers\DashboardTrazabilidadController;
 use App\Http\Controllers\DocumentoController;
 use App\Http\Controllers\GeoController;
 use App\Http\Controllers\LoteController;
@@ -205,6 +206,7 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::post('acopio-cosechas/{cosecha}/lotes', [LoteController::class, 'store']);
     Route::put('lotes/{lote}', [LoteController::class, 'update']);
     Route::delete('lotes/{lote}', [LoteController::class, 'destroy']);
+    Route::get('lotes/trazabilidad', [LoteController::class, 'trazabilidad']);
 
     Route::get('/tanques/estadisticas', [\App\Http\Controllers\TanqueController::class, 'estadisticas']);
     Route::get('/tanques', [\App\Http\Controllers\TanqueController::class, 'index']);
@@ -263,6 +265,19 @@ Route::middleware('auth:sanctum')->group(callback: function () {
     Route::get('ventas/{venta}', [VentaController::class, 'show']); // detalle
     Route::post('ventas', [VentaController::class, 'store']);       // crear
     Route::delete('ventas/{venta}', [VentaController::class, 'destroy']); // opcional
+    
+    Route::prefix('dashboard-trazabilidad')->group(function () {
+        Route::get('capacidad-productiva', [DashboardTrazabilidadController::class, 'capacidadProductiva']);
+        Route::get('alertas-sobreproduccion', [DashboardTrazabilidadController::class, 'alertasSobreproduccion']);
+        Route::get('senasag', [DashboardTrazabilidadController::class, 'estadisticasSenasag']);
+        Route::get('transporte-apiarios', [DashboardTrazabilidadController::class, 'transporteApiarios']);
+        Route::get('recepcion-rechazos', [DashboardTrazabilidadController::class, 'recepcionRechazos']);
+        Route::get('procesamiento-merma', [DashboardTrazabilidadController::class, 'procesamientoMerma']);
+        Route::get('lotes-almacenamiento', [DashboardTrazabilidadController::class, 'lotesAlmacenamiento']);
+        Route::get('metodos-procesamiento', [DashboardTrazabilidadController::class, 'metodosProcessamiento']);
+        Route::get('mortandad', [DashboardTrazabilidadController::class, 'mortandad']);
+    });
+    
     Route::get('/organizaciones/reportActivos/{estado}', [OrganizacionController::class, 'reportActivos']);
 
     Route::post('productorExcel', [ProductorController::class, 'productorExcel']);

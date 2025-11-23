@@ -15,6 +15,8 @@ class Medicamento extends Model implements Auditable
 {
     use AuditableTrait, SoftDeletes;
 
+    protected $table = 'traza.medicamentos';
+
     // Campos actualizados según formulario físico
     protected $fillable = [
         'fecha',

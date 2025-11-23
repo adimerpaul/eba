@@ -361,6 +361,15 @@
                 <q-item-label class="text-white">Dashboard de Ventas</q-item-label>
               </q-item-section>
             </q-item>
+            <q-item :inset-level="0.3" dense to="/dashboard-trazabilidad" clickable class="menu-item" active-class="menu-active"
+              v-close-popup v-if="hasPerm('Dashboard')">
+              <q-item-section avatar>
+                <q-icon name="insights" class="text-white" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Dashboard de Trazabilidad</q-item-label>
+              </q-item-section>
+            </q-item>
             <q-item :inset-level="0.3" dense to="/clientes" exact clickable class="menu-item" active-class="menu-active"
               v-close-popup v-if="hasPerm('Clientes')">
               <q-item-section avatar>

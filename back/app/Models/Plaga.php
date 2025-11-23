@@ -15,6 +15,8 @@ class Plaga extends Model implements Auditable
 {
     use AuditableTrait, SoftDeletes;
 
+    protected $table = 'traza.plagas';
+
     // Campos actualizados según formulario físico
     protected $fillable = [
         'fecha',

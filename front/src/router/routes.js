@@ -35,6 +35,8 @@ const routes = [
       { path: '/ventas/dashboard', component: () => import('pages/ventas/DashboardVentas.vue'), meta: { requiresAuth: true, perm: 'Ventas' } },
       { path: '/ventas/crear', component: () => import('pages/ventas/VentaCrear.vue'), meta: { requiresAuth: true, perm: 'Ventas' } },
       { path: '/ventas', component: () => import('pages/ventas/Ventas.vue'), meta: { requiresAuth: true, perm: 'Ventas' } },
+      // Dashboard de Trazabilidad
+      { path: '/dashboard-trazabilidad', component: () => import('pages/trazabilidad/DashboardTrazabilidad.vue'), meta: { requiresAuth: true, perm: 'Dashboard' } },
       { path: '/reportes', component: () => import('pages/reportes/Reporte_tabla.vue'),  meta: { requiresAuth: true } },
       // reportesActuales
       { path: '/reportesActuales', component: () => import('pages/reportes/reportesActuales.vue'),  meta: { requiresAuth: true } },

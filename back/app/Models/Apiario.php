@@ -10,6 +10,8 @@ class Apiario extends Model implements Auditable
 {
     use SoftDeletes, AuditableTrait;
 
+    protected $table = 'traza.apiarios';
+
     protected $fillable = [
         'productor_id','municipio_id','tipo_manejo_id',
         'nombre_cip','latitud','longitud','altitud','lugar_apiario',
