@@ -3,17 +3,11 @@
     <!-- HEADER -->
     <q-header class="bg-white text-black" bordered>
       <q-toolbar>
-        <q-btn
-          flat
-          color="primary"
-          :icon="leftDrawerOpen ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right'"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-          unelevated
-          dense
-        />
+        <q-btn flat color="primary"
+          :icon="leftDrawerOpen ? 'keyboard_double_arrow_left' : 'keyboard_double_arrow_right'" aria-label="Menu"
+          @click="toggleLeftDrawer" unelevated dense />
         <div class="row items-center q-gutter-sm">
-<!--          <q-badge color="green-8" text-color="white" class="text-bold">EBA</q-badge>-->
+          <!--          <q-badge color="green-8" text-color="white" class="text-bold">EBA</q-badge>-->
           <div class="text-subtitle1 text-weight-medium" style="line-height: 0.9">
             Dashboard de Gestión <br>
             <q-badge color="warning" text-color="black" v-if="roleText" class="text-bold">{{ roleText }}</q-badge>
@@ -28,18 +22,19 @@
             <template v-slot:label>
               <div class="row items-center no-wrap q-gutter-sm">
                 <q-avatar rounded>
-                  <q-img :src="`${$url}/../images/${$store.user.avatar}`" width="40px" height="40px" v-if="$store.user.avatar"/>
+                  <q-img :src="`${$url}/../images/${$store.user.avatar}`" width="40px" height="40px"
+                    v-if="$store.user.avatar" />
                   <q-icon name="person" v-else />
                 </q-avatar>
                 <div class="text-left" style="line-height: 1">
                   <div class="ellipsis" style="max-width: 130px;">
                     {{ $store.user.username }}
-<!--                    usr_usuario-->
+                    <!--                    usr_usuario-->
                     {{ $store.user.usr_usuario }}
                   </div>
-<!--                  <q-chip dense size="10px" :color="$filters.color($store.user.role)" text-color="white">-->
-<!--                    {{ $store.user.role }}-->
-<!--                  </q-chip>-->
+                  <!--                  <q-chip dense size="10px" :color="$filters.color($store.user.role)" text-color="white">-->
+                  <!--                    {{ $store.user.role }}-->
+                  <!--                  </q-chip>-->
                 </div>
               </div>
             </template>
@@ -51,15 +46,8 @@
                 </q-item-label>
                 <q-item-label caption class="q-mt-xs">
                   <div class="row q-col-gutter-xs" style="min-width: 150px; max-width: 150px;">
-                    <q-chip
-                      v-for="(p, i) in $store.permissions"
-                      :key="i"
-                      dense
-                      color="grey-3"
-                      text-color="black"
-                      size="12px"
-                      class="q-mr-xs q-mb-xs"
-                    >
+                    <q-chip v-for="(p, i) in $store.permissions" :key="i" dense color="grey-3" text-color="black"
+                      size="12px" class="q-mr-xs q-mb-xs">
                       {{ p }}
                     </q-chip>
                     <q-badge v-if="!$store.permissions?.length" color="grey-5" outline>Sin permisos</q-badge>
@@ -84,14 +72,8 @@
     </q-header>
 
     <!-- DRAWER -->
-    <q-drawer
-      v-model="leftDrawerOpen"
-      bordered
-      show-if-above
-      :width="240"
-      :breakpoint="500"
-      class="bg-primary text-white"
-    >
+    <q-drawer v-model="leftDrawerOpen" bordered show-if-above :width="240" :breakpoint="500"
+      class="bg-primary text-white">
       <q-list class="q-pb-none">
         <q-item-label header class="text-center q-pa-none q-pt-md">
           <q-avatar size="64px" class="q-mb-sm bg-white" rounded>
@@ -101,65 +83,67 @@
           <div class="text-caption text-white">Sistema de Gestión Apícola</div>
         </q-item-label>
 
-<!--        <q-separator color="green-8" />-->
+        <!--        <q-separator color="green-8" />-->
 
         <q-item-label header class="q-px-md text-grey-3 q-mt-sm">
           Módulos del Sistema
         </q-item-label>
 
         <!-- Menú dinámico por permisos -->
-<!--        <template v-for="link in filteredLinks" :key="link.title">-->
-<!--          <q-item-->
-<!--            clickable-->
-<!--            :to="link.link"-->
-<!--            exact-->
-<!--            dense-->
-<!--            class="menu-item"-->
-<!--            active-class="menu-active"-->
-<!--            v-close-popup-->
-<!--          >-->
-<!--            <q-item-section avatar>-->
-<!--              <q-icon-->
-<!--                :name="$route.path === link.link ? 'o_' + link.icon : link.icon"-->
-<!--                :class="$route.path === link.link ? 'text-grey-3' : 'text-white'"-->
-<!--              />-->
-<!--            </q-item-section>-->
-<!--            <q-item-section>-->
-<!--              <q-item-label :class="$route.path === link.link ? 'text-white text-weight-bold' : 'text-white'">-->
-<!--                {{ link.title }}-->
-<!--              </q-item-label>-->
-<!--            </q-item-section>-->
-<!--          </q-item>-->
-<!--        </template>-->
-<!--        $permisos = [-->
-<!--        'Dashboard',-->
-<!--        'Produccion primaria',-->
-<!--        'Modulo Acopio',-->
-<!--        'Usuarios',-->
-<!--        'Productos',-->
-<!--        'Clientes',-->
-<!--        'Transporte',-->
-<!--        'Plantas de procesamiento',-->
-<!--        'Modulo comercializacion',-->
-<!--        'Modulo reportes',-->
-<!--        ];-->
-        <q-item dense to="/" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Dashboard')">
+        <!--        <template v-for="link in filteredLinks" :key="link.title">-->
+        <!--          <q-item-->
+        <!--            clickable-->
+        <!--            :to="link.link"-->
+        <!--            exact-->
+        <!--            dense-->
+        <!--            class="menu-item"-->
+        <!--            active-class="menu-active"-->
+        <!--            v-close-popup-->
+        <!--          >-->
+        <!--            <q-item-section avatar>-->
+        <!--              <q-icon-->
+        <!--                :name="$route.path === link.link ? 'o_' + link.icon : link.icon"-->
+        <!--                :class="$route.path === link.link ? 'text-grey-3' : 'text-white'"-->
+        <!--              />-->
+        <!--            </q-item-section>-->
+        <!--            <q-item-section>-->
+        <!--              <q-item-label :class="$route.path === link.link ? 'text-white text-weight-bold' : 'text-white'">-->
+        <!--                {{ link.title }}-->
+        <!--              </q-item-label>-->
+        <!--            </q-item-section>-->
+        <!--          </q-item>-->
+        <!--        </template>-->
+        <!--        $permisos = [-->
+        <!--        'Dashboard',-->
+        <!--        'Produccion primaria',-->
+        <!--        'Modulo Acopio',-->
+        <!--        'Usuarios',-->
+        <!--        'Productos',-->
+        <!--        'Clientes',-->
+        <!--        'Transporte',-->
+        <!--        'Plantas de procesamiento',-->
+        <!--        'Modulo comercializacion',-->
+        <!--        'Modulo reportes',-->
+        <!--        ];-->
+        <q-item dense to="/" exact clickable class="menu-item" active-class="menu-active" v-close-popup
+          v-if="hasPerm('Dashboard')">
           <q-item-section avatar>
-            <q-icon name="dashboard" class="text-white"/>
+            <q-icon name="dashboard" class="text-white" />
           </q-item-section>
           <q-item-section>
             <q-item-label class="text-white">Dashboard</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item dense to="/usuarios" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Usuarios')">
+        <q-item dense to="/usuarios" exact clickable class="menu-item" active-class="menu-active" v-close-popup
+          v-if="hasPerm('Usuarios')">
           <q-item-section avatar>
-            <q-icon name="people" class="text-white"/>
+            <q-icon name="people" class="text-white" />
           </q-item-section>
           <q-item-section>
             <q-item-label class="text-white">Modulo Usuarios</q-item-label>
           </q-item-section>
         </q-item>
-<!--        trazabildiada hacia atras-->
+        <!--        trazabildiada hacia atras-->
         <!--<q-item dense exact clickable class="menu-item" active-class="menu-active" v-close-popup>
           <q-item-section avatar>
             <q-icon name="history" class="text-white"/>
@@ -169,32 +153,46 @@
           </q-item-section>
         </q-item>-->
 
-<!-- Modifcación de la vista para mejor percepción visual -->
+        <!-- Modifcación de la vista para mejor percepción visual -->
         <q-item-label header class="q-px-md text-grey-3 q-mt-sm text-uppercase text-bold">
           Trazabilidad Atrás
         </q-item-label>
 
-        <q-expansion-item v-model="expansionProduccion" dense expand-separator icon="gavel" label="Modulo Producción Primaria" active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
+        <q-item  dense to="/dashboard-acopios" clickable class="menu-item" active-class="menu-active"
+          v-close-popup>
+          <q-item-section avatar>
+            <q-icon name="analytics" class="text-white" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-white">Dashboard de Acopios</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-expansion-item v-model="expansionProduccion" dense expand-separator icon="gavel" label="Producción Primaria"
+          active-class="menu-active" v-if="hasPerm('Produccion primaria')">
           <q-list>
-            <q-item :inset-level="0.3" dense to="/productores/crear" clickable class="menu-item" active-class="menu-active" v-close-popup >
+            <q-item :inset-level="0.3" dense to="/productores/crear" clickable class="menu-item"
+              active-class="menu-active" v-close-popup>
               <q-item-section avatar>
-                <q-icon name="person_add" class="text-white"/>
+                <q-icon name="person_add" class="text-white" />
               </q-item-section>
               <q-item-section>
                 <q-item-label class="text-white">Crear Productor</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item :inset-level="0.3" dense to="/productores" clickable class="menu-item" active-class="menu-active" v-close-popup >
+            <q-item :inset-level="0.3" dense to="/productores" clickable class="menu-item" active-class="menu-active"
+              v-close-popup>
               <q-item-section avatar>
-                <q-icon name="agriculture" class="text-white"/>
+                <q-icon name="agriculture" class="text-white" />
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-white">Gestion de Productores</q-item-label>
+                <q-item-label class="text-white">Lista de Productores</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item :inset-level="0.3" dense to="/geocrud" clickable class="menu-item" active-class="menu-active" v-close-popup >
+            <q-item :inset-level="0.3" dense to="/geocrud" clickable class="menu-item" active-class="menu-active"
+              v-close-popup>
               <q-item-section avatar>
-                <q-icon name="location_city" class="text-white"/>
+                <q-icon name="location_city" class="text-white" />
               </q-item-section>
               <q-item-section>
                 <q-item-label class="text-white">
@@ -202,9 +200,10 @@
                 </q-item-label>
               </q-item-section>
             </q-item>
-            <q-item :inset-level="0.3" dense to="/organizaciones" clickable class="menu-item" active-class="menu-active" v-close-popup >
+            <q-item :inset-level="0.3" dense to="/organizaciones" clickable class="menu-item" active-class="menu-active"
+              v-close-popup>
               <q-item-section avatar>
-                <q-icon name="apartment" class="text-white"/>
+                <q-icon name="apartment" class="text-white" />
               </q-item-section>
               <q-item-section>
                 <q-item-label class="text-white">Convenios</q-item-label>
@@ -212,136 +211,32 @@
             </q-item>
           </q-list>
         </q-expansion-item>
-        <q-expansion-item v-model="expansionAcopio" dense expand-separator icon="inbox" label="Módulo Acopio" active-class="menu-active" v-if="hasPerm('Modulo Acopio')">
+
+        <q-expansion-item v-model="expansionTransporte" dense expand-separator icon="local_shipping" label="Transporte"
+          active-class="menu-active" v-if="hasPerm('Transporte')">
           <q-list>
-            <!-- 2025-11-21: Opción 'Registro de Acopio' ocultada - funcionalidad movida a gestión de productores -->
-            <!-- <q-item :inset-level="0.3" dense to="/recoleccion" clickable class="menu-item" active-class="menu-active" v-close-popup >
+            <q-item :inset-level="0.3" dense to="/dashboard-transportes" exact clickable class="menu-item"
+              active-class="menu-active" v-close-popup>
               <q-item-section avatar>
-                <q-icon name="yard" class="text-white"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label class="text-white">Registro de Acopio</q-item-label>
-              </q-item-section>
-            </q-item> -->
-            
-            <!-- 2025-11-21: Dashboard de Acopios con análisis multidimensional -->
-            <q-item :inset-level="0.3" dense to="/dashboard-acopios" clickable class="menu-item" active-class="menu-active" v-close-popup >
-              <q-item-section avatar>
-                <q-icon name="analytics" class="text-white"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label class="text-white">Dashboard de Acopios</q-item-label>
-              </q-item-section>
-            </q-item>
-            
-            <q-item :inset-level="0.3" dense to="/acopios" clickable class="menu-item" active-class="menu-active" v-close-popup >
-              <q-item-section avatar>
-                <q-icon name="inbox" class="text-white"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label class="text-white">Resumen de Acopios</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item :inset-level="0.3" dense to="/control-procesos" clickable class="menu-item" active-class="menu-active" v-close-popup >
-              <q-item-section avatar>
-                <q-icon name="settings" class="text-white"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label class="text-white">Control de Procesos</q-item-label>
-              </q-item-section>
-            </q-item>
-            
-            <!-- Procesamiento Masivo -->
-            <q-item :inset-level="0.3" dense to="/acopios-pendientes" clickable class="menu-item" active-class="menu-active" v-close-popup >
-              <q-item-section avatar>
-                <q-icon name="sync_alt" class="text-white"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label class="text-white">Procesar Acopios</q-item-label>
-              </q-item-section>
-            </q-item>
-            
-            <q-item :inset-level="0.3" dense to="/historial-procesamientos" clickable class="menu-item" active-class="menu-active" v-close-popup >
-              <q-item-section avatar>
-                <q-icon name="history" class="text-white"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label class="text-white">Historial Procesamientos</q-item-label>
-              </q-item-section>
-            </q-item>
-            
-            <q-item :inset-level="0.3" dense to="/acopios-rechazados" clickable class="menu-item" active-class="menu-active" v-close-popup >
-              <q-item-section avatar>
-                <q-icon name="cancel" class="text-white"/>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label class="text-white">Acopios Rechazados</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-expansion-item>
-
-        <!--<q-item dense exact clickable class="menu-item" active-class="menu-active" v-close-popup>
-          <q-item-section avatar>
-            <q-icon name="history" class="text-white"/>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label class="text-white text-uppercase text-bold text-red">Trazabilidad En proceso</q-item-label>
-          </q-item-section>
-        </q-item>-->
-
-        <!-- Modifcación de la vista para mejor percepción visual -->
-        <q-item-label header class="q-px-md text-grey-3 q-mt-sm text-uppercase text-bold">
-          Trazabilidad en Proceso
-        </q-item-label>
-
-<!--        productos cleintes transporte-->
-        <q-expansion-item v-model="expansionProceso" dense expand-separator icon="gavel" label="Módulo de control de proceso productivo " active-class="menu-active"  v-if="hasPerm('Produccion primaria')">
-          <q-list>
-        <q-item :inset-level="0.3" dense to="/productos" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Productos')">
-          <q-item-section avatar>
-            <q-icon name="inventory" class="text-white"/>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label class="text-white">Productos</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item :inset-level="0.3" dense to="/clientes" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Clientes')">
-          <q-item-section avatar>
-            <q-icon name="storefront" class="text-white"/>
-          </q-item-section>
-          <q-item-section>
-            <q-item-label class="text-white">Clientes</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-expansion-item
-          dense
-          icon="local_shipping"
-          label="Transporte"
-          class="menu-item text-white"
-          v-if="hasPerm('Transporte')"
-        >
-          <q-list>
-            <q-item :inset-level="0.5" dense to="/dashboard-transportes" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
-              <q-item-section avatar>
-                <q-icon name="dashboard" class="text-white"/>
+                <q-icon name="dashboard" class="text-white" />
               </q-item-section>
               <q-item-section>
                 <q-item-label class="text-white">Dashboard</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item :inset-level="0.5" dense to="/transportes" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+            <q-item :inset-level="0.3" dense to="/transportes" exact clickable class="menu-item"
+              active-class="menu-active" v-close-popup>
               <q-item-section avatar>
-                <q-icon name="list" class="text-white"/>
+                <q-icon name="list" class="text-white" />
               </q-item-section>
               <q-item-section>
                 <q-item-label class="text-white">Gestión de Transportes</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item :inset-level="0.5" dense to="/historial-transportes" exact clickable class="menu-item" active-class="menu-active" v-close-popup>
+            <q-item :inset-level="0.3" dense to="/historial-transportes" exact clickable class="menu-item"
+              active-class="menu-active" v-close-popup>
               <q-item-section avatar>
-                <q-icon name="history" class="text-white"/>
+                <q-icon name="history" class="text-white" />
               </q-item-section>
               <q-item-section>
                 <q-item-label class="text-white">Historial de Viajes</q-item-label>
@@ -349,18 +244,95 @@
             </q-item>
           </q-list>
         </q-expansion-item>
-<!--        plantas-->
-        <q-item :inset-level="0.3" dense to="/plantas" exact clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Plantas de procesamiento')">
+
+        <q-item-label header class="q-px-md text-grey-3 q-mt-sm text-uppercase text-bold">
+          Trazabilidad en Proceso
+        </q-item-label>
+        <q-expansion-item v-model="expansionAcopio" dense expand-separator icon="inbox" label="Acopio y Procesamiento"
+          active-class="menu-active" v-if="hasPerm('Modulo Acopio')">
+          <q-list>
+            <q-item :inset-level="0.3" dense to="/acopios" clickable class="menu-item" active-class="menu-active"
+              v-close-popup>
+              <q-item-section avatar>
+                <q-icon name="inbox" class="text-white" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Resumen de Acopios</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item :inset-level="0.3" dense to="/acopios-pendientes" clickable class="menu-item"
+              active-class="menu-active" v-close-popup>
+              <q-item-section avatar>
+                <q-icon name="sync_alt" class="text-white" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Procesar Acopios</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item :inset-level="0.3" dense to="/control-procesos" clickable class="menu-item"
+              active-class="menu-active" v-close-popup>
+              <q-item-section avatar>
+                <q-icon name="settings" class="text-white" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Control de Procesos</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item :inset-level="0.3" dense to="/acopios-rechazados" clickable class="menu-item"
+              active-class="menu-active" v-close-popup>
+              <q-item-section avatar>
+                <q-icon name="cancel" class="text-white" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Acopios Rechazados</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item :inset-level="0.3" dense to="/historial-procesamientos" clickable class="menu-item"
+              active-class="menu-active" v-close-popup>
+              <q-item-section avatar>
+                <q-icon name="history" class="text-white" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Historial Procesamientos</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-expansion-item>
+
+        <q-item dense to="/plantas" exact clickable class="menu-item" active-class="menu-active"
+          v-close-popup v-if="hasPerm('Plantas de procesamiento')">
           <q-item-section avatar>
-            <q-icon name="factory" class="text-white"/>
+            <q-icon name="factory" class="text-white" />
           </q-item-section>
           <q-item-section>
             <q-item-label class="text-white">Plantas de Procesamiento</q-item-label>
           </q-item-section>
         </q-item>
-        </q-list>
-        </q-expansion-item>
-<!--        COMERZILIZACION-->
+
+        <!-- Tanques de almacenamiento -->
+        <q-item dense to="/tanques" exact clickable class="menu-item" active-class="menu-active"
+          v-close-popup v-if="hasPerm('Tanques de almacenamiento')">
+          <q-item-section avatar>
+            <q-icon name="storage" class="text-white" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-white">Tanques de Almacenamiento</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item dense to="/productos" exact clickable class="menu-item"
+          active-class="menu-active" v-close-popup v-if="hasPerm('Productos')">
+          <q-item-section avatar>
+            <q-icon name="inventory" class="text-white" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label class="text-white">Productos</q-item-label>
+          </q-item-section>
+        </q-item>
 
         <!--<q-item dense exact clickable class="menu-item" active-class="menu-active" v-close-popup>
           <q-item-section avatar>
@@ -376,21 +348,33 @@
           Trazabilidad Adelante
         </q-item-label>
 
-        <q-expansion-item v-model="expansionComercializacion" dense expand-separator icon="store" label="Módulo Comercialización" active-class="menu-active" v-if="hasPerm('Modulo comercializacion')">
+        <q-expansion-item v-model="expansionComercializacion" dense expand-separator icon="store"
+          label="Módulo Comercialización" active-class="menu-active" v-if="hasPerm('Modulo comercializacion')">
           <q-list>
-<!--            crear ventas-->
-            <q-item :inset-level="0.3" dense to="/ventas/crear" clickable class="menu-item" active-class="menu-active" v-close-popup >
+            <q-item :inset-level="0.3" dense to="/clientes" exact clickable class="menu-item" active-class="menu-active"
+              v-close-popup v-if="hasPerm('Clientes')">
               <q-item-section avatar>
-                <q-icon name="point_of_sale" class="text-white"/>
+                <q-icon name="storefront" class="text-white" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Clientes</q-item-label>
+              </q-item-section>
+            </q-item>
+            <!--            crear ventas-->
+            <q-item :inset-level="0.3" dense to="/ventas/crear" clickable class="menu-item" active-class="menu-active"
+              v-close-popup>
+              <q-item-section avatar>
+                <q-icon name="point_of_sale" class="text-white" />
               </q-item-section>
               <q-item-section>
                 <q-item-label class="text-white">Crear Venta</q-item-label>
               </q-item-section>
             </q-item>
-<!--            gestionar ventas-->
-            <q-item :inset-level="0.3" dense to="/ventas" clickable class="menu-item" active-class="menu-active" v-close-popup v-if="hasPerm('Modulo comercializacion')">
+            <!--            gestionar ventas-->
+            <q-item :inset-level="0.3" dense to="/ventas" clickable class="menu-item" active-class="menu-active"
+              v-close-popup v-if="hasPerm('Modulo comercializacion')">
               <q-item-section avatar>
-                <q-icon name="sell" class="text-white"/>
+                <q-icon name="sell" class="text-white" />
               </q-item-section>
               <q-item-section>
                 <q-item-label class="text-white">Gestionar Ventas</q-item-label>
@@ -398,26 +382,28 @@
             </q-item>
           </q-list>
         </q-expansion-item>
-        <q-expansion-item v-model="expansionReportes" dense expand-separator icon="data_thresholding" label="Módulo Reportes" active-class="menu-active" v-if="hasPerm('Modulo reportes')">
+        <q-expansion-item v-model="expansionReportes" dense expand-separator icon="data_thresholding"
+          label="Módulo Reportes" active-class="menu-active" v-if="hasPerm('Modulo reportes')">
           <q-list>
-<!--            crear ventas-->
-<!--            <q-item :inset-level="0.3" dense to="/reportesActuales" clickable class="menu-item" active-class="menu-active" v-close-popup >-->
-<!--              <q-item-section avatar>-->
-<!--                <q-icon name="print" class="text-white"/>-->
-<!--              </q-item-section>-->
-<!--              <q-item-section>-->
-<!--                <q-item-label class="text-white">Reporte Actuales</q-item-label>-->
-<!--              </q-item-section>-->
-<!--            </q-item>-->
-            <q-item :inset-level="0.3" dense to="/reportes" clickable class="menu-item" active-class="menu-active" v-close-popup >
+            <!--            crear ventas-->
+            <!--            <q-item :inset-level="0.3" dense to="/reportesActuales" clickable class="menu-item" active-class="menu-active" v-close-popup >-->
+            <!--              <q-item-section avatar>-->
+            <!--                <q-icon name="print" class="text-white"/>-->
+            <!--              </q-item-section>-->
+            <!--              <q-item-section>-->
+            <!--                <q-item-label class="text-white">Reporte Actuales</q-item-label>-->
+            <!--              </q-item-section>-->
+            <!--            </q-item>-->
+            <q-item :inset-level="0.3" dense to="/reportes" clickable class="menu-item" active-class="menu-active"
+              v-close-popup>
               <q-item-section avatar>
-                <q-icon name="bar_chart" class="text-white"/>
+                <q-icon name="bar_chart" class="text-white" />
               </q-item-section>
               <q-item-section>
                 <q-item-label class="text-white">Reporte</q-item-label>
               </q-item-section>
             </q-item>
-<!--            gestionar ventas-->
+            <!--            gestionar ventas-->
           </q-list>
         </q-expansion-item>
 
@@ -459,36 +445,37 @@ const leftDrawerOpen = ref(false)
 
 // 2025-11-23: Estados de expansión persistentes para mantener secciones abiertas
 const expansionProduccion = ref(true)
+const expansionTransporte = ref(true)
 const expansionAcopio = ref(true)
-const expansionProceso = ref(true)
+const expansionControlProcesos = ref(true)
 const expansionComercializacion = ref(true)
 const expansionReportes = ref(true)
 
 // Helpers de permisos
-function hasPerm (perm) {
+function hasPerm(perm) {
   if (!perm) return true
   return store.permissions?.includes(perm)
 }
-function hasAnyPerm (perms = []) {
+function hasAnyPerm(perms = []) {
   return perms.some(p => hasPerm(p))
 }
 
 const linksList = [
-  { title: 'Dashboard',            icon: 'dashboard',     link: '/',                   canPerm: 'Dashboard' },
-  { title: 'Geografía',          icon: 'location_city', link: '/geocrud',  canPerm: 'Geografia' },
-  { title: 'Organizaciones',       icon: 'apartment',    link: '/organizaciones',     canPerm: 'Organizaciones' },
+  { title: 'Dashboard', icon: 'dashboard', link: '/', canPerm: 'Dashboard' },
+  { title: 'Geografía', icon: 'location_city', link: '/geocrud', canPerm: 'Geografia' },
+  { title: 'Organizaciones', icon: 'apartment', link: '/organizaciones', canPerm: 'Organizaciones' },
   // { path: '/productores/crear', component: () => import('pages/productores/ProductorCrear.vue'), meta: { requiresAuth: true, perm: 'Productores' } },
-  { title: 'Productores Crear',   icon: 'person_add',  link: '/productores/crear', canPerm: 'Productores Crear' },
+  { title: 'Productores Crear', icon: 'person_add', link: '/productores/crear', canPerm: 'Productores Crear' },
   { title: 'Productores / Agricultores', icon: 'agriculture', link: '/productores', canPerm: 'Productores / Agricultores' },
   // { title: 'Recolección',          icon: 'yard',          link: '/recoleccion',        canPerm: 'Recoleccion' },
   // { title: 'Procesamiento',        icon: 'precision_manufacturing', link: '/procesamiento', canPerm: 'Procesamiento' },
   // { title: 'Almacenamiento',       icon: 'warehouse',     link: '/almacenamiento',     canPerm: 'Almacenamiento' },
   // { title: 'Despacho',             icon: 'local_shipping',link: '/despacho',           canPerm: 'Despacho' },
-  { title: 'Acopios',              icon: 'inbox',         link: '/acopios',            canPerm: 'Acopios' },
-  { title: 'Usuarios',             icon: 'people',        link: '/usuarios',           canPerm: 'Usuarios' },
+  { title: 'Acopios', icon: 'inbox', link: '/acopios', canPerm: 'Acopios' },
+  { title: 'Usuarios', icon: 'people', link: '/usuarios', canPerm: 'Usuarios' },
   // { title: 'Reportes',             icon: 'print',    link: '/reportes',           canPerm: 'Reportes' },
-  { title: 'Configuración',        icon: 'settings',      link: '/configuraciones',    canPerm: 'Configuracion' },
-  { title: 'Soporte',              icon: 'support',       link: '/soporte',            canPerm: 'Soporte' },
+  { title: 'Configuración', icon: 'settings', link: '/configuraciones', canPerm: 'Configuracion' },
+  { title: 'Soporte', icon: 'support', link: '/soporte', canPerm: 'Soporte' },
 ]
 
 const filteredLinks = computed(() => {
@@ -499,11 +486,11 @@ const filteredLinks = computed(() => {
   })
 })
 
-function toggleLeftDrawer () {
+function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
-function logout () {
+function logout() {
   proxy.$alert.dialog('¿Desea salir del sistema?')
     .onOk(() => {
       proxy.$axios.post('/logout')
@@ -532,6 +519,7 @@ const roleText = computed(() => {
   margin: 4px 8px;
   padding: 4px 6px;
 }
+
 .menu-active {
   background: rgba(255, 255, 255, 0.15);
   color: #fff !important;
