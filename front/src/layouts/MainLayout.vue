@@ -462,13 +462,13 @@ const store = useCounterStore()
 
 const leftDrawerOpen = ref(false)
 
-// 2025-11-23: Estados de expansión persistentes para mantener secciones abiertas
-const expansionProduccion = ref(true)
-const expansionTransporte = ref(true)
-const expansionAcopio = ref(true)
-const expansionControlProcesos = ref(true)
-const expansionComercializacion = ref(true)
-const expansionReportes = ref(true)
+// 2025-11-23: Estados de expansión - colapsados por defecto
+const expansionProduccion = ref(false)
+const expansionTransporte = ref(false)
+const expansionAcopio = ref(false)
+const expansionControlProcesos = ref(false)
+const expansionComercializacion = ref(false)
+const expansionReportes = ref(false)
 
 // Helpers de permisos
 function hasPerm(perm) {
