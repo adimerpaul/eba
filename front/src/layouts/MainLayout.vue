@@ -352,6 +352,15 @@
         <q-expansion-item v-model="expansionComercializacion" dense expand-separator icon="store"
           label="Módulo Comercialización" active-class="menu-active" v-if="hasPerm('Modulo comercializacion')">
           <q-list>
+            <q-item :inset-level="0.3" dense to="/ventas/dashboard" clickable class="menu-item" active-class="menu-active"
+              v-close-popup>
+              <q-item-section avatar>
+                <q-icon name="dashboard" class="text-white" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-white">Dashboard de Ventas</q-item-label>
+              </q-item-section>
+            </q-item>
             <q-item :inset-level="0.3" dense to="/clientes" exact clickable class="menu-item" active-class="menu-active"
               v-close-popup v-if="hasPerm('Clientes')">
               <q-item-section avatar>

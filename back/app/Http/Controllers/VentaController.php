@@ -393,4 +393,120 @@ public function anularVenta(Request $request)
     {
         return number_format((float)$v, 2, '.', '');
     }
+
+    /**
+     * Estadísticas para dashboard de comercialización
+     * GET /ventas/estadisticas?fecha_inicio=2025-01-01&fecha_fin=2025-12-31
+     */
+    public function estadisticas(Request $request)
+    {
+        $fechaInicio = $request->input('fecha_inicio', now()->startOfMonth()->toDateString());
+        $fechaFin = $request->input('fecha_fin', now()->endOfMonth()->toDateString());
+
+        // Total de ventas y monto
+        $ventas = Venta::whereBetween('fecha_venta', [$fechaInicio, $fechaFin])
+            ->where('estado', 'VALIDO')
+            ->get();
+
+        $totalVentas = $ventas->count();
+        $montoTotal = $ventas->sum('precio_total');
+
+        // Ventas por cliente (top 10)
+        $ventasPorCliente = Venta::with('cliente:id,nombre_cliente')
+            ->whereBetween('fecha_venta', [$fechaInicio, $fechaFin])
+            ->where('estado', 'VALIDO')
+            ->get()
+            ->groupBy('cliente_id')
+            ->map(function ($grupo) {
+                return [
+                    'cliente' => $grupo->first()->cliente->nombre_cliente ?? 'Sin cliente',
+                    'total_ventas' => $grupo->count(),
+                    'monto_total' => round($grupo->sum('precio_total'), 2)
+                ];
+            })
+            ->sortByDesc('monto_total')
+            ->take(10)
+            ->values();
+
+        // Productos más vendidos
+        $productosMasVendidos = Kardex::with('producto:id,nombre_producto')
+            ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin])
+            ->whereNotNull('venta_id')
+            ->get()
+            ->groupBy('producto_id')
+            ->map(function ($grupo) {
+                return [
+                    'producto' => $grupo->first()->producto->nombre_producto ?? 'Sin producto',
+                    'cantidad_kg' => round($grupo->sum('cantidad_salida'), 2),
+                    'total_ventas' => $grupo->count()
+                ];
+            })
+            ->sortByDesc('cantidad_kg')
+            ->take(10)
+            ->values();
+
+        // Ventas por mes (últimos 6 meses)
+        $ventasPorMes = Venta::selectRaw("
+                TO_CHAR(fecha_venta, 'YYYY-MM') as mes,
+                COUNT(*) as total_ventas,
+                SUM(precio_total) as monto_total
+            ")
+            ->where('estado', 'VALIDO')
+            ->whereBetween('fecha_venta', [
+                now()->subMonths(6)->startOfMonth(),
+                now()->endOfMonth()
+            ])
+            ->groupBy('mes')
+            ->orderBy('mes', 'asc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'mes' => $item->mes,
+                    'total_ventas' => (int) $item->total_ventas,
+                    'monto_total' => round((float) $item->monto_total, 2)
+                ];
+            });
+
+        // Lotes con mayor rotación
+        $lotesRotacion = Kardex::with('lote:id,codigo_lote')
+            ->whereBetween('fecha_registro', [$fechaInicio, $fechaFin])
+            ->whereNotNull('venta_id')
+            ->get()
+            ->groupBy('lote_id')
+            ->map(function ($grupo) {
+                return [
+                    'codigo_lote' => $grupo->first()->lote->codigo_lote ?? 'Sin código',
+                    'cantidad_vendida_kg' => round($grupo->sum('cantidad_salida'), 2),
+                    'numero_ventas' => $grupo->count()
+                ];
+            })
+            ->sortByDesc('cantidad_vendida_kg')
+            ->take(10)
+            ->values();
+
+        // Promedio de venta
+        $promedioVenta = $totalVentas > 0 ? round($montoTotal / $totalVentas, 2) : 0;
+
+        // Kg totales vendidos
+        $kgVendidos = Kardex::whereBetween('fecha_registro', [$fechaInicio, $fechaFin])
+            ->whereNotNull('venta_id')
+            ->sum('cantidad_salida');
+
+        return response()->json([
+            'periodo' => [
+                'fecha_inicio' => $fechaInicio,
+                'fecha_fin' => $fechaFin
+            ],
+            'resumen' => [
+                'total_ventas' => $totalVentas,
+                'monto_total' => round($montoTotal, 2),
+                'promedio_venta' => $promedioVenta,
+                'kg_vendidos' => round($kgVendidos, 2)
+            ],
+            'ventas_por_cliente' => $ventasPorCliente,
+            'productos_mas_vendidos' => $productosMasVendidos,
+            'ventas_por_mes' => $ventasPorMes,
+            'lotes_rotacion' => $lotesRotacion
+        ]);
+    }
 }

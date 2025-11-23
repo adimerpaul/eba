@@ -258,6 +258,7 @@ Route::middleware('auth:sanctum')->group(callback: function () {
 
     Route::get('lotes/disponibles', [VentaController::class, 'lotesDisponibles']);
 
+    Route::get('ventas/estadisticas', [VentaController::class, 'estadisticas']);
     Route::get('ventas', [VentaController::class, 'index']);       // opcional: listado
     Route::get('ventas/{venta}', [VentaController::class, 'show']); // detalle
     Route::post('ventas', [VentaController::class, 'store']);       // crear
