@@ -3,69 +3,34 @@
     <!-- ENCABEZADO CON SELECTORES -->
     <div class="row items-center q-gutter-sm q-mb-md">
       <div class="text-subtitle1 text-weight-medium">Acopios por Gestión (Julio-Junio)</div>
-      <q-space/>
-      
+      <q-space />
+
       <!-- Selector de Gestión -->
-      <q-select 
-        v-model="gestionSeleccionada" 
-        :options="gestiones" 
-        label="Gestión" 
-        dense 
-        outlined 
-        style="min-width: 130px"
-        @update:model-value="cargarAcopios"
-        :loading="loading"
-      >
+      <q-select v-model="gestionSeleccionada" :options="gestiones" label="Gestión" dense outlined
+        style="min-width: 130px" @update:model-value="cargarAcopios" :loading="loading">
         <template v-slot:prepend>
           <q-icon name="event" />
         </template>
       </q-select>
 
       <!-- Selector de Producto -->
-      <q-select 
-        v-model="productoSeleccionado" 
-        :options="productos" 
-        option-label="nombre_producto" 
-        option-value="id"
-        emit-value
-        map-options
-        label="Producto" 
-        dense 
-        outlined 
-        style="min-width: 200px"
-        @update:model-value="cargarAcopios"
-        :loading="loadingProductos"
-      >
+      <q-select v-model="productoSeleccionado" :options="productos" option-label="nombre_producto" option-value="id"
+        emit-value map-options label="Producto" dense outlined style="min-width: 200px"
+        @update:model-value="cargarAcopios" :loading="loadingProductos">
         <template v-slot:prepend>
           <q-icon name="inventory" />
         </template>
       </q-select>
 
       <!-- Botón Exportar Excel -->
-      <q-btn 
-        color="green" 
-        icon="download" 
-        label="Excel" 
-        dense 
-        no-caps
-        @click="exportarExcel"
-        :loading="loadingExcel"
-        :disable="!datosDisponibles"
-      >
+      <q-btn color="green" icon="download" label="Excel" dense no-caps @click="exportarExcel" :loading="loadingExcel"
+        :disable="!datosDisponibles">
         <q-tooltip v-if="!datosDisponibles">
           No hay datos para exportar
         </q-tooltip>
       </q-btn>
 
-      <q-btn 
-        color="primary" 
-        icon="refresh" 
-        dense
-        round
-        flat
-        @click="cargarAcopios"
-        :loading="loading"
-      >
+      <q-btn color="primary" icon="refresh" dense round flat @click="cargarAcopios" :loading="loading">
         <q-tooltip>Recargar datos</q-tooltip>
       </q-btn>
     </div>
@@ -109,24 +74,18 @@
           </thead>
           <tbody>
             <!-- Filas de datos de cada mes -->
-            <tr v-for="mes in meses" :key="mes.offset_mes" :class="{'bg-grey-2': mes.num_entregas === 0}">
+            <tr v-for="mes in meses" :key="mes.offset_mes" :class="{ 'bg-grey-2': mes.num_entregas === 0 }">
               <td class="text-left">
                 <span class="text-weight-medium">{{ mes.mes_nombre }}</span>
                 <span class="text-caption text-grey-7 q-ml-xs" v-if="mes.anio_mes">{{ mes.anio_mes }}</span>
               </td>
               <td class="text-right">
-                <span :class="{'text-weight-bold': mes.num_entregas > 0}">
+                <span :class="{ 'text-weight-bold': mes.num_entregas > 0 }">
                   {{ formatNumber(mes.cantidad_kg) }}
                 </span>
               </td>
               <td class="text-right">
-                <q-chip 
-                  v-if="mes.num_entregas > 0" 
-                  dense 
-                  size="sm" 
-                  color="blue-2" 
-                  text-color="blue-9"
-                >
+                <q-chip v-if="mes.num_entregas > 0" dense size="sm" color="blue-2" text-color="blue-9">
                   {{ mes.num_entregas }}
                 </q-chip>
                 <span v-else class="text-grey-5">-</span>
@@ -268,7 +227,7 @@ export default {
       try {
         const { data } = await this.$axios.get('/productos/tipo/1')
         this.productos = data?.data || data || []
-        
+
         // Si no hay productos, mostrar alerta
         if (this.productos.length === 0) {
           this.$alert?.warning?.('No se encontraron productos tipo miel')
@@ -325,7 +284,7 @@ export default {
       } catch (e) {
         console.error('Error cargando acopios:', e)
         this.$alert?.error?.(e.response?.data?.message || 'Error al cargar acopios por gestión')
-        
+
         // Limpiar datos en caso de error
         this.meses = []
         this.totalKg = 0
@@ -478,11 +437,11 @@ export default {
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
-        
+
         // Nombre del archivo con información del productor y gestión
         const nombreProductor = this.datosProductor?.productor?.replace(/\s+/g, '_') || 'productor'
         link.setAttribute('download', `acopios_${nombreProductor}_${this.gestionSeleccionada}.xlsx`)
-        
+
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)

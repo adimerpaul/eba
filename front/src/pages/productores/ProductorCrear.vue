@@ -8,11 +8,8 @@
     <q-card flat bordered>
       <q-card-section>
         <!-- No pasamos 'productor' → el form crea desde cero -->
-        <ProductorForm
-          banner-msg="Completa los datos para registrar un nuevo productor"
-          @saved="onSaved"
-          @cancel="$router.back()"
-        />
+        <ProductorForm banner-msg="Completa los datos para registrar un nuevo productor" @saved="onSaved"
+          @cancel="$router.back()" />
       </q-card-section>
     </q-card>
   </q-page>
@@ -24,9 +21,9 @@ import ProductorForm from "pages/productores/ProductorForm.vue";
 
 export default {
   name: 'ProductorCrear',
-  components: {ProductorForm},
+  components: { ProductorForm },
   methods: {
-    onSaved (saved) {
+    onSaved(saved) {
       // Redirige como prefieras:
       // 1) a la lista
       // this.$router.push({ name: 'productores.index' })

@@ -9,14 +9,7 @@
       </div>
       <q-space />
       <!-- 2025-11-21: Boton de navegacion rapida a modulo de Acopio -->
-      <q-btn 
-        v-if="productor"
-        flat 
-        color="primary" 
-        icon="inventory_2" 
-        label="Ver Acopios"
-        @click="navegarAcopios"
-      />
+      <q-btn v-if="productor" flat color="primary" icon="inventory_2" label="Ver Acopios" @click="navegarAcopios" />
       <q-btn flat round icon="refresh" :loading="loading" @click="fetchProductor" />
     </div>
 
@@ -87,22 +80,15 @@
     <q-card v-if="!loading && productor" flat bordered class="q-mb-md">
       <q-card-section>
         <div class="text-subtitle2 q-mb-sm">Completitud del Perfil</div>
-        <q-linear-progress 
-          :value="completitud / 100" 
-          size="12px" 
-          :color="completitud === 100 ? 'green' : 'orange'"
-          class="q-mb-sm"
-        />
+        <q-linear-progress :value="completitud / 100" size="12px" :color="completitud === 100 ? 'green' : 'orange'"
+          class="q-mb-sm" />
         <div class="text-caption text-grey-7">
           Perfil completo al {{ completitud }}%
           <q-tooltip max-width="300px">
             <div class="text-weight-bold q-mb-xs">Checklist de Completitud:</div>
             <div v-for="item in checklistCompletitud" :key="item.label" class="q-my-xs">
-              <q-icon 
-                :name="item.completo ? 'check_circle' : 'radio_button_unchecked'" 
-                :color="item.completo ? 'green' : 'grey'" 
-                size="sm"
-              />
+              <q-icon :name="item.completo ? 'check_circle' : 'radio_button_unchecked'"
+                :color="item.completo ? 'green' : 'grey'" size="sm" />
               {{ item.label }}
             </div>
           </q-tooltip>
@@ -137,12 +123,8 @@
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="general" class="q-pa-none">
           <q-card-section v-if="!loading && productor">
-            <ProductorForm
-              :productor="productor"
-              banner-msg="Actualiza los datos y guarda los cambios"
-              @saved="onSaved"
-              @cancel="$router.back()"
-            />
+            <ProductorForm :productor="productor" banner-msg="Actualiza los datos y guarda los cambios" @saved="onSaved"
+              @cancel="$router.back()" />
           </q-card-section>
         </q-tab-panel>
 
@@ -170,7 +152,7 @@
         <q-tab-panel name="acopio" class="q-pa-none">
           <ProductorAcopios :productor="productor" @updated="fetchProductor" />
         </q-tab-panel>
-<!--      </q-tab-panels>-->
+        <!--      </q-tab-panels>-->
       </q-tab-panels>
     </q-card>
   </q-page>
@@ -197,7 +179,7 @@ export default {
     ProductorRunsa,
     ProductorAcopiosGestion // Registrar nuevo componente
   },
-  data () {
+  data() {
     return {
       tab: 'general',
       loading: false,
@@ -209,20 +191,20 @@ export default {
   },
   computed: {
     // 2025-11-21: Computed properties para KPIs del dashboard
-    totalApiarios () {
+    totalApiarios() {
       return this.productor?.apiarios?.length || 0
     },
-    totalColmenas () {
+    totalColmenas() {
       if (!this.productor?.apiarios) return 0
       return this.productor.apiarios.reduce((sum, apiario) => {
         return sum + (parseInt(apiario.numero_colmenas_prod) || 0)
       }, 0)
     },
-    totalCertificaciones () {
+    totalCertificaciones() {
       return this.productor?.certificaciones?.length || 0
     },
     // 2025-11-21: Clase dinamica para tarjeta de estado
-    estadoClass () {
+    estadoClass() {
       if (!this.productor?.estado) return 'bg-grey text-white'
       const estado = this.productor.estado.toUpperCase()
       if (estado === 'VIGENTE' || estado === 'ACTIVO') return 'bg-green text-white'
@@ -230,24 +212,24 @@ export default {
       return 'bg-grey text-white'
     },
     // 2025-11-21: Checklist de completitud del perfil
-    checklistCompletitud () {
+    checklistCompletitud() {
       if (!this.productor) return []
-      
+
       const tieneDatosBasicos = !!(
         this.productor.nombre &&
         this.productor.apellidos &&
         this.productor.numcarnet &&
         this.productor.organizacion_id
       )
-      
+
       const tieneRunsaVigente = this.productor.runsas?.some(r => r.estado === 'VIGENTE') || false
-      
+
       const tieneCertificacionVigente = this.productor.certificaciones?.some(c => c.estado === 'VIGENTE') || false
-      
+
       const tieneApiario = (this.productor.apiarios?.length || 0) > 0
-      
+
       const tieneColmenas = this.totalColmenas > 0
-      
+
       return [
         { label: 'Datos basicos completos', completo: tieneDatosBasicos },
         { label: 'Tiene RUNSA vigente', completo: tieneRunsaVigente },
@@ -257,21 +239,21 @@ export default {
       ]
     },
     // 2025-11-21: Porcentaje de completitud (0-100)
-    completitud () {
+    completitud() {
       const checklist = this.checklistCompletitud
       if (checklist.length === 0) return 0
-      
+
       const completos = checklist.filter(item => item.completo).length
       return Math.round((completos / checklist.length) * 100)
     }
   },
-  mounted () {
+  mounted() {
     this.fetchProductor()
     // 2025-11-21: Cargar alertas de vencimientos al montar componente
     this.fetchVencimientos()
   },
   methods: {
-    async fetchProductor () {
+    async fetchProductor() {
       this.loading = true
       try {
         const id = this.$route.params.id
@@ -288,7 +270,7 @@ export default {
      * Obtener contadores de vencimientos proximos (30 dias)
      * Creado: 2025-11-21
      */
-    async fetchVencimientos () {
+    async fetchVencimientos() {
       try {
         const id = this.$route.params.id
         const { data } = await this.$axios.get(`productores/${id}/verificar-vencimientos`)
@@ -303,13 +285,13 @@ export default {
      * Navegar al modulo de Acopio con filtro por productor
      * Creado: 2025-11-21
      */
-    navegarAcopios () {
+    navegarAcopios() {
       this.$router.push({
         path: '/acopios',
         query: { productor_id: this.productor.id }
       })
     },
-    onSaved (saved) {
+    onSaved(saved) {
       this.productor = saved
       this.$alert?.success?.('Cambios guardados')
     }

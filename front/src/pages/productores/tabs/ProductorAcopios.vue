@@ -9,34 +9,20 @@
         </span>-->
       </div>
       <q-space />
-      
+
       <!-- 2025-11-21: Botón para registro rápido de acopio -->
-      <q-btn
-        color="positive"
-        icon="add"
-        label="Nuevo Acopio"
-        dense
-        no-caps
-        @click="abrirModalNuevoAcopio"
-      >
+      <q-btn color="positive" icon="add" label="Nuevo Acopio" dense no-caps @click="abrirModalNuevoAcopio">
         <q-tooltip>Registrar nuevo acopio para este productor</q-tooltip>
       </q-btn>
     </div>
 
     <!-- TABS -->
-    <q-tabs
-      v-model="tab"
-      dense
-      align="left"
-      active-color="primary"
-      indicator-color="primary"
-      class="text-primary"
-    >
+    <q-tabs v-model="tab" dense align="left" active-color="primary" indicator-color="primary" class="text-primary">
       <q-tab name="detalle" label="Lista de Acopios" icon="table_view" />
       <q-tab name="resumen" label="Proyección mensual" icon="analytics" />
       <q-tab name="gestion" label="Gestión anual" icon="event_note" />
     </q-tabs>
-    
+
     <!-- 2025-11-21: Chips de totales movidos debajo de tabs para dar visibilidad al botón Nuevo Acopio -->
     <div class="row items-center q-gutter-sm q-mt-sm q-mb-sm">
       <q-chip color="primary" text-color="white" dense>
@@ -49,7 +35,7 @@
         Nº cosechas: {{ acopioCosechas.length }}
       </q-chip>
     </div>
-    
+
     <q-separator class="q-mb-md" />
 
     <q-tab-panels v-model="tab" animated>
@@ -58,144 +44,99 @@
       <q-tab-panel name="detalle">
         <q-markup-table v-if="acopioCosechas.length > 0" dense wrap-cells flat bordered>
           <thead>
-          <tr class="bg-primary text-white">
-            <!-- 2025-11-21: Nueva columna para numeracion secuencial -->
-            <th style="width: 50px;">#</th>
-            <!-- 2025-11-21: Nueva columna para botones de accion -->
-            <th style="width: 180px;">Opciones</th>
-            <th>Fecha Cosecha</th>
-            <th>Número Acta</th>
-            <th>Productor</th>
-            <!-- 2025-11-21: Nueva columna para tipo de materia prima -->
-            <th>Tipo Materia Prima</th>
-            <!-- 2025-11-21: Cambio de etiqueta de 'Cantidad (kg)' a 'Peso Total (Kg)' -->
-            <th class="text-right">Peso Total (Kg)</th>
-            <!-- 2025-11-21: Nueva columna para precio de compra -->
-            <th class="text-right">Precio Bs.</th>
-            <!-- 2025-11-21: Nueva columna para costo total calculado -->
-            <th class="text-right">Costo Total</th>
-            <th>Estado</th>
-            <!-- MODIFICACION 2025-11-17: Nueva columna para acceso rapido a formularios de control - Movida al final 2025-11-21 -->
-            <th style="width: 120px;">Formularios de CONTROL</th>
-            <!-- 2025-11-21: Nueva columna para editar y eliminar -->
-            <th style="width: 100px;">Acciones</th>
-            <!-- 2025-11-21: Columnas ocultadas (comentadas) para no mostrar en tabla principal -->
-            <!-- <th>Humedad (%)</th> -->
-            <!-- <th>Temperatura Almacenaje (°C)</th> -->
-            <!-- <th>Condiciones Almacenaje</th> -->
-          </tr>
+            <tr class="bg-primary text-white">
+              <!-- 2025-11-21: Nueva columna para numeracion secuencial -->
+              <th style="width: 50px;">#</th>
+              <!-- 2025-11-21: Nueva columna para botones de accion -->
+              <th style="width: 180px;">Opciones</th>
+              <th>Fecha Cosecha</th>
+              <th>Número Acta</th>
+              <th>Productor</th>
+              <!-- 2025-11-21: Nueva columna para tipo de materia prima -->
+              <th>Tipo Materia Prima</th>
+              <!-- 2025-11-21: Cambio de etiqueta de 'Cantidad (kg)' a 'Peso Total (Kg)' -->
+              <th class="text-right">Peso Total (Kg)</th>
+              <!-- 2025-11-21: Nueva columna para precio de compra -->
+              <th class="text-right">Precio Bs.</th>
+              <!-- 2025-11-21: Nueva columna para costo total calculado -->
+              <th class="text-right">Costo Total</th>
+              <th>Estado</th>
+              <!-- MODIFICACION 2025-11-17: Nueva columna para acceso rapido a formularios de control - Movida al final 2025-11-21 -->
+              <th style="width: 120px;">Formularios de CONTROL</th>
+              <!-- 2025-11-21: Nueva columna para editar y eliminar -->
+              <th style="width: 100px;">Acciones</th>
+              <!-- 2025-11-21: Columnas ocultadas (comentadas) para no mostrar en tabla principal -->
+              <!-- <th>Humedad (%)</th> -->
+              <!-- <th>Temperatura Almacenaje (°C)</th> -->
+              <!-- <th>Condiciones Almacenaje</th> -->
+            </tr>
           </thead>
           <tbody>
-          <tr v-for="(cosecha, index) in acopioCosechas" :key="cosecha.id">
-            <!-- 2025-11-21: Celda de numeracion secuencial -->
-            <td class="text-center">{{ index + 1 }}</td>
-            <!-- 2025-11-21: Celda de botones de accion -->
-            <td class="text-center">
-              <div class="q-gutter-xs">
-                <q-btn
-                  flat dense round
-                  color="blue"
-                  icon="description"
-                  size="sm"
-                  @click="imprimirActaConformidad(cosecha)"
-                >
-                  <q-tooltip>Acta de Conformidad</q-tooltip>
+            <tr v-for="(cosecha, index) in acopioCosechas" :key="cosecha.id">
+              <!-- 2025-11-21: Celda de numeracion secuencial -->
+              <td class="text-center">{{ index + 1 }}</td>
+              <!-- 2025-11-21: Celda de botones de accion -->
+              <td class="text-center">
+                <div class="q-gutter-xs">
+                  <q-btn flat dense round color="blue" icon="description" size="sm"
+                    @click="imprimirActaConformidad(cosecha)">
+                    <q-tooltip>Acta de Conformidad</q-tooltip>
+                  </q-btn>
+                  <q-btn flat dense round color="green" icon="local_shipping" size="sm"
+                    @click="imprimirActaEntrega(cosecha)">
+                    <q-tooltip>Acta de Entrega</q-tooltip>
+                  </q-btn>
+                  <q-btn flat dense round color="orange" icon="receipt" size="sm" @click="imprimirRecibo(cosecha)">
+                    <q-tooltip>Recibo</q-tooltip>
+                  </q-btn>
+                  <q-btn flat dense round color="purple" icon="sync" size="sm" @click="procesarAcopio(cosecha)"
+                    :disable="cosecha.estado !== 'BUENO'">
+                    <q-tooltip>Procesar (Enviar a Revisión)</q-tooltip>
+                  </q-btn>
+                </div>
+              </td>
+              <td>{{ cosecha.fecha_cosecha }}</td>
+              <td>{{ cosecha.num_acta }}</td>
+              <td>
+                {{ cosecha.apiario?.productor.nombre }}
+                {{ cosecha.apiario?.productor.apellidos }}
+              </td>
+              <!-- 2025-11-21: Celda para tipo de materia prima (producto) - Corregido a nombre_producto -->
+              <td>{{ cosecha.producto?.nombre_producto || 'N/A' }}</td>
+              <!-- 2025-11-21: Celda de peso total (antes 'Cantidad kg') -->
+              <td class="text-right">{{ Number(cosecha.cantidad_kg).toFixed(2) }}</td>
+              <!-- 2025-11-21: Celda de precio de compra -->
+              <td class="text-right">{{ Number(cosecha.precio_compra || 0).toFixed(2) }}</td>
+              <!-- 2025-11-21: Celda de costo total calculado -->
+              <td class="text-right">{{ calcularCostoTotal(cosecha) }}</td>
+              <!-- 2025-11-21: Celda de estado con chip mejorado -->
+              <td>
+                <q-chip :color="obtenerColorEstado(cosecha.estado)" text-color="white" dense size="10px">
+                  {{ obtenerLabelEstado(cosecha.estado) }}
+                </q-chip>
+              </td>
+              <!-- MODIFICACION 2025-11-17: Boton para abrir dialog de formularios de control - Movido al final 2025-11-21 -->
+              <td class="text-center">
+                <q-btn flat dense color="primary" icon="description" size="sm" @click="openFormulariosDialog(cosecha)">
+                  <q-tooltip>Ver Formularios de Control del SENASAG</q-tooltip>
                 </q-btn>
-                <q-btn
-                  flat dense round
-                  color="green"
-                  icon="local_shipping"
-                  size="sm"
-                  @click="imprimirActaEntrega(cosecha)"
-                >
-                  <q-tooltip>Acta de Entrega</q-tooltip>
-                </q-btn>
-                <q-btn
-                  flat dense round
-                  color="orange"
-                  icon="receipt"
-                  size="sm"
-                  @click="imprimirRecibo(cosecha)"
-                >
-                  <q-tooltip>Recibo</q-tooltip>
-                </q-btn>
-                <q-btn
-                  flat dense round
-                  color="purple"
-                  icon="sync"
-                  size="sm"
-                  @click="procesarAcopio(cosecha)"
-                  :disable="cosecha.estado !== 'BUENO'"
-                >
-                  <q-tooltip>Procesar (Enviar a Revisión)</q-tooltip>
-                </q-btn>
-              </div>
-            </td>
-            <td>{{ cosecha.fecha_cosecha }}</td>
-            <td>{{ cosecha.num_acta }}</td>
-            <td>
-              {{ cosecha.apiario?.productor.nombre }}
-              {{ cosecha.apiario?.productor.apellidos }}
-            </td>
-            <!-- 2025-11-21: Celda para tipo de materia prima (producto) - Corregido a nombre_producto -->
-            <td>{{ cosecha.producto?.nombre_producto || 'N/A' }}</td>
-            <!-- 2025-11-21: Celda de peso total (antes 'Cantidad kg') -->
-            <td class="text-right">{{ Number(cosecha.cantidad_kg).toFixed(2) }}</td>
-            <!-- 2025-11-21: Celda de precio de compra -->
-            <td class="text-right">{{ Number(cosecha.precio_compra || 0).toFixed(2) }}</td>
-            <!-- 2025-11-21: Celda de costo total calculado -->
-            <td class="text-right">{{ calcularCostoTotal(cosecha) }}</td>
-            <!-- 2025-11-21: Celda de estado con chip mejorado -->
-            <td>
-              <q-chip
-                :color="obtenerColorEstado(cosecha.estado)"
-                text-color="white"
-                dense size="10px"
-              >
-                {{ obtenerLabelEstado(cosecha.estado) }}
-              </q-chip>
-            </td>
-            <!-- MODIFICACION 2025-11-17: Boton para abrir dialog de formularios de control - Movido al final 2025-11-21 -->
-            <td class="text-center">
-              <q-btn
-                flat
-                dense
-                color="primary"
-                icon="description"
-                size="sm"
-                @click="openFormulariosDialog(cosecha)"
-              >
-                <q-tooltip>Ver Formularios de Control del SENASAG</q-tooltip>
-              </q-btn>
-            </td>
-            <!-- 2025-11-21: Celda de acciones (editar y eliminar) -->
-            <td class="text-center">
-              <div class="q-gutter-xs">
-                <q-btn
-                  flat dense round
-                  color="primary"
-                  icon="edit"
-                  size="sm"
-                  @click="editarAcopio(cosecha)"
-                >
-                  <q-tooltip>Editar acopio</q-tooltip>
-                </q-btn>
-                <q-btn
-                  flat dense round
-                  color="negative"
-                  icon="delete"
-                  size="sm"
-                  @click="eliminarAcopio(cosecha)"
-                >
-                  <q-tooltip>Eliminar acopio</q-tooltip>
-                </q-btn>
-              </div>
-            </td>
-            <!-- 2025-11-21: Celdas ocultadas (comentadas) - datos siguen disponibles en dialog de formularios -->
-            <!-- <td>{{ cosecha.humedad }}</td> -->
-            <!-- <td>{{ cosecha.temperatura_almacenaje }}</td> -->
-            <!-- <td>{{ cosecha.condiciones_almacenaje }}</td> -->
-          </tr>
+              </td>
+              <!-- 2025-11-21: Celda de acciones (editar y eliminar) -->
+              <td class="text-center">
+                <div class="q-gutter-xs">
+                  <q-btn flat dense round color="primary" icon="edit" size="sm" @click="editarAcopio(cosecha)">
+                    <q-tooltip>Editar acopio</q-tooltip>
+                  </q-btn>
+                  <q-btn flat dense round color="negative" icon="delete" size="sm" @click="eliminarAcopio(cosecha)">
+                    <q-tooltip>Eliminar acopio</q-tooltip>
+                  </q-btn>
+                </div>
+              </td>
+              <!-- 2025-11-21: Celdas ocultadas (comentadas) - datos siguen disponibles en dialog de formularios -->
+              <!-- <td>{{ cosecha.humedad }}</td> -->
+              <!-- <td>{{ cosecha.temperatura_almacenaje }}</td> -->
+              <!-- <td>{{ cosecha.condiciones_almacenaje }}</td> -->
+            </tr>
           </tbody>
         </q-markup-table>
         <div v-else class="text-center q-pa-md">
@@ -210,29 +151,24 @@
           <!-- Tabla resumen -->
           <q-markup-table dense flat bordered class="q-mb-md">
             <thead>
-            <tr class="bg-primary text-white">
-              <th>Mes</th>
-              <th>Total Kg</th>
-              <th>Total compra (Bs)</th>
-            </tr>
+              <tr class="bg-primary text-white">
+                <th>Mes</th>
+                <th>Total Kg</th>
+                <th>Total compra (Bs)</th>
+              </tr>
             </thead>
             <tbody>
-            <tr v-for="row in monthlyAggregates" :key="row.key">
-              <td>{{ row.label }}</td>
-              <td>{{ row.totalKg.toFixed(2) }}</td>
-              <td>{{ row.totalMonto.toFixed(2) }}</td>
-            </tr>
+              <tr v-for="row in monthlyAggregates" :key="row.key">
+                <td>{{ row.label }}</td>
+                <td>{{ row.totalKg.toFixed(2) }}</td>
+                <td>{{ row.totalMonto.toFixed(2) }}</td>
+              </tr>
             </tbody>
           </q-markup-table>
 
           <!-- Gráfico Apex -->
           <div class="q-mt-md">
-            <apexchart
-              type="line"
-              height="320"
-              :options="monthlyChartOptions"
-              :series="monthlyChartSeries"
-            />
+            <apexchart type="line" height="320" :options="monthlyChartOptions" :series="monthlyChartSeries" />
           </div>
         </div>
         <div v-else class="text-center q-pa-md">
@@ -245,10 +181,7 @@
 
       <!-- ================= GESTIÓN ANUAL ================= -->
       <q-tab-panel name="gestion">
-        <ProductorAcopiosGestion 
-          v-if="productor"
-          :productor="productor"
-        />
+        <ProductorAcopiosGestion v-if="productor" :productor="productor" />
       </q-tab-panel>
     </q-tab-panels>
 
@@ -266,162 +199,80 @@
         <q-card-section>
           <q-form ref="formAcopioRef" @submit.prevent="guardarAcopio">
             <div class="row q-col-gutter-md">
-              
+
               <!-- Fecha (precargada con fecha actual) -->
               <div class="col-12 col-md-4">
-                <q-input
-                  v-model="formAcopio.fecha_cosecha"
-                  type="date"
-                  label="Fecha de Cosecha"
-                  dense outlined
-                  :rules="[val => !!val || 'Requerido']"
-                />
+                <q-input v-model="formAcopio.fecha_cosecha" type="date" label="Fecha de Cosecha" dense outlined
+                  :rules="[val => !!val || 'Requerido']" />
               </div>
 
               <!-- Número de Acta -->
               <div class="col-12 col-md-4">
-                <q-input
-                  v-model="formAcopio.num_acta"
-                  label="Número de Acta"
-                  dense outlined
-                  :rules="[val => !!val || 'Requerido']"
-                />
+                <q-input v-model="formAcopio.num_acta" label="Número de Acta" dense outlined
+                  :rules="[val => !!val || 'Requerido']" />
               </div>
 
               <!-- Apiario (dependiente del productor actual) -->
               <div class="col-12 col-md-4">
-                <q-select
-                  v-model="formAcopio.apiario_id"
-                  :options="apiarioOptionsModal"
-                  option-value="value"
-                  option-label="label"
-                  emit-value
-                  map-options
-                  label="Apiario"
-                  dense outlined
-                  :loading="loadingApiariosModal"
-                  :rules="[v => !!v || 'Seleccione un apiario']"
-                />
+                <q-select v-model="formAcopio.apiario_id" :options="apiarioOptionsModal" option-value="value"
+                  option-label="label" emit-value map-options label="Apiario" dense outlined
+                  :loading="loadingApiariosModal" :rules="[v => !!v || 'Seleccione un apiario']" />
               </div>
 
               <!-- Producto (precargado con Miel de Abeja) -->
               <div class="col-12 col-md-6">
-                <q-select
-                  v-model="formAcopio.producto_id"
-                  :options="productosOptions"
-                  option-value="value"
-                  option-label="label"
-                  emit-value
-                  map-options
-                  label="Tipo de Materia Prima"
-                  dense outlined
-                  :loading="loadingProductos"
-                  :rules="[v => !!v || 'Requerido']"
-                />
+                <q-select v-model="formAcopio.producto_id" :options="productosOptions" option-value="value"
+                  option-label="label" emit-value map-options label="Tipo de Materia Prima" dense outlined
+                  :loading="loadingProductos" :rules="[v => !!v || 'Requerido']" />
               </div>
 
               <!-- Cantidad KG -->
               <div class="col-12 col-md-3">
-                <q-input
-                  v-model.number="formAcopio.cantidad_kg"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  label="Cantidad (kg)"
-                  dense outlined
-                  suffix="kg"
-                  :rules="[v => v > 0 || 'Mayor a 0']"
-                />
+                <q-input v-model.number="formAcopio.cantidad_kg" type="number" min="0" step="0.01" label="Cantidad (kg)"
+                  dense outlined suffix="kg" :rules="[v => v > 0 || 'Mayor a 0']" />
               </div>
 
               <!-- Precio de Compra -->
               <div class="col-12 col-md-3">
-                <q-input
-                  v-model.number="formAcopio.precio_compra"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  label="Precio de compra"
-                  dense outlined
-                  prefix="Bs "
-                  :rules="[v => v >= 0 || 'No negativo']"
-                />
+                <q-input v-model.number="formAcopio.precio_compra" type="number" min="0" step="0.01"
+                  label="Precio de compra" dense outlined prefix="Bs " :rules="[v => v >= 0 || 'No negativo']" />
               </div>
 
               <!-- Humedad (opcional) -->
               <div class="col-6 col-md-3">
-                <q-input
-                  v-model.number="formAcopio.humedad"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  label="Humedad (%)"
-                  dense outlined
-                  suffix="%"
-                />
+                <q-input v-model.number="formAcopio.humedad" type="number" min="0" step="0.01" label="Humedad (%)" dense
+                  outlined suffix="%" />
               </div>
 
               <!-- Temperatura (opcional) -->
               <div class="col-6 col-md-3">
-                <q-input
-                  v-model.number="formAcopio.temperatura_almacenaje"
-                  type="number"
-                  step="0.01"
-                  label="Temperatura (°C)"
-                  dense outlined
-                  suffix="°C"
-                />
+                <q-input v-model.number="formAcopio.temperatura_almacenaje" type="number" step="0.01"
+                  label="Temperatura (°C)" dense outlined suffix="°C" />
               </div>
 
               <!-- Procedencia (opcional) -->
               <div class="col-6 col-md-3">
-                <q-input
-                  v-model="formAcopio.procedencia"
-                  label="Procedencia"
-                  dense outlined
-                  maxlength="50"
-                />
+                <q-input v-model="formAcopio.procedencia" label="Procedencia" dense outlined maxlength="50" />
               </div>
 
               <!-- Tipo de Envase -->
               <div class="col-6 col-md-3">
-                <q-select
-                  v-model="formAcopio.tipo_envase"
-                  label="Tipo de envase"
-                  dense outlined
-                  :options="['BALDE','OTRO']"
-                />
+                <q-select v-model="formAcopio.tipo_envase" label="Tipo de envase" dense outlined
+                  :options="['BALDE', 'OTRO']" />
               </div>
 
               <!-- Observaciones -->
               <div class="col-12">
-                <q-input
-                  v-model="formAcopio.observaciones"
-                  label="Observaciones"
-                  dense outlined
-                  autogrow
-                  maxlength="255"
-                />
+                <q-input v-model="formAcopio.observaciones" label="Observaciones" dense outlined autogrow
+                  maxlength="255" />
               </div>
 
             </div>
 
             <div class="row q-gutter-sm q-mt-md justify-end">
-              <q-btn 
-                label="Cancelar" 
-                color="grey-7" 
-                flat 
-                v-close-popup 
-                no-caps
-              />
-              <q-btn 
-                type="submit" 
-                :label="formAcopio.id ? 'Actualizar Acopio' : 'Guardar Acopio'" 
-                color="positive" 
-                icon="save"
-                :loading="loadingGuardar" 
-                no-caps
-              />
+              <q-btn label="Cancelar" color="grey-7" flat v-close-popup no-caps />
+              <q-btn type="submit" :label="formAcopio.id ? 'Actualizar Acopio' : 'Guardar Acopio'" color="positive"
+                icon="save" :loading="loadingGuardar" no-caps />
             </div>
           </q-form>
         </q-card-section>
@@ -443,17 +294,10 @@
         <q-card-section>
           <q-form @submit="submit" class="row q-col-gutter-sm">
             <div class="col-12 col-sm-4">
-              <q-input
-                v-model="form.codigo"
-                dense outlined label="Codigo"
-                :rules="[v=>!!v || 'Requerido']"
-              />
+              <q-input v-model="form.codigo" dense outlined label="Codigo" :rules="[v => !!v || 'Requerido']" />
             </div>
             <div class="col-12 col-sm-8">
-              <q-input
-                v-model="form.subcodigo"
-                dense outlined label="Subcodigo"
-              />
+              <q-input v-model="form.subcodigo" dense outlined label="Subcodigo" />
             </div>
 
             <div class="col-6 col-sm-3">
@@ -464,17 +308,13 @@
             </div>
 
             <div class="col-12 col-sm-3">
-              <q-select
-                v-model="form.estado"
-                :options="['VIGENTE','VENCIDO','SUSPENDIDO']"
-                dense outlined label="Estado"
-              />
+              <q-select v-model="form.estado" :options="['VIGENTE', 'VENCIDO', 'SUSPENDIDO']" dense outlined
+                label="Estado" />
             </div>
 
             <div class="col-12 text-right q-gutter-sm q-mt-sm">
               <q-btn flat color="grey" label="Cancelar" v-close-popup :disable="saving" />
-              <q-btn color="primary" :label="form.id ? 'Guardar cambios' : 'Crear'"
-                     type="submit" :loading="saving" />
+              <q-btn color="primary" :label="form.id ? 'Guardar cambios' : 'Crear'" type="submit" :loading="saving" />
             </div>
           </q-form>
         </q-card-section>
@@ -521,11 +361,7 @@
             </div>
             <div class="col-12 col-md-2">
               <div class="text-caption text-grey-7">Estado</div>
-              <q-chip
-                :color="formulariosDialog.cosecha?.estado === 'BUENO' ? 'green' : 'red'"
-                text-color="white"
-                dense
-              >
+              <q-chip :color="formulariosDialog.cosecha?.estado === 'BUENO' ? 'green' : 'red'" text-color="white" dense>
                 {{ formulariosDialog.cosecha?.estado }}
               </q-chip>
             </div>
@@ -536,14 +372,8 @@
 
         <!-- Tabs de formularios -->
         <q-card-section class="q-pa-md">
-          <q-tabs
-            v-model="formulariosDialog.tab"
-            dense
-            class="text-grey"
-            active-color="primary"
-            indicator-color="primary"
-            align="left"
-          >
+          <q-tabs v-model="formulariosDialog.tab" dense class="text-grey" active-color="primary"
+            indicator-color="primary" align="left">
             <q-tab name="plagas" icon="bug_report" label="Plagas" no-caps />
             <q-tab name="limpiezas" icon="cleaning_services" label="Limpiezas" no-caps />
             <q-tab name="medicamentos" icon="medication" label="Medicamentos" no-caps />
@@ -553,24 +383,15 @@
 
           <q-tab-panels v-model="formulariosDialog.tab" animated style="max-height: 60vh; overflow-y: auto">
             <q-tab-panel name="plagas">
-              <PlagasFormulario
-                v-if="formulariosDialog.cosecha"
-                :cosecha="formulariosDialog.cosecha"
-              />
+              <PlagasFormulario v-if="formulariosDialog.cosecha" :cosecha="formulariosDialog.cosecha" />
             </q-tab-panel>
 
             <q-tab-panel name="limpiezas">
-              <LimpiezasFormulario
-                v-if="formulariosDialog.cosecha"
-                :cosecha="formulariosDialog.cosecha"
-              />
+              <LimpiezasFormulario v-if="formulariosDialog.cosecha" :cosecha="formulariosDialog.cosecha" />
             </q-tab-panel>
 
             <q-tab-panel name="medicamentos">
-              <MedicamentosFormulario
-                v-if="formulariosDialog.cosecha"
-                :cosecha="formulariosDialog.cosecha"
-              />
+              <MedicamentosFormulario v-if="formulariosDialog.cosecha" :cosecha="formulariosDialog.cosecha" />
             </q-tab-panel>
           </q-tab-panels>
         </q-card-section>
@@ -601,7 +422,7 @@ export default {
     productor: { type: Object, required: true }
   },
   emits: ['updated'],
-  data () {
+  data() {
     return {
       loading: false,
       saving: false,
@@ -639,13 +460,13 @@ export default {
       }
     }
   },
-  mounted () { this.hydrateFromProductor() },
+  mounted() { this.hydrateFromProductor() },
   watch: {
-    productor () { this.hydrateFromProductor() }
+    productor() { this.hydrateFromProductor() }
   },
   computed: {
     // Totales globales
-    totals () {
+    totals() {
       let totalKg = 0
       let totalMonto = 0
       this.acopioCosechas.forEach(c => {
@@ -658,7 +479,7 @@ export default {
     },
 
     // Array de meses agregados
-    monthlyAggregates () {
+    monthlyAggregates() {
       const map = {}
 
       this.acopioCosechas.forEach(c => {
@@ -691,7 +512,7 @@ export default {
     },
 
     // Opciones del gráfico
-    monthlyChartOptions () {
+    monthlyChartOptions() {
       return {
         chart: {
           id: 'acopios-mensuales',
@@ -727,7 +548,7 @@ export default {
     },
 
     // Series del gráfico
-    monthlyChartSeries () {
+    monthlyChartSeries() {
       const kgData = this.monthlyAggregates.map(m => m.totalKg)
       const montoData = this.monthlyAggregates.map(m => m.totalMonto)
 
@@ -746,7 +567,7 @@ export default {
     }
   },
   methods: {
-    async fetchAcopio () {
+    async fetchAcopio() {
       if (!this.productor?.id) return
       this.loading = true
       try {
@@ -761,11 +582,11 @@ export default {
         this.loading = false
       }
     },
-    hydrateFromProductor () {
+    hydrateFromProductor() {
       this.fetchAcopio()
     },
 
-    async fetchRunsas () {
+    async fetchRunsas() {
       if (!this.productor?.id) return
       this.loading = true
       try {
@@ -781,7 +602,7 @@ export default {
         this.loading = false
       }
     },
-    emptyForm () {
+    emptyForm() {
       return {
         id: null,
         productor_id: this.productor?.id || null,
@@ -792,19 +613,19 @@ export default {
         estado: 'VIGENTE'
       }
     },
-    chip (estado) {
+    chip(estado) {
       if (estado === 'VIGENTE') return 'green'
       if (estado === 'VENCIDO') return 'red'
       if (estado === 'SUSPENDIDO') return 'orange'
       return 'grey'
     },
 
-    startCreate () {
+    startCreate() {
       this.form = this.emptyForm()
       this.form.productor_id = this.productor?.id || null
       this.dlg.open = true
     },
-    startEdit (row) {
+    startEdit(row) {
       this.form = {
         id: row.id,
         productor_id: this.productor?.id || row.productor_id,
@@ -817,7 +638,7 @@ export default {
       this.dlg.open = true
     },
 
-    async submit () {
+    async submit() {
       if (!this.productor?.id) return
       this.saving = true
       try {
@@ -837,7 +658,7 @@ export default {
       }
     },
 
-    remove (row) {
+    remove(row) {
       this.$alert?.dialog?.('¿Eliminar runsa?')?.onOk(async () => {
         try {
           await this.$axios.delete(`runsas/${row.id}`)
@@ -852,7 +673,7 @@ export default {
     // MODIFICACION 2025-11-17: Metodo para abrir el dialog de formularios de control
     // Recibe el objeto cosecha y lo asigna al estado del dialog
     // MODIFICACION 2025-11-18: Cargar relaciones completas de la cosecha para mostrar datos de encabezado
-    async openFormulariosDialog (cosecha) {
+    async openFormulariosDialog(cosecha) {
       try {
         // MODIFICACION 2025-11-18: Obtener cosecha con todas las relaciones necesarias para encabezado
         // El backend ya carga: apiario.productor.municipio.provincia/departamento
@@ -874,7 +695,7 @@ export default {
      * @param {Object} cosecha - Objeto cosecha con cantidad_kg y precio_compra
      * @returns {String} Costo total formateado con 2 decimales
      */
-    calcularCostoTotal (cosecha) {
+    calcularCostoTotal(cosecha) {
       const cantidad = parseFloat(cosecha.cantidad_kg || 0)
       const precio = parseFloat(cosecha.precio_compra || 0)
       return (cantidad * precio).toFixed(2)
@@ -886,7 +707,7 @@ export default {
      * @param {String} estado - Estado del acopio (BUENO, EN_PROCESO, CANCELADO)
      * @returns {String} Color para el q-chip
      */
-    obtenerColorEstado (estado) {
+    obtenerColorEstado(estado) {
       const colores = {
         'BUENO': 'green',
         'EN_PROCESO': 'orange',
@@ -901,7 +722,7 @@ export default {
      * @param {String} estado - Estado del acopio (BUENO, EN_PROCESO, CANCELADO)
      * @returns {String} Label descriptivo del estado
      */
-    obtenerLabelEstado (estado) {
+    obtenerLabelEstado(estado) {
       const labels = {
         'BUENO': 'Acopiado',
         'EN_PROCESO': 'En Revisión',
@@ -915,7 +736,7 @@ export default {
      * Creado: 2025-11-21
      * @param {Object} cosecha - Objeto cosecha a procesar
      */
-    procesarAcopio (cosecha) {
+    procesarAcopio(cosecha) {
       if (cosecha.estado !== 'BUENO') {
         this.$q.notify({
           type: 'warning',
@@ -963,7 +784,7 @@ export default {
      * Placeholder: Se implementara en siguiente fase
      * @param {Object} cosecha - Objeto cosecha
      */
-    imprimirActaConformidad (cosecha) {
+    imprimirActaConformidad(cosecha) {
       this.$q.notify({
         type: 'info',
         message: 'Funcionalidad en desarrollo - Acta de Conformidad',
@@ -977,7 +798,7 @@ export default {
      * Placeholder: Se implementara en siguiente fase
      * @param {Object} cosecha - Objeto cosecha
      */
-    imprimirActaEntrega (cosecha) {
+    imprimirActaEntrega(cosecha) {
       this.$q.notify({
         type: 'info',
         message: 'Funcionalidad en desarrollo - Acta de Entrega',
@@ -991,7 +812,7 @@ export default {
      * Placeholder: Se implementara en siguiente fase
      * @param {Object} cosecha - Objeto cosecha
      */
-    imprimirRecibo (cosecha) {
+    imprimirRecibo(cosecha) {
       this.$q.notify({
         type: 'info',
         message: 'Funcionalidad en desarrollo - Recibo de Compra',
@@ -1004,7 +825,7 @@ export default {
      * Creado: 2025-11-21
      * Precarga: fecha actual, productor actual, apiarios del productor, Miel de Abeja
      */
-    async abrirModalNuevoAcopio () {
+    async abrirModalNuevoAcopio() {
       if (!this.productor?.id) {
         this.$q.notify({
           type: 'warning',
@@ -1019,7 +840,7 @@ export default {
       const year = now.getFullYear()
       const timestamp = now.getTime().toString().slice(-6) // Últimos 6 dígitos del timestamp
       const numActaGenerado = `${timestamp}/${year}`
-      
+
       this.formAcopio = {
         fecha_cosecha: now.toISOString().split('T')[0], // Fecha actual
         num_acta: numActaGenerado, // Número de acta generado automáticamente
@@ -1050,7 +871,7 @@ export default {
      * Creado: 2025-11-21
      * Si solo hay un apiario, lo selecciona automaticamente
      */
-    async cargarApiariosModal () {
+    async cargarApiariosModal() {
       if (!this.productor?.id) return
 
       this.loadingApiariosModal = true
@@ -1089,7 +910,7 @@ export default {
      * Creado: 2025-11-21
      * Preselecciona "Miel de Abeja" automaticamente
      */
-    async cargarProductos () {
+    async cargarProductos() {
       this.loadingProductos = true
       try {
         const { data } = await this.$axios.get('/productos/tipo/1')
@@ -1123,14 +944,14 @@ export default {
      * Crea o actualiza el acopio via POST/PUT /acopio-cosechas y recarga la lista
      * Actualizado: 2025-11-21 - Agregado soporte para edición
      */
-    async guardarAcopio () {
+    async guardarAcopio() {
       // Validar formulario
       const isValid = await this.$refs.formAcopioRef.validate()
       if (!isValid) return
 
       this.loadingGuardar = true
       const isEdit = !!this.formAcopio.id
-      
+
       try {
         let data
         if (isEdit) {
@@ -1169,7 +990,7 @@ export default {
 
       } catch (error) {
         console.error('Error guardando acopio:', error)
-        
+
         // Verificar si el error es por duplicado de num_acta
         const errorMsg = error.response?.data?.message || ''
         if (errorMsg.includes('num_acta')) {
@@ -1197,7 +1018,7 @@ export default {
      * Creado: 2025-11-21
      * Abre el modal con los datos del acopio para edición
      */
-    async editarAcopio (cosecha) {
+    async editarAcopio(cosecha) {
       if (!cosecha?.id) {
         this.$q.notify({
           type: 'warning',
@@ -1236,7 +1057,7 @@ export default {
      * Creado: 2025-11-21
      * Solicita confirmación y elimina el acopio
      */
-    eliminarAcopio (cosecha) {
+    eliminarAcopio(cosecha) {
       if (!cosecha?.id) {
         this.$q.notify({
           type: 'warning',

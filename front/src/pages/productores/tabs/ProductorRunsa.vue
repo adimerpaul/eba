@@ -3,10 +3,7 @@
     <div class="row items-center q-gutter-sm q-mb-sm">
       <div class="text-subtitle1">Certificaciones Runsa</div>
       <q-space />
-      <q-btn
-        dense color="primary" icon="add_circle" label="Nueva"
-        @click="startCreate" :disable="saving" no-caps
-      />
+      <q-btn dense color="primary" icon="add_circle" label="Nueva" @click="startCreate" :disable="saving" no-caps />
       <!--
       <q-btn
         dense flat icon="picture_as_pdf" label="Imprimir"
@@ -18,49 +15,49 @@
     <!-- Tabla -->
     <q-markup-table dense>
       <thead>
-      <tr class="bg-grey-3">
-        <th class="text-left">#</th>
-        <th class="text-left" style="width:120px;">Opciones</th>
-        <th class="text-left">Codigo</th>
-        <th class="text-left">Subcodigo</th>
-        <th class="text-left">Registro</th>
-        <th class="text-left">Vencimiento</th>
-        <th class="text-left">Estado</th>
-      </tr>
+        <tr class="bg-grey-3">
+          <th class="text-left">#</th>
+          <th class="text-left" style="width:120px;">Opciones</th>
+          <th class="text-left">Codigo</th>
+          <th class="text-left">Subcodigo</th>
+          <th class="text-left">Registro</th>
+          <th class="text-left">Vencimiento</th>
+          <th class="text-left">Estado</th>
+        </tr>
       </thead>
       <tbody>
-      <tr v-for="(c,i) in (list || [])" :key="c.id || i">
-        <td>{{ i + 1 }}</td>
+        <tr v-for="(c, i) in (list || [])" :key="c.id || i">
+          <td>{{ i + 1 }}</td>
 
-        <td>
-          <q-btn-dropdown dense label="Opciones" color="primary" no-caps size="10px">
-            <q-list>
-              <q-item clickable v-ripple @click="startEdit(c)" v-close-popup>
-                <q-item-section avatar><q-icon name="edit" /></q-item-section>
-                <q-item-section>Editar</q-item-section>
-              </q-item>
-              <q-item clickable v-ripple @click="remove(c)" v-close-popup>
-                <q-item-section avatar><q-icon name="delete" class="text-negative" /></q-item-section>
-                <q-item-section class="text-negative">Eliminar</q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
-        </td>
+          <td>
+            <q-btn-dropdown dense label="Opciones" color="primary" no-caps size="10px">
+              <q-list>
+                <q-item clickable v-ripple @click="startEdit(c)" v-close-popup>
+                  <q-item-section avatar><q-icon name="edit" /></q-item-section>
+                  <q-item-section>Editar</q-item-section>
+                </q-item>
+                <q-item clickable v-ripple @click="remove(c)" v-close-popup>
+                  <q-item-section avatar><q-icon name="delete" class="text-negative" /></q-item-section>
+                  <q-item-section class="text-negative">Eliminar</q-item-section>
+                </q-item>
+              </q-list>
+            </q-btn-dropdown>
+          </td>
 
-        <td>{{ c.codigo || '-' }}</td>
-        <td>{{ c.subcodigo || '-' }}</td>
-        <td>{{ c.fecha_registro || '-' }}</td>
-        <td>{{ c.fecha_vencimiento || '-' }}</td>
-        <td>
-          <q-chip :color="chip(c.estado)" text-color="white" size="xs" class="text-bold">
-            {{ c.estado }}
-          </q-chip>
-        </td>
-      </tr>
+          <td>{{ c.codigo || '-' }}</td>
+          <td>{{ c.subcodigo || '-' }}</td>
+          <td>{{ c.fecha_registro || '-' }}</td>
+          <td>{{ c.fecha_vencimiento || '-' }}</td>
+          <td>
+            <q-chip :color="chip(c.estado)" text-color="white" size="xs" class="text-bold">
+              {{ c.estado }}
+            </q-chip>
+          </td>
+        </tr>
 
-      <tr v-if="!loading && (productor?.runsas?.length || 0) === 0">
-        <td colspan="8" class="text-center text-grey">Sin registros</td>
-      </tr>
+        <tr v-if="!loading && (productor?.runsas?.length || 0) === 0">
+          <td colspan="8" class="text-center text-grey">Sin registros</td>
+        </tr>
       </tbody>
     </q-markup-table>
 
@@ -79,17 +76,10 @@
         <q-card-section>
           <q-form @submit="submit" class="row q-col-gutter-sm">
             <div class="col-12 col-sm-4">
-              <q-input
-                v-model="form.codigo"
-                dense outlined label="Codigo"
-                :rules="[v=>!!v || 'Requerido']"
-              />
+              <q-input v-model="form.codigo" dense outlined label="Codigo" :rules="[v => !!v || 'Requerido']" />
             </div>
             <div class="col-12 col-sm-8">
-              <q-input
-                v-model="form.subcodigo"
-                dense outlined label="Subcodigo"
-              />
+              <q-input v-model="form.subcodigo" dense outlined label="Subcodigo" />
             </div>
 
             <div class="col-6 col-sm-3">
@@ -100,17 +90,13 @@
             </div>
 
             <div class="col-12 col-sm-3">
-              <q-select
-                v-model="form.estado"
-                :options="['VIGENTE','VENCIDO','SUSPENDIDO']"
-                dense outlined label="Estado"
-              />
+              <q-select v-model="form.estado" :options="['VIGENTE', 'VENCIDO', 'SUSPENDIDO']" dense outlined
+                label="Estado" />
             </div>
 
             <div class="col-12 text-right q-gutter-sm q-mt-sm">
               <q-btn flat color="grey" label="Cancelar" v-close-popup :disable="saving" />
-              <q-btn color="primary" :label="form.id ? 'Guardar cambios' : 'Crear'"
-                     type="submit" :loading="saving" />
+              <q-btn color="primary" :label="form.id ? 'Guardar cambios' : 'Crear'" type="submit" :loading="saving" />
             </div>
           </q-form>
         </q-card-section>
@@ -127,7 +113,7 @@ export default {
     productor: { type: Object, required: true }
   },
   emits: ['updated'],
-  data () {
+  data() {
     return {
       loading: false,
       saving: false,
@@ -136,21 +122,21 @@ export default {
       form: this.emptyForm(),
     }
   },
-    mounted () { this.hydrateFromProductor() },
-  watch: { productor () { this.hydrateFromProductor() } },
+  mounted() { this.hydrateFromProductor() },
+  watch: { productor() { this.hydrateFromProductor() } },
   methods: {
-    hydrateFromProductor () {
+    hydrateFromProductor() {
       if (this.productor?.runsas) this.list = this.productor.runsas
       else this.fetchRunsas()
     },
-    async fetchRunsas () {
-        console.log(this.productor)
+    async fetchRunsas() {
+      console.log(this.productor)
       this.loading = true
       try {
         const { data } = await this.$axios.get('runsas', {
           params: { productor_id: this.productor.id, paginate: false }
         })
-        console.log(data)   
+        console.log(data)
         this.list = Array.isArray(data) ? data : (data?.data || [])
       } catch (e) {
         console.log(e)
@@ -158,7 +144,7 @@ export default {
         this.$alert?.error?.(e.response?.data?.message || 'No se pudo cargar runsas')
       } finally { this.loading = false }
     },
-    emptyForm () {
+    emptyForm() {
       return {
         id: null,
         productor_id: this.productor?.id || null,
@@ -169,19 +155,19 @@ export default {
         estado: 'VIGENTE'
       }
     },
-    chip (estado) {
+    chip(estado) {
       if (estado === 'VIGENTE') return 'green'
       if (estado === 'VENCIDO') return 'red'
       if (estado === 'SUSPENDIDO') return 'orange'
       return 'grey'
     },
 
-    startCreate () {
+    startCreate() {
       this.form = this.emptyForm()
       this.form.productor_id = this.productor?.id || null
       this.dlg.open = true
     },
-    startEdit (row) {
+    startEdit(row) {
       this.form = {
         id: row.id,
         productor_id: this.productor?.id || row.productor_id,
@@ -194,7 +180,7 @@ export default {
       this.dlg.open = true
     },
 
-    async submit () {
+    async submit() {
       if (!this.productor?.id) return
       this.saving = true
       try {
@@ -214,7 +200,7 @@ export default {
       }
     },
 
-    remove (row) {
+    remove(row) {
       this.$alert?.dialog?.('¿Eliminar runsa?')?.onOk(async () => {
         try {
           await this.$axios.delete(`runsas/${row.id}`)

@@ -48,11 +48,12 @@
         <q-select v-model="form.proveedor" label="Proveedor" :options="tipos" dense outlined />
       </div>-->
       <div class="col-12 col-sm-4">
-<!--        <q-input v-model="form.cip_acopio" label="CIP Acopio" dense outlined />-->
-<!--        CIP MONTEAGUDO-->
-<!--        CIP IRUPANA-->
-<!--        CIP ZABUZABETI-->
-        <q-select v-model="form.cip_acopio" label="CIP Acopio" :options="['CIP MONTEAGUDO','CIP IRUPANA','CIP ZABUZABETI']" dense outlined />
+        <!--        <q-input v-model="form.cip_acopio" label="CIP Acopio" dense outlined />-->
+        <!--        CIP MONTEAGUDO-->
+        <!--        CIP IRUPANA-->
+        <!--        CIP ZABUZABETI-->
+        <q-select v-model="form.cip_acopio" label="CIP Acopio"
+          :options="['CIP MONTEAGUDO', 'CIP IRUPANA', 'CIP ZABUZABETI']" dense outlined />
       </div>
 
       <!-- Celular / Ocupación / Selección -->
@@ -68,20 +69,9 @@
 
       <!-- Organización (buscador remoto simple) -->
       <div class="col-12 col-sm-4">
-        <q-select
-          v-model="form.organizacion"
-          label="Organización"
-          dense outlined
-          use-input fill-input input-debounce="300"
-          :options="orgOptions"
-          option-label="nombre_organiza"
-
-          emit-value map-options
-          clearable
-          @filter="filterOrganizaciones"
-          :loading="orgLoading"
-          hint="Escribe para buscar"
-        >
+        <q-select v-model="form.organizacion" label="Organización" dense outlined use-input fill-input
+          input-debounce="300" :options="orgOptions" option-label="nombre_organiza" emit-value map-options clearable
+          @filter="filterOrganizaciones" :loading="orgLoading" hint="Escribe para buscar">
           <template #no-option>
             <q-item><q-item-section class="text-grey">Sin resultados</q-item-section></q-item>
           </template>
@@ -135,7 +125,8 @@
         <q-input v-model="form.fecha_expiracion" type="date" label="Fecha Expiración" dense outlined />
       </div>
       <div class="col-12 col-sm-4">
-        <q-select v-model="form.estado" :options="['VIGENTE','VENCIDO','ACTIVO','INACTIVO']" label="Estado" dense outlined />
+        <q-select v-model="form.estado" :options="['VIGENTE', 'VENCIDO', 'ACTIVO', 'INACTIVO']" label="Estado" dense
+          outlined />
       </div>
 
       <!-- Otros -->
@@ -163,10 +154,10 @@ export default {
     bannerMsg: { type: String, default: '' }
   },
   emits: ['saved', 'cancel', 'error'],
-  data () {
+  data() {
     return {
-      tipos: ['Pequeño Productor','Productor Individual','Organizacion de Productores','Asociacion'],
-      dept:['LPZ','CBB','SCZ','ORU','POT','PND','BEN','TAR','SUC','OTRO'],
+      tipos: ['Pequeño Productor', 'Productor Individual', 'Organizacion de Productores', 'Asociacion'],
+      dept: ['LPZ', 'CBB', 'SCZ', 'ORU', 'POT', 'PND', 'BEN', 'TAR', 'SUC', 'OTRO'],
       localTree: [],
       saving: false,
       banner: this.bannerMsg,
@@ -183,19 +174,19 @@ export default {
     }
   },
   computed: {
-    treeToUse () {
+    treeToUse() {
       return (this.tree && this.tree.length) ? this.tree : this.localTree
     },
-    depOptions () {
+    depOptions() {
       return (this.treeToUse || []).map(d => ({ label: d.nombre_departamento, value: d.id }))
     },
-    provOptions () {
+    provOptions() {
       const depId = this.form.departamento_id
       if (!depId) return []
       const dep = (this.treeToUse || []).find(d => d.id === depId)
       return (dep?.provincias || []).map(p => ({ label: p.nombre_provincia, value: p.id }))
     },
-    munOptions () {
+    munOptions() {
       const depId = this.form.departamento_id
       const provId = this.form.provincia_id
       if (!depId || !provId) return []
@@ -206,17 +197,17 @@ export default {
   },
   watch: {
     productor: {
-      handler () { this.initFromProp() },
+      handler() { this.initFromProp() },
       immediate: true
     }
   },
-  mounted () {
+  mounted() {
     if (!this.tree?.length && this.autoLoadTree) {
       this.loadTree()
     }
   },
   methods: {
-    emptyForm () {
+    emptyForm() {
       return {
         id: null,
         municipio_id: null,
@@ -237,7 +228,7 @@ export default {
         otros: '',
         seleccion: 0,
         organizacion_id: null,
-        fecha_registro: new Date().toISOString().slice(0,10),
+        fecha_registro: new Date().toISOString().slice(0, 10),
         fecha_expiracion: null,
         estado: 'VIGENTE',
         // selects dependientes
@@ -246,7 +237,7 @@ export default {
       }
     },
 
-    async loadTree () {
+    async loadTree() {
       try {
         const { data } = await this.$axios.get('geo/tree')
         this.localTree = data
@@ -255,7 +246,7 @@ export default {
       }
     },
 
-    initFromProp () {
+    initFromProp() {
       const p = this.productor
       console.log(p);
       if (!p) {
@@ -282,8 +273,8 @@ export default {
         otros: p.otros ?? '',
         seleccion: p.seleccion ?? 0,
         organizacion_id: p.organizacion?.id || p.organizacion_id || null,
-        organizacion:  p.organizacion || null,
-        fecha_registro: p.fecha_registro ?? new Date().toISOString().slice(0,10),
+        organizacion: p.organizacion || null,
+        fecha_registro: p.fecha_registro ?? new Date().toISOString().slice(0, 10),
         fecha_expiracion: p.fecha_expiracion ?? null,
         estado: p.estado ?? 'VIGENTE',
         //departamento_id: p.municipio?.departamento_id || null,
@@ -291,15 +282,15 @@ export default {
       }
     },
 
-    onDepChange () {
+    onDepChange() {
       this.form.provincia_id = null
       this.form.municipio_id = null
     },
-    onProvChange () {
+    onProvChange() {
       this.form.municipio_id = null
     },
 
-    async filterOrganizaciones (val, update) {
+    async filterOrganizaciones(val, update) {
       update(async () => {
         this.orgLoading = true
         try {
@@ -321,7 +312,7 @@ export default {
      * Creado: 2025-11-21
      * @returns {Promise<boolean>} true si existe duplicado (cancela creacion), false si no existe
      */
-    async verificarDuplicados () {
+    async verificarDuplicados() {
       try {
         const params = {}
         if (this.form.numcarnet) params.numcarnet = this.form.numcarnet
@@ -369,7 +360,7 @@ export default {
       }
     },
 
-    async submit () {
+    async submit() {
       // 2025-11-21: Validar duplicados antes de crear nuevo productor
       if (!this.form.id) {
         const duplicado = await this.verificarDuplicados()

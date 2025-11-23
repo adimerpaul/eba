@@ -1,51 +1,21 @@
 <template>
   <q-card-section class="q-pa-none">
     <div style="height: 580px; border-radius: 8px; overflow: hidden">
-      <l-map
-        ref="map"
-        :zoom="zoom"
-        :center="initialCenter"
-        :options="mapOptions"
-        style="height: 100%; width: 100%"
-      >
+      <l-map ref="map" :zoom="zoom" :center="initialCenter" :options="mapOptions" style="height: 100%; width: 100%">
         <l-control-layers position="topright" />
 
         <!-- Capas base -->
-        <l-tile-layer
-          layer-type="base"
-          name="OpenStreetMap"
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          :max-zoom="19"
-          :visible="false"
-        />
-        <l-tile-layer
-          layer-type="base"
-          name="Google Calle"
-          url="https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}"
-          :max-zoom="21"
-          :visible="false"
-        />
-        <l-tile-layer
-          layer-type="base"
-          name="Google Satélite"
-          url="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-          :max-zoom="21"
-          :visible="false"
-        />
-        <l-tile-layer
-          layer-type="base"
-          name="Google Híbrido"
-          url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
-          :max-zoom="21"
-          :visible="true"
-        />
+        <l-tile-layer layer-type="base" name="OpenStreetMap" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          :max-zoom="19" :visible="false" />
+        <l-tile-layer layer-type="base" name="Google Calle" url="https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}"
+          :max-zoom="21" :visible="false" />
+        <l-tile-layer layer-type="base" name="Google Satélite" url="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+          :max-zoom="21" :visible="false" />
+        <l-tile-layer layer-type="base" name="Google Híbrido" url="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"
+          :max-zoom="21" :visible="true" />
 
         <!-- Marcadores de apiarios -->
-        <l-marker
-          v-for="a in apiariosConLatLng"
-          :key="a.id"
-          :lat-lng="[a.lat, a.lng]"
-        >
+        <l-marker v-for="a in apiariosConLatLng" :key="a.id" :lat-lng="[a.lat, a.lng]">
           <l-popup>
             <div style="min-width: 180px">
               <div class="text-bold">{{ a.nombre_cip || ('Apiario #' + a.id) }}</div>
@@ -56,7 +26,7 @@
               </div>
               <div v-if="a.estado" class="q-mt-xs">
                 Estado:
-                <q-badge :color="a.estado==='ACTIVO' ? 'green' : 'grey'" text-color="white" rounded>
+                <q-badge :color="a.estado === 'ACTIVO' ? 'green' : 'grey'" text-color="white" rounded>
                   {{ a.estado }}
                 </q-badge>
               </div>
@@ -75,7 +45,7 @@ import L from 'leaflet'
 
 // Fix de iconos (Vite/Webpack)
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
-import markerIcon   from 'leaflet/dist/images/marker-icon.png'
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
@@ -92,10 +62,10 @@ export default {
     productor: { type: Object, required: true },
     // Centro y zoom por defecto: Bolivia
     defaultCenter: { type: Array, default: () => [-16.29, -63.59] },
-    defaultZoom:   { type: Number, default: 6 }
+    defaultZoom: { type: Number, default: 6 }
   },
 
-  data () {
+  data() {
     return {
       zoom: this.defaultZoom,
       initialCenter: this.defaultCenter,
@@ -110,9 +80,9 @@ export default {
   },
 
   computed: {
-    mapObj () { return this.$refs.map?.leafletObject || null },
+    mapObj() { return this.$refs.map?.leafletObject || null },
 
-    apiariosConLatLng () {
+    apiariosConLatLng() {
       const arr = Array.isArray(this.productor?.apiarios) ? this.productor.apiarios : []
       return arr
         .map(a => {
@@ -129,23 +99,23 @@ export default {
   watch: {
     productor: {
       deep: true,
-      handler () { this.$nextTick(() => this.fitToMarkers()) }
+      handler() { this.$nextTick(() => this.fitToMarkers()) }
     }
   },
 
-  mounted () {
+  mounted() {
     this.$nextTick(() => this.fitToMarkers())
   },
 
   methods: {
     // Llama a esto si el mapa se muestra dentro de un QDialog/Tab
-    refresh () {
+    refresh() {
       const map = this.mapObj
       if (!map) return
       setTimeout(() => { map.invalidateSize(); this.fitToMarkers(true) }, 60)
     },
 
-    fitToMarkers (keepZoom = false) {
+    fitToMarkers(keepZoom = false) {
       const map = this.mapObj
       if (!map) return
 
