@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Mail;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role; // 👈 IMPORTANTE
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -42,6 +42,29 @@ class UserController extends Controller
         return response()->json(['message' => 'No se ha enviado un archivo'], 400);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/login",
+     *     tags={"Auth"},
+     *     summary="Login de usuario externo/interno",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"username","password"},
+     *             @OA\Property(property="username", type="string", example="admin"),
+     *             @OA\Property(property="password", type="string", format="password", example="admin123Admin")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Login exitoso"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Usuario o contraseña incorrectos"
+     *     )
+     * )
+     */
     public function login(Request $request)
     {
         $credentials = $request->only('username', 'password');
