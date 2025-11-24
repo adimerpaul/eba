@@ -54,19 +54,32 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Avatar actualizado correctamente"
+     *         description="Avatar actualizado correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Avatar actualizado"),
+     *             @OA\Property(property="avatar", type="string", example="1711200000.jpg")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Usuario no encontrado"
+     *         description="Usuario no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuario no encontrado")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=400,
-     *         description="No se envió archivo"
+     *         description="No se envió archivo",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No se ha enviado un archivo")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="No autenticado"
+     *         description="No autenticado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */
@@ -113,15 +126,26 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Login exitoso, devuelve token y datos de usuario"
+     *         description="Login exitoso, devuelve token y datos de usuario",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string", example="1|xxxxxxxxxxxxxxxxxxxx"),
+     *             @OA\Property(property="user", type="object"),
+     *             @OA\Property(property="source", type="string", example="externo")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="Usuario o contraseña incorrectos"
+     *         description="Usuario o contraseña incorrectos",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuario o contraseña incorrectos")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=403,
-     *         description="Usuario interno sin acceso a TRAZA"
+     *         description="Usuario interno sin acceso a TRAZA",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="El usuario no tiene acceso al sistema TRAZA")
+     *         )
      *     )
      * )
      */
@@ -131,7 +155,7 @@ class UserController extends Controller
 
         // ========= 1) USUARIO EXTERNO =========
         $user = User::where('username', $credentials['username'])
-            ->with(['permissions:id,name', 'roles:id,name']) // 👈 también roles
+            ->with(['permissions:id,name', 'roles:id,name'])
             ->first();
 
         if ($user) {
@@ -219,11 +243,17 @@ class UserController extends Controller
      *     security={{"sanctum": {}}},
      *     @OA\Response(
      *         response=200,
-     *         description="Token eliminado correctamente"
+     *         description="Token eliminado correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Token eliminado")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="No autenticado"
+     *         description="No autenticado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */
@@ -243,18 +273,22 @@ class UserController extends Controller
      *     security={{"sanctum": {}}},
      *     @OA\Response(
      *         response=200,
-     *         description="Datos del usuario autenticado"
+     *         description="Datos del usuario autenticado",
+     *         @OA\JsonContent(type="object")
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="No autenticado"
+     *         description="No autenticado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */
     public function me(Request $request)
     {
         $user = $request->user();
-        $user->load('permissions:id,name', 'roles:id,name'); // 👈 también roles
+        $user->load('permissions:id,name', 'roles:id,name');
         return response()->json($user);
     }
 
@@ -266,18 +300,30 @@ class UserController extends Controller
      *     security={{"sanctum": {}}},
      *     @OA\Response(
      *         response=200,
-     *         description="Listado de usuarios"
+     *         description="Listado de usuarios",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="username", type="string", example="admin"),
+     *                 @OA\Property(property="name", type="string", example="Admin"),
+     *                 @OA\Property(property="email", type="string", example="admin@eba.com.bo")
+     *             )
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="No autenticado"
+     *         description="No autenticado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */
     public function index()
     {
         return User::where('id', '!=', 0)
-            ->with(['permissions:id,name', 'roles:id,name']) // 👈 también roles
+            ->with(['permissions:id,name', 'roles:id,name'])
             ->orderBy('id', 'desc')
             ->get();
     }
@@ -307,15 +353,22 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Usuario actualizado"
+     *         description="Usuario actualizado",
+     *         @OA\JsonContent(type="object")
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Usuario no encontrado"
+     *         description="Usuario no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuario no encontrado")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="No autenticado"
+     *         description="No autenticado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */
@@ -325,12 +378,11 @@ class UserController extends Controller
 
         $data = $request->only(['name', 'email', 'username', 'avatar']);
 
-        // 👇 Si viene role_id, sincronizamos el rol del usuario
         if ($request->filled('role_id')) {
             $role = Role::find($request->role_id);
             if ($role) {
                 $user->syncRoles([$role->id]);
-                $data['role'] = $role->name; // columna texto para mostrar
+                $data['role'] = $role->name;
             }
         }
 
@@ -364,15 +416,22 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Contraseña actualizada"
+     *         description="Contraseña actualizada",
+     *         @OA\JsonContent(type="object")
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Usuario no encontrado"
+     *         description="Usuario no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuario no encontrado")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="No autenticado"
+     *         description="No autenticado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */
@@ -380,7 +439,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $user->update([
-            'password' => $request->password, // casteado como hashed en el modelo
+            'password' => $request->password,
         ]);
         return $user;
     }
@@ -404,15 +463,22 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Usuario creado correctamente"
+     *         description="Usuario creado correctamente",
+     *         @OA\JsonContent(type="object")
      *     ),
      *     @OA\Response(
      *         response=422,
-     *         description="Validación fallida o username ya existe"
+     *         description="Validación fallida o username ya existe",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="El nombre de usuario ya existe")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="No autenticado"
+     *         description="No autenticado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */
@@ -432,12 +498,11 @@ class UserController extends Controller
 
         $userData = [
             'username' => $validatedData['username'],
-            'password' => $validatedData['password'], // hashed por cast
+            'password' => $validatedData['password'],
             'name'     => $validatedData['name'],
             'email'    => $validatedData['email'] ?? null,
         ];
 
-        // Si viene rol, lo guardamos como texto también
         $role = null;
         if (!empty($validatedData['role_id'])) {
             $role = Role::find($validatedData['role_id']);
@@ -448,7 +513,6 @@ class UserController extends Controller
 
         $user = User::create($userData);
 
-        // Sincronizar roles Spatie
         if ($role) {
             $user->syncRoles([$role->id]);
         }
@@ -485,15 +549,24 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Usuario eliminado"
+     *         description="Usuario eliminado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuario eliminado")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Usuario no encontrado"
+     *         description="Usuario no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuario no encontrado")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="No autenticado"
+     *         description="No autenticado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */
@@ -522,15 +595,25 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Listado de IDs de permisos"
+     *         description="Listado de IDs de permisos",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(type="integer", example=1)
+     *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Usuario no encontrado"
+     *         description="Usuario no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuario no encontrado")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="No autenticado"
+     *         description="No autenticado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */
@@ -566,15 +649,30 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Permisos actualizados"
+     *         description="Permisos actualizados",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="permissions",
+     *                 type="array",
+     *                 @OA\Items(type="string"),
+     *                 example={"ventas.index","ventas.store"}
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Permisos actualizados")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Usuario no encontrado"
+     *         description="Usuario no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuario no encontrado")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="No autenticado"
+     *         description="No autenticado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */
@@ -610,15 +708,25 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Listado de IDs de roles"
+     *         description="Listado de IDs de roles",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(type="integer", example=1)
+     *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Usuario no encontrado"
+     *         description="Usuario no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuario no encontrado")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="No autenticado"
+     *         description="No autenticado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */
@@ -654,15 +762,30 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Roles sincronizados correctamente"
+     *         description="Roles sincronizados correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="roles",
+     *                 type="array",
+     *                 @OA\Items(type="string"),
+     *                 example={"admin","monitor"}
+     *             ),
+     *             @OA\Property(property="message", type="string", example="Roles del usuario actualizados")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=404,
-     *         description="Usuario no encontrado"
+     *         description="Usuario no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Usuario no encontrado")
+     *         )
      *     ),
      *     @OA\Response(
      *         response=401,
-     *         description="No autenticado"
+     *         description="No autenticado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *         )
      *     )
      * )
      */
@@ -679,17 +802,6 @@ class UserController extends Controller
         $roleIds = $request->roles ?? [];
         $user->syncRoles($roleIds);
 
-//        // actualizar columna texto "role" con el primer rol (opcional)
-//        $firstRole = $user->roles()->first();
-//        if ($firstRole) {
-//            $user->role = $firstRole->name;
-//            $user->save();
-//        }
-//
-//        return response()->json([
-//            'message'     => 'Roles del usuario actualizados',
-//            'roles'       => $user->roles()->pluck('name'),
-//            'permissions' => $user->getAllPermissions()->pluck('name'),
-//        ]);
+        // sin cambio en lógica
     }
 }
