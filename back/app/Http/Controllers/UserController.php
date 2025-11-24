@@ -11,9 +11,65 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use OpenApi\Annotations as OA;
 
+/**
+ * @OA\SecurityScheme(
+ *     securityScheme="sanctum",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="Token",
+ *     description="Token de autenticación de Laravel Sanctum (Bearer {token})"
+ * )
+ */
 class UserController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/api/{user}/avatar",
+     *     tags={"Usuarios"},
+     *     summary="Actualizar avatar de un usuario",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         required=true,
+     *         description="ID del usuario",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Archivo de imagen para el avatar",
+     *         @OA\MediaType(
+     *             mediaType="multipart/form-data",
+     *             @OA\Schema(
+     *                 @OA\Property(
+     *                     property="avatar",
+     *                     type="string",
+     *                     format="binary",
+     *                     description="Imagen del avatar"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Avatar actualizado correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="No se envió archivo"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
     public function updateAvatar(Request $request, $userId)
     {
         $user = User::find($userId);
@@ -57,11 +113,15 @@ class UserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="Login exitoso"
+     *         description="Login exitoso, devuelve token y datos de usuario"
      *     ),
      *     @OA\Response(
      *         response=401,
      *         description="Usuario o contraseña incorrectos"
+     *     ),
+     *     @OA\Response(
+     *         response=403,
+     *         description="Usuario interno sin acceso a TRAZA"
      *     )
      * )
      */
@@ -151,6 +211,22 @@ class UserController extends Controller
         return false;
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/logout",
+     *     tags={"Auth"},
+     *     summary="Cerrar sesión (revoca el token actual)",
+     *     security={{"sanctum": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Token eliminado correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
@@ -159,6 +235,22 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/me",
+     *     tags={"Auth"},
+     *     summary="Obtener datos del usuario autenticado",
+     *     security={{"sanctum": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Datos del usuario autenticado"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
     public function me(Request $request)
     {
         $user = $request->user();
@@ -166,6 +258,22 @@ class UserController extends Controller
         return response()->json($user);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/users",
+     *     tags={"Usuarios"},
+     *     summary="Listado de usuarios externos",
+     *     security={{"sanctum": {}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Listado de usuarios"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
     public function index()
     {
         return User::where('id', '!=', 0)
@@ -174,6 +282,43 @@ class UserController extends Controller
             ->get();
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/users/{user}",
+     *     tags={"Usuarios"},
+     *     summary="Actualizar datos de un usuario",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         required=true,
+     *         description="ID del usuario a actualizar",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="email", type="string", format="email"),
+     *             @OA\Property(property="username", type="string"),
+     *             @OA\Property(property="avatar", type="string"),
+     *             @OA\Property(property="role_id", type="integer", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario actualizado"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -197,6 +342,40 @@ class UserController extends Controller
         return $user;
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/updatePassword/{user}",
+     *     tags={"Usuarios"},
+     *     summary="Actualizar la contraseña de un usuario",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         required=true,
+     *         description="ID del usuario",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"password"},
+     *             @OA\Property(property="password", type="string", format="password")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Contraseña actualizada"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
     public function updatePassword(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -206,6 +385,37 @@ class UserController extends Controller
         return $user;
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/users",
+     *     tags={"Usuarios"},
+     *     summary="Crear un nuevo usuario externo",
+     *     security={{"sanctum": {}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"username","password","name"},
+     *             @OA\Property(property="username", type="string", example="nuevo.user"),
+     *             @OA\Property(property="password", type="string", format="password", example="Secret123"),
+     *             @OA\Property(property="name", type="string", example="Nuevo Usuario"),
+     *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
+     *             @OA\Property(property="role_id", type="integer", nullable=true, example=1)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario creado correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validación fallida o username ya existe"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -260,6 +470,33 @@ class UserController extends Controller
         return $user;
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/users/{user}",
+     *     tags={"Usuarios"},
+     *     summary="Eliminar un usuario externo",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         required=true,
+     *         description="ID del usuario a eliminar",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Usuario eliminado"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
     public function destroy($id)
     {
         $user = User::find($id);
@@ -270,13 +507,77 @@ class UserController extends Controller
         return response()->json(['message' => 'Usuario eliminado']);
     }
 
-    // ---------- PERMISOS DIRECTOS (puedes dejarlo para compatibilidad) ----------
+    /**
+     * @OA\Get(
+     *     path="/api/users/{user}/permissions",
+     *     tags={"Usuarios - Permisos"},
+     *     summary="Obtener IDs de permisos directos de un usuario",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         required=true,
+     *         description="ID del usuario",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Listado de IDs de permisos"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
     public function getPermissions($userId)
     {
         $user = User::findOrFail($userId);
         return $user->permissions()->pluck('id');
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/users/{user}/permissions",
+     *     tags={"Usuarios - Permisos"},
+     *     summary="Sincronizar permisos directos de un usuario",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         required=true,
+     *         description="ID del usuario",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="permissions",
+     *                 type="array",
+     *                 @OA\Items(type="integer"),
+     *                 description="IDs de permisos a asignar"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Permisos actualizados"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
     public function syncPermissions(Request $request, $userId)
     {
         $request->validate([
@@ -294,13 +595,77 @@ class UserController extends Controller
         ]);
     }
 
-    // ---------- ROLES DEL USUARIO (NUEVO) ----------
+    /**
+     * @OA\Get(
+     *     path="/api/users/{user}/roles",
+     *     tags={"Usuarios - Roles"},
+     *     summary="Obtener IDs de roles asignados a un usuario",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         required=true,
+     *         description="ID del usuario",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Listado de IDs de roles"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
     public function getRoles($userId)
     {
         $user = User::findOrFail($userId);
         return $user->roles()->pluck('id');
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/users/{user}/roles",
+     *     tags={"Usuarios - Roles"},
+     *     summary="Sincronizar roles de un usuario externo",
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="user",
+     *         in="path",
+     *         required=true,
+     *         description="ID del usuario",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=false,
+     *         @OA\JsonContent(
+     *             @OA\Property(
+     *                 property="roles",
+     *                 type="array",
+     *                 @OA\Items(type="integer"),
+     *                 description="IDs de roles a asignar"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Roles sincronizados correctamente"
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Usuario no encontrado"
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="No autenticado"
+     *     )
+     * )
+     */
     public function syncRoles(Request $request, $userId)
     {
         $request->validate([
